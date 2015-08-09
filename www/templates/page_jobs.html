@@ -1,0 +1,79 @@
+<div class="container" ng-controller="jobsCtrl">
+    <div class="sub_menu">
+        <button id="new_job" disabled>&#x2795; New Job</button>
+        <button id="archived_jobs" disabled>&#x2672; Archived Jobs</button>
+    </div>
+    <table class="table table-striped" id="jobs_list">
+        <thead>
+            <tr>
+                <th>Job</th>
+                <th>Transport</th>
+                <th>Endpoint</th>
+                <th>Node</th>
+                <th>Progress</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tbody_jobs_list">
+            <tr ng-repeat="job in jobs | filter:query">
+                <td>
+                    <table>
+                        <tr>
+                            <td class="s_job_name">Worker</td><td>{{job.worker}}</td>
+                        </tr>
+                        <tr>
+                            <td class="s_job_name">Job ID</td><td>{{job.id}}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr ng-repeat="(key, value) in job.data.target.transport">
+                            <td class="list_key">{{key | capitalize}}:</td><td>{{value}}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr ng-repeat="(key, value) in job.data.target.endpoint">
+                            <td class="list_key">{{key | capitalize}}:</td><td>{{value}}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>{{job.name}}</td>
+                <td class="jobs_col_progbar">
+                    <div ng-if="job.state == 'running'">
+                        <progressbar id="job_progress" max="job.progress.num_mutations" value="job.progress.total_mutant_index">
+                            {{job.progress.total_mutant_index}} / {{job.progress.num_mutations}}
+                        </progressbar>
+                    </div>
+                    <div ng-if="job.state == 'finished'">
+                        <progressbar type="success" id="job_progress" max="job.progress.num_mutations" value="job.progress.total_mutant_index">
+                            FINISHED ({{job.progress.total_mutant_index}} / {{job.progress.num_mutations}})
+                        </progressbar>
+                    </div>
+                    <div ng-if="job.state == 'paused'">
+                        <progressbar type="warning" id="job_progress" max="job.progress.num_mutations" value="job.progress.total_mutant_index">
+                            PAUSED ({{job.progress.total_mutant_index}} / {{job.progress.num_mutations}})
+                        </progressbar>
+                    </div>
+                    <div ng-if="job.state == 'stopped'">
+                        <progressbar type="danger" id="job_progress" max="job.progress.num_mutations" value="job.progress.total_mutant_index">
+                            STOPPED ({{job.progress.total_mutant_index}} / {{job.progress.num_mutations}})
+                        </progressbar>
+                    </div>
+                </td>
+                <td>
+                    <div ng-if="job.state == 'running'" id="job_action">
+                        <button class="job_action" title="Pause Job" job_id="{{job.id}}" id="pause_job">&#9646;&#9646;</button>
+                    </div>
+                    <div ng-if="job.state == 'paused'" id="job_action">
+                        <button class="job_action" title="Start Job" job_id="{{job.id}}" id="start_job">&#x25B6;</button>
+                    </div>
+                    <button class="job_action" title="Delete Job" job_id="{{job.id}}" id="delete_job">&#x2718;</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

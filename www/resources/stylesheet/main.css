@@ -1,0 +1,152 @@
+body {
+  margin-bottom: 62px;
+}
+
+.img-responsive-b {
+  display: inline-block;
+  max-width: 35px;
+  margin-top: -7px;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 62px;
+  background-color: #f5f5f5;
+}
+
+body > .container {
+  padding: 20px 15px 0;
+}
+
+.container .text-muted {
+  margin: 20px 0;
+}
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+code {
+  font-size: 80%;
+}
+
+.navbar-bottom {
+  margin-top: 50px;
+  height: 2px;
+  background: #e7e7e7;
+  background: -moz-linear-gradient(left, #e7e7e7 0%, #c41230 100%);
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%,#e7e7e7), color-stop(100%,#c41230));
+  background: -webkit-linear-gradient(left, #e7e7e7 0%,#c41230 100%);
+  background: -o-linear-gradient(left, #e7e7e7 0%,#c41230 100%);
+  background: -ms-linear-gradient(left, #e7e7e7 0%,#c41230 100%);
+  background: linear-gradient(to right, #e7e7e7 0%,#c41230 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e7e7e7', endColorstr='#c41230',GradientType=1 );
+}
+
+.footer-bottom {
+  height: 2px;
+  background: #e7e7e7;
+  background: -moz-linear-gradient(left, #c41230 0%, #e7e7e7 100%);
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%,#c41230), color-stop(100%,#e7e7e7));
+  background: -webkit-linear-gradient(left, #c41230 0%,#e7e7e7 100%);
+  background: -o-linear-gradient(left, #c41230 0%,#e7e7e7 100%);
+  background: -ms-linear-gradient(left, #c41230 0%,#e7e7e7 100%);
+  background: linear-gradient(to right, #c41230 0%,#e7e7e7 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c41230', endColorstr='#e7e7e7',GradientType=1 );
+}
+
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:hover {
+  background-color: #e7e7e7;
+  color: #C41230;
+}
+
+input {
+  border-radius: 0px;
+  border: 1px solid #AAAAAA;
+  padding: 3px;
+}
+
+.sec-enf-txt {
+  font-size: 0.8em;
+}
+
+.img_help {
+  margin-top: -5px;
+}
+
+a.c_tooltip::before {
+  content: attr(data-tip) ;   
+     
+  font-size: 12px;
+  position: absolute;
+  z-index: 999;
+  background: #FAFAFA;
+  color: #303030;
+  padding:0px 7px;
+  line-height: 28px;
+  height: 28px;
+
+  opacity: 0;  
+  transition:opacity 0.4s ease-out; 
+  text-decoration: none;
+}
+     
+a.c_tooltip:hover::before {
+  opacity: 1;
+  border: 0px;
+  text-decoration: none;
+}
+
+div.sub_menu {
+  margin-bottom: 15px;
+}
+
+td.list_key {
+  min-width: 90px;
+}
+
+#tbody_jobs_list {
+  font-size: 0.9em;
+}
+
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+div#job_progress,
+tr.ng-scope td.jobs_col_progbar div.progress.ng-isolate-scope div.progress-bar {
+  border-radius: 0px;
+}
+
+td.jobs_col_progbar {
+  min-width: 250px;
+}
+
+div#job_action {
+  float: left;
+}
+
+button.job_action {
+  min-width: 40px;
+}
+
+div.status_error_header {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+div.status_error_message {
+  margin-bottom: 20px;
+}
+
+td.s_job_name {
+  min-width: 70px;
+}
+

@@ -1,0 +1,31 @@
+{
+    "session": {
+        "sleep_time": 0,
+        "restart_sleep_time": 0,
+        "timeout": 0,
+        "skip": 0
+    },
+    "target": {
+        "transport": {
+            "media": "file",
+            "protocol": "file"
+        },
+        "endpoint": {
+            "path": "/tmp/jpegs", 
+            "filename": "test", 
+            "extension": "jpg"
+        },
+        "conditions": {
+            "fail_connection": ["log", "restart"],
+            "fail_receive": [],
+            "fail_send": ["log"]
+        }
+    },
+    "request": {
+        "request_file": "file_JPEG",
+        "graph": 
+        [
+            {"current": "JPEG"}
+        ]
+    }
+}

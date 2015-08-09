@@ -1,0 +1,29 @@
+<div class="container" ng-controller="enginesCtrl">
+    <div class="sub_menu">
+        <button id="add_new_engine">&#x2795; Add Engine</button>
+    </div>
+    <table class="table table-striped" id="engines_list">
+        <thead>
+            <tr>
+                <th>Active</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Port</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tbody_engines_list">
+            <tr ng-repeat="engine in engines | filter:query">
+                <td>{{engine.active | engine_active }}</td>
+                <td>{{engine.name}}</td>
+                <td>{{engine.address}}</td>
+                <td>{{engine.port}}</td>
+                <td>
+                    <button engine="{{engine.name}}" title="Set Active" id="set_active_engine">&#x2605;</button>
+                    <button engine="{{engine.name}}" title="Delete Engine" id="delete_engine">&#x2718;</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

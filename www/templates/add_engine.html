@@ -1,0 +1,63 @@
+<form class="form-horizontal" name="add_engine">
+<fieldset>
+
+<!-- Form Name -->
+<legend>Add Engine</legend>
+
+<!-- Text input-->
+<div class="control-group">
+  <label class="control-label" for="textinput">Name</label>
+  <div class="controls">
+    <input id="new_engine_name" name="engine_name" placeholder="Name of the engine" class="input-xlarge" required="" type="text">
+    <a href="#" class="c_tooltip" data-tip="Minimum 1, maximum 128 characters, can contain all alpha-numeric, dash, underscore and dot characters.">
+        <img width="25" class="img_help" src="/resources/images/help.png"/>
+    </a>
+    <p class="help-block">An engine name is an arbitrary string to help you identify your engine.</p>
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="control-group">
+  <label class="control-label" for="textinput">Address</label>
+  <div class="controls">
+    <input id="new_engine_address" name="engine_address" placeholder="IP address / hostname" class="input-xlarge" required="" type="text">
+    <a href="#" class="c_tooltip" data-tip="Minimum 5, maximum 256 characters, can contain all alpha-numeric, dash, underscore and dot characters.">
+        <img width="25" class="img_help" src="/resources/images/help.png"/>
+    </a>
+    <p class="help-block">The IP address or hostname to be used to connect to the engine.</p>
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="control-group">
+  <label class="control-label" for="textinput">Port</label>
+  <div class="controls">
+    <input id="new_engine_port" name="engine_port" placeholder="Port number" class="input-xlarge" required="" type="number" min=1 max=65535>
+    <a href="#" class="c_tooltip" data-tip="Numeric only. Minimum value is 1, maximum value is 65535.">
+        <img width="25" class="img_help" src="/resources/images/help.png"/>
+    </a>
+    <p class="help-block">The port number the engine is listening on.</p>
+  </div>
+</div>
+
+<!-- Password input-->
+<div class="control-group">
+  <label class="control-label" for="passwordinput">Password</label>
+  <div class="controls">
+    <input id="new_engine_password" name="engine_password" placeholder="" class="input-xlarge" type="password">
+    <p class="help-block">If the engine requires a password, provide the password here.</p>
+  </div>
+</div>
+
+<!-- Button (Double) -->
+<div class="control-group">
+  <label class="control-label" for="button1id"></label>
+  <div class="controls">
+    <button id="save_engine" name="save_engine" class="btn btn-success">Save</button>
+    <button id="cancel_save_engine" name="cancel_save_engine" class="btn btn-danger">Cancel</button>
+  </div>
+</div>
+
+</fieldset>
+</form>
+
