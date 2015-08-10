@@ -120,7 +120,7 @@ class jobshandler(threading.Thread):
     # 
     # -------------------------------------------------------------------------
 
-    def handle_job_status(self, cmd):
+    def _q_handle_job_status(self, cmd):
         if self.is_status_for_worker(cmd["from"]):
             self.update_worker_status(cmd["from"], cmd["data"])
         else:
@@ -133,7 +133,7 @@ class jobshandler(threading.Thread):
     # 
     # -------------------------------------------------------------------------
 
-    def handle_pong(self, cmd):
+    def _q_handle_pong(self, cmd):
         worker_id = cmd["from"]
         for worker in self.workers:
             if worker["id"] == worker_id:
@@ -143,7 +143,7 @@ class jobshandler(threading.Thread):
     # 
     # -------------------------------------------------------------------------
 
-    def handle_pid(self, cmd):
+    def _q_handle_pid(self, cmd):
         worker_id = cmd["from"]
         for worker in self.workers:
             if worker["id"] == worker_id:
@@ -153,7 +153,7 @@ class jobshandler(threading.Thread):
     #
     # -------------------------------------------------------------------------
 
-    def handle_job_finished(self, cmd):
+    def _q_handle_job_finished(self, cmd):
         job_id = cmd["data"]
         self.delete_worker(cmd["from"])
         if job_id in self.jobs_registered: self.jobs_registered.remove(job_id)
@@ -191,21 +191,22 @@ class jobshandler(threading.Thread):
                 })
 
     # -------------------------------------------------------------------------
-    # 
+    #
     # -------------------------------------------------------------------------
 
-    def handle(self, cmd):
-        if not cmd.get("command"):
-            syslog.syslog(syslog.LOG_ERR, "command missing, worker: %s" %
-                              cmd["from"])
+    """
+     Handle the received message. The handler function is dynamically looked
+     up and called, this way handling of new commands can be easily implemented
+     by just adding a handler function.
+    """
 
-        if cmd["command"]   == "pong":         self.handle_pong(cmd)
-        elif cmd["command"] == "pid":          self.handle_pid(cmd)
-        elif cmd["command"] == "job_status":   self.handle_job_status(cmd)
-        elif cmd["command"] == "job_finished": self.handle_job_finished(cmd)
-        else:
-            syslog.syslog(syslog.LOG_ERR, "unsupported command '%s' from worker: %s" %
-                              (cmd["command"], cmd["from"]))
+    def handle(self, cmd):
+        try:
+            getattr(self, '_q_handle_' + cmd["command"], None)(cmd)
+        except Exception, ex:
+            syslog.syslog(syslog.LOG_ERR, "w[%s]: failed to execute queue handler '%s' (%s)" %
+                              (self.id, cmd["command"], str(ex)))
+            return
 
     # -------------------------------------------------------------------------
     # 

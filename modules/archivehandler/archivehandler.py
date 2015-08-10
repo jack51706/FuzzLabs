@@ -127,7 +127,7 @@ class archivehandler(threading.Thread):
                 shutil.move(a_job_path + data + ".jlock", a_job_path + data + ".job")
             if not os.path.isfile(a_job_path + data + ".job"): 
                 syslog.syslog(syslog.LOG_ERR,
-                              "archive handler failed to start job %s (%s)" % data)
+                              "archive handler failed to start job %s" % data)
             shutil.move(self.archived_jobs_dir + "/" + data, self.jobs_dir + "/")
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR,
