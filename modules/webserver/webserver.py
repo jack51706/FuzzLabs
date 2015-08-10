@@ -23,6 +23,7 @@ from pydispatch import dispatcher
 from classes import Event as ev
 
 jobs_status = ""
+archives_status = ""
 issues_list = ""
 
 # =======================================================================================
@@ -106,6 +107,17 @@ class jobs_status_collector(threading.Thread):
     #
     # -----------------------------------------------------------------------------------
 
+    def __handle_rsp_jobs_list(self, sender, data = ""):
+        global jobs_status
+        jobs_status = data
+
+        if self.config['general']['debug'] >= 1:
+            syslog.syslog(syslog.LOG_INFO, "jobs status received: " + str(jobs_status))
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
     def run(self):
         dispatcher.connect(self.__handle_rsp_jobs_list, 
                            signal=ev.Event.EVENT__RSP_JOBS_LIST, sender=dispatcher.Any)
@@ -154,6 +166,46 @@ class issues_status_collector(threading.Thread):
                 dispatcher.send(signal=ev.Event.EVENT__REQ_ISSUES_LIST, sender="WEBSERVER")
             except Exception, ex:
                 syslog.syslog(syslog.LOG_ERR, "failed to send issues list request event (%s)" % str(ex))
+
+# =======================================================================================
+#
+# =======================================================================================
+
+class archives_collector(threading.Thread):
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def __init__(self, config):
+        threading.Thread.__init__(self)
+        self.config = config
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def __handle_rsp_archives_list(self, sender, data = ""):
+        global archives_status
+        archives_status = data
+
+        if self.config['general']['debug'] >= 1:
+            syslog.syslog(syslog.LOG_INFO, "archives received: " + str(archives_status))
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def run(self):
+        dispatcher.connect(self.__handle_rsp_archives_list,
+                           signal=ev.Event.EVENT__RSP_ARCHIVES_LIST,
+                           sender=dispatcher.Any)
+        while True:
+            time.sleep(5)
+            try:
+                dispatcher.send(signal=ev.Event.EVENT__REQ_ARCHIVES_LIST, sender="WEBSERVER")
+            except Exception, ex:
+                syslog.syslog(syslog.LOG_ERR, "failed to send archives list request event (%s)" % str(ex))
 
 # =======================================================================================
 #
@@ -292,6 +344,9 @@ class web_interface_handler (BaseHTTPServer.BaseHTTPRequestHandler):
         elif uri_items[1] == "status":
             response = self.view_status(self.path)
 
+        elif uri_items[1] == "archives":
+            response = self.view_archives(self.path)
+
         elif uri_items[1] == "issues":
             response = self.view_issues(self.path)
 
@@ -310,6 +365,14 @@ class web_interface_handler (BaseHTTPServer.BaseHTTPRequestHandler):
 
     def version_string (self):
         return "DCNWS"
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def view_archives (self, path):
+        global archives_status
+        return archives_status
 
     # -----------------------------------------------------------------------------------
     #
@@ -370,6 +433,7 @@ class webserver(threading.Thread):
         self.running = True
         self.server = None
         self.jobs_collector = None
+        self.archives_collector = None
         self.issues_collector = None
 
         syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_DAEMON)
@@ -415,6 +479,12 @@ class webserver(threading.Thread):
             self.jobs_collector.start()
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR, 'failed to start job status collector (%s)' % str(ex))
+
+        try:
+            self.archives_collector = archives_collector(self.config)
+            self.archives_collector.start()
+        except Exception, ex:
+            syslog.syslog(syslog.LOG_ERR, 'failed to start archives collector (%s)' % str(ex))
 
         try:
             self.issues_collector = issues_status_collector(self.config)

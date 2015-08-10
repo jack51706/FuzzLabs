@@ -100,6 +100,18 @@ fuzzlabsApp.config(['$stateProvider',
         }
     });
 
+    $stateProvider.state("Modal.pageArchives", {
+        url: "/archives",
+        views:{
+            "modal": {
+                templateUrl: "templates/page_archives.html"
+            }
+        },
+        onEnter: function() {
+            change_page('archives');
+        }
+    });
+
     $stateProvider.state("Modal.pageEngines", {
         url: "/engines",
         views:{
@@ -323,6 +335,83 @@ fuzzlabsApp.factory('JobsService', ['$interval', '$http', function($interval, $h
 //
 // -----------------------------------------------------------------------------
 
+fuzzlabsApp.factory('ArchivesService', ['$interval', '$http', function($interval, $http) {
+
+    var factory = {};
+    var archives = [];
+
+    factory.get_current_engine_cons = function() {
+        var c_engine = JSON.parse(window.localStorage.getItem("current_engine"));
+        if (c_engine == null) return(null);
+        return({"address": c_engine.address + ":" + c_engine.port,
+                "password": c_engine.password});
+    }
+
+    factory.fetch_archives = function() {
+        var c_engine = factory.get_current_engine_cons();
+        if (c_engine == null) {
+            archives = null;
+            return(null);
+        }
+        if (c_engine.password.length > 0) {
+            $http.post('http://' + c_engine.address + '/archives', {'secret': c_engine.password}).
+            then(function(response) {
+                archives = response.data;
+            }, function(response) {
+                archives = null;
+            });
+        } else {
+            $http.get('http://' + c_engine.address + '/archives').
+            then(function(response) {
+                archives = response.data;
+            }, function(response) {
+                archives = null;
+            });
+        }
+    }
+
+    factory.delete_job = function(job_id) {
+        var c_engine = factory.get_current_engine_cons();
+        if (c_engine.password.length > 0) {
+            $http.post('http://' + c_engine.address + '/archives/delete/' + job_id, {'secret': c_engine.password})
+        } else {
+            $http.get('http://' + c_engine.address + '/archives/delete/' + job_id);
+        }
+    }
+
+    factory.restart_job = function(job_id) {
+        var c_engine = factory.get_current_engine_cons();
+        if (c_engine.password.length > 0) {
+            $http.post('http://' + c_engine.address + '/archives/restart/' + job_id, {'secret': c_engine.password})
+        } else {
+            $http.get('http://' + c_engine.address + '/archives/restart/' + job_id);
+        }
+    }
+
+    factory.start_job = function(job_id) {
+        var c_engine = factory.get_current_engine_cons();
+        if (c_engine.password.length > 0) {
+            $http.post('http://' + c_engine.address + '/archives/start/' + job_id, {'secret': c_engine.password})
+        } else {
+            $http.get('http://' + c_engine.address + '/archives/start/' + job_id);
+        }
+    }
+
+    factory.get_archives = function() {
+        return(archives);
+    }
+
+    $interval(function() {
+        factory.fetch_archives();
+    }, 7000);
+
+    return(factory);
+}]);
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+
 fuzzlabsApp.controller('appInitCtrl', ['$scope', '$state', 'EnginesService', function ($scope, $state, EnginesService) {
 
     $(document).on("click", "button#status_error_reconnect", function() {
@@ -405,6 +494,10 @@ fuzzlabsApp.controller('jobsCtrl', ['$state', '$scope', '$interval', 'JobsServic
 
     var on_error_page = false;
 
+    $(document).on("click", "button#archived_jobs", function() {
+        $state.go("Modal.pageArchives");
+    });
+
     $(document).on("click", "button#delete_job", function() {
         var job_id = $(this).attr('job_id');
         JobsService.delete_job(job_id);
@@ -437,3 +530,42 @@ fuzzlabsApp.controller('jobsCtrl', ['$state', '$scope', '$interval', 'JobsServic
 
 }]);
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+
+fuzzlabsApp.controller('archivesCtrl', ['$state', '$scope', '$interval', 'ArchivesService', function ($state, $scope, $interval, ArchivesService) {
+
+    var on_error_page = false;
+
+    $(document).on("click", "button#delete_archived", function() {
+        var job_id = $(this).attr('job_id');
+        ArchivesService.delete_job(job_id);
+    });
+
+    $(document).on("click", "button#restart_archived", function() {
+        var job_id = $(this).attr('job_id');
+        ArchivesService.restart_job(job_id);
+    });
+
+    $(document).on("click", "button#start_archived", function() {
+        var job_id = $(this).attr('job_id');
+        ArchivesService.start_job(job_id);
+    });
+
+    $interval(function() {
+        var archives_list = ArchivesService.get_archives();
+        if (archives_list == null && on_error_page == false) {
+            $state.go("Status.engineError");
+            on_error_page = true;
+            // We give 3 minutes to the user to correct the
+            // engine settings. After, if the settings are
+            // not corrected we drop to the error page again.
+            $interval(function() {
+                on_error_page = false;
+            }, 180000, 1);
+        }
+        $scope.archives = archives_list;
+    }, 1000);
+
+}]);

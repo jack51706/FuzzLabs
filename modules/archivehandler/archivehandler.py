@@ -61,8 +61,7 @@ class archivehandler(threading.Thread):
 
     def load_job_data(self, f_path):
         try:
-            data = json.load(open(f_path, 'r'))
-            return data
+            return json.load(open(f_path, 'r'))
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR,
                           "archive handler failed to load job data (%s)" %
@@ -73,46 +72,47 @@ class archivehandler(threading.Thread):
     # 
     # -------------------------------------------------------------------------
 
-    def __handle_archives_list(self, sender, data):
+    def get_archived_jobs(self):
+        archived = []
+        for dirpath, dirnames, filenames in os.walk(self.archived_jobs_dir):
+            for dirname in dirnames:
+                archived.append(dirname)
+        return archived
+
+    # -------------------------------------------------------------------------
+    # 
+    # -------------------------------------------------------------------------
+
+    def __handle_archives_list(self, sender):
         if self.processing: return
         self.processing = True
 
         report = []
-        archived = []
+        archived = self.get_archived_jobs()
         c_path = self.archived_jobs_dir
-        for dirpath, dirnames, filenames in os.walk(c_path):
-            for dirname in dirnames:
-                archived.append(dirname)
-
-        if len(archived) == 0: return
 
         for job in archived:
-            a_job_details = {}
-            a_job_details["id"] = None
-            for files in os.listdir(c_path + "/" + job):
+            job_details = {"id": job, "job": "", "session": ""}
+
+            for files in os.listdir(c_path + "/" + job + "/"):
                 e_file = files.split(".")
                 if len(e_file) < 2 or e_file[0] != job: continue
-                if e_file[1] == "job":
-                    a_job_details["id"] = job
-                    a_job_details["job"] = self.load_job_data(c_path + "/" + job + "/" + e_file)
-                    pass
-                if e_file[2] == "jlock":
-                    a_job_details["id"] = job
-                    a_job_details["job"] = self.load_job_data(c_path + "/" + job + "/" + e_file)
-                    pass
-                if e_file[2] == "session":
-                    a_job_details["session"] = self.load_job_data(c_path + "/" + job + "/" + e_file)
-                    pass
-                if e_file[2] == "crashes":
+                if e_file[1] == "job" or e_file[1] == "jlock":
+                    job_details["job"] = self.load_job_data(c_path + "/" + job + "/" + files)
+                if e_file[1] == "session":
+                    job_details["session"] = self.load_job_data(c_path + "/" + job + "/" + files)
+                if e_file[1] == "crashes":
+                    # Deal with this later...
                     pass
 
-            if a_job_details["id"] and a_job_details["job"]:
-                report.append(a_job_details)
+            if job_details["id"] == "" or \
+               job_details["job"] == "" or \
+               job_details["job"] == None: continue
+            report.append(job_details)
 
         dispatcher.send(signal=ev.Event.EVENT__RSP_ARCHIVES_LIST,
                         sender="ARCHIVEHANDLER",
                         data=json.dumps(report))
-
         self.processing = False
 
     # -------------------------------------------------------------------------

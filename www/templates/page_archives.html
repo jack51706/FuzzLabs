@@ -1,0 +1,50 @@
+<div class="container" ng-controller="archivesCtrl">
+    <table class="table table-striped" id="archives_list">
+        <thead>
+            <tr>
+                <th>Archived Job</th>
+                <th>Transport</th>
+                <th>Endpoint</th>
+                <th>Progress</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tbody_jobs_list">
+            <tr ng-repeat="job in archives | filter:query">
+                <td>{{job.id}}</td>
+                <td>
+                    <table>
+                        <tr ng-repeat="(key, value) in job.job.target.transport">
+                            <td class="list_key">{{key | capitalize}}:</td><td>{{value}}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr ng-repeat="(key, value) in job.job.target.endpoint">
+                            <td class="list_key">{{key | capitalize}}:</td><td>{{value}}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="jobs_col_progbar">
+                    <div ng-if="job.session != ''">
+                        <progressbar type="danger" id="job_progress" max="job.session.total_num_mutations" value="job.session.total_mutant_index">
+                            <span style="color:black; white-space:nowrap;">
+                                {{job.session.total_mutant_index}} / {{job.session.total_num_mutations}}
+                            </span>
+                        </progressbar>
+                    </div>
+                    <div ng-if="job.session == ''">
+                        <span style="color:black; white-space:nowrap;">Not Available</span>
+                    </div>
+                </td>
+                <td>
+                    <button class="job_action" title="Start Job" job_id="{{job.id}}" id="start_archived">&#x25B6;</button>
+                    <button class="job_action" title="Restart Job" job_id="{{job.id}}" id="restart_archived">&#x27F3;</button>
+                    <button class="job_action" title="Delete Job" job_id="{{job.id}}" id="delete_archived">&#x2718;</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

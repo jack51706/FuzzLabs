@@ -106,7 +106,6 @@ class jobworker():
     def _q_handle_job_delete(self, cmd):
         if self.running == False: return
         if cmd["data"] == self.job_id:
-            self.do_archive = False
             self.core.terminate()
 
     # -------------------------------------------------------------------------

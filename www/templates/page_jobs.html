@@ -1,7 +1,7 @@
 <div class="container" ng-controller="jobsCtrl">
     <div class="sub_menu">
         <button id="new_job" disabled>&#x2795; New Job</button>
-        <button id="archived_jobs" disabled>&#x2672; Archived Jobs</button>
+        <button id="archived_jobs">&#x2672; Archived Jobs</button>
     </div>
     <table class="table table-striped" id="jobs_list">
         <thead>
@@ -44,22 +44,30 @@
                 <td class="jobs_col_progbar">
                     <div ng-if="job.state == 'running'">
                         <progressbar id="job_progress" max="job.progress.num_mutations" value="job.progress.total_mutant_index">
-                            {{job.progress.total_mutant_index}} / {{job.progress.num_mutations}}
+                            <span style="color:black; white-space:nowrap;">
+                                {{job.progress.total_mutant_index}} / {{job.progress.num_mutations}}
+                            </span>
                         </progressbar>
                     </div>
                     <div ng-if="job.state == 'finished'">
                         <progressbar type="success" id="job_progress" max="job.progress.num_mutations" value="job.progress.total_mutant_index">
-                            FINISHED ({{job.progress.total_mutant_index}} / {{job.progress.num_mutations}})
+                            <span style="color:black; white-space:nowrap;">
+                                FINISHED ({{job.progress.total_mutant_index}} / {{job.progress.num_mutations}})
+                            </span>
                         </progressbar>
                     </div>
                     <div ng-if="job.state == 'paused'">
                         <progressbar type="warning" id="job_progress" max="job.progress.num_mutations" value="job.progress.total_mutant_index">
-                            PAUSED ({{job.progress.total_mutant_index}} / {{job.progress.num_mutations}})
+                            <span style="color:black; white-space:nowrap;">
+                                PAUSED ({{job.progress.total_mutant_index}} / {{job.progress.num_mutations}})
+                            </span>
                         </progressbar>
                     </div>
                     <div ng-if="job.state == 'stopped'">
                         <progressbar type="danger" id="job_progress" max="job.progress.num_mutations" value="job.progress.total_mutant_index">
-                            STOPPED ({{job.progress.total_mutant_index}} / {{job.progress.num_mutations}})
+                            <span style="color:black; white-space:nowrap;">
+                                STOPPED ({{job.progress.total_mutant_index}} / {{job.progress.num_mutations}})
+                            </span>
                         </progressbar>
                     </div>
                 </td>
