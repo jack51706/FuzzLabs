@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import os.path
 import re
 import sys
 import json
@@ -116,6 +117,59 @@ class archivehandler(threading.Thread):
         self.processing = False
 
     # -------------------------------------------------------------------------
+    #
+    # -------------------------------------------------------------------------
+
+    def __handle_job_start(self, sender, data):
+        a_job_path = self.archived_jobs_dir + "/" + data + "/"
+        try:
+            if os.path.isfile(a_job_path + data + ".jlock"):
+                shutil.move(a_job_path + data + ".jlock", a_job_path + data + ".job")
+            if not os.path.isfile(a_job_path + data + ".job"): 
+                syslog.syslog(syslog.LOG_ERR,
+                              "archive handler failed to start job %s (%s)" % data)
+            shutil.move(self.archived_jobs_dir + "/" + data, self.jobs_dir + "/")
+        except Exception, ex:
+            syslog.syslog(syslog.LOG_ERR,
+                          "archive handler failed to start job %s (%s)" %
+                          (data, str(ex)))
+
+    # -------------------------------------------------------------------------
+    #
+    # -------------------------------------------------------------------------
+
+    def __handle_job_restart(self, sender, data):
+        a_job_path = self.archived_jobs_dir + "/" + data + "/"
+        try:
+            if os.path.isfile(a_job_path + data + ".jlock"):
+                shutil.move(a_job_path + data + ".jlock", a_job_path + data + ".job")
+            if not os.path.isfile(a_job_path + data + ".job"): 
+                syslog.syslog(syslog.LOG_ERR,
+                              "archive handler failed to restart job %s (%s)" %
+                              (data, str(ex)))
+            if os.path.isfile(a_job_path + data + ".session"):
+                os.remove(a_job_path + data + ".session")
+            if os.path.isfile(a_job_path + data + ".crashes"):
+                os.remove(a_job_path + data + ".crashes")
+            shutil.move(self.archived_jobs_dir + "/" + data, self.jobs_dir + "/")
+        except Exception, ex:
+            syslog.syslog(syslog.LOG_ERR,
+                          "archive handler failed to start job %s (%s)" %
+                          (data, str(ex)))
+
+    # -------------------------------------------------------------------------
+    #
+    # -------------------------------------------------------------------------
+
+    def __handle_job_delete(self, sender, data):
+        try:
+            shutil.rmtree(self.archived_jobs_dir + "/" + data)
+        except Exception, ex:
+            syslog.syslog(syslog.LOG_ERR,
+                          "archive handler failed to delete job %s (%s)" %
+                          (data, str(ex)))
+
+    # -------------------------------------------------------------------------
     # 
     # -------------------------------------------------------------------------
 
@@ -125,6 +179,10 @@ class archivehandler(threading.Thread):
         dispatcher.connect(self.__handle_archives_list,
                            signal=ev.Event.EVENT__REQ_ARCHIVES_LIST,
                            sender=dispatcher.Any)
+
+        dispatcher.connect(self.__handle_job_start, signal=ev.Event.EVENT__REQ_ARCHIVES_START, sender=dispatcher.Any)
+        dispatcher.connect(self.__handle_job_restart, signal=ev.Event.EVENT__REQ_ARCHIVES_RESTART, sender=dispatcher.Any)
+        dispatcher.connect(self.__handle_job_delete, signal=ev.Event.EVENT__REQ_ARCHIVES_DELETE, sender=dispatcher.Any)
 
         while self.running:
             pass

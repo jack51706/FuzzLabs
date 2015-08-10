@@ -107,22 +107,12 @@ class jobs_status_collector(threading.Thread):
     #
     # -----------------------------------------------------------------------------------
 
-    def __handle_rsp_jobs_list(self, sender, data = ""):
-        global jobs_status
-        jobs_status = data
-
-        if self.config['general']['debug'] >= 1:
-            syslog.syslog(syslog.LOG_INFO, "jobs status received: " + str(jobs_status))
-
-    # -----------------------------------------------------------------------------------
-    #
-    # -----------------------------------------------------------------------------------
-
     def run(self):
+        syslog.syslog(syslog.LOG_INFO, "jobs status collector started") 
         dispatcher.connect(self.__handle_rsp_jobs_list, 
                            signal=ev.Event.EVENT__RSP_JOBS_LIST, sender=dispatcher.Any)
         while True:
-            time.sleep(5)
+            time.sleep(4)
             try:
                 dispatcher.send(signal=ev.Event.EVENT__REQ_JOBS_LIST, sender="WEBSERVER")
             except Exception, ex:
@@ -158,6 +148,7 @@ class issues_status_collector(threading.Thread):
     # -----------------------------------------------------------------------------------
 
     def run(self):
+        syslog.syslog(syslog.LOG_INFO, "issues status collector started") 
         dispatcher.connect(self.__handle_rsp_issues_list,
                            signal=ev.Event.EVENT__RSP_ISSUES_LIST, sender=dispatcher.Any)
         while True:
@@ -197,6 +188,7 @@ class archives_collector(threading.Thread):
     # -----------------------------------------------------------------------------------
 
     def run(self):
+        syslog.syslog(syslog.LOG_INFO, "archives status collector started") 
         dispatcher.connect(self.__handle_rsp_archives_list,
                            signal=ev.Event.EVENT__RSP_ARCHIVES_LIST,
                            sender=dispatcher.Any)
@@ -323,36 +315,47 @@ class web_interface_handler (BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
 
-        if uri_items[1] == "pause":
-            syslog.syslog(syslog.LOG_INFO, "pause request received for job: " + str(uri_items[2]))
-            dispatcher.send(signal=ev.Event.EVENT__REQ_JOB_PAUSE, 
-                            sender="WEBSERVER", 
-                            data=str(uri_items[2]))
-
-        elif uri_items[1] == "resume":
-            syslog.syslog(syslog.LOG_INFO, "resume request received for job: " + str(uri_items[2]))
-            dispatcher.send(signal=ev.Event.EVENT__REQ_JOB_RESUME, 
-                            sender="WEBSERVER",
-                            data=str(uri_items[2]))
-
-        elif uri_items[1] == "delete":
-            syslog.syslog(syslog.LOG_INFO, "delete request received for job: " + str(uri_items[2]))
-            dispatcher.send(signal=ev.Event.EVENT__REQ_JOB_DELETE,
-                            sender="WEBSERVER",
-                            data=str(uri_items[2]))
-
-        elif uri_items[1] == "status":
+        if uri_items[1] == "status":
             response = self.view_status(self.path)
-
-        elif uri_items[1] == "archives":
-            response = self.view_archives(self.path)
-
         elif uri_items[1] == "issues":
             response = self.view_issues(self.path)
-
         elif uri_items[1] == "system":
             ss = system_stats()
             response = json.dumps(ss.get_stats_summary())
+        elif uri_items[1] == "jobs":
+            if uri_items[2] == "pause":
+                syslog.syslog(syslog.LOG_INFO, "pause request received for job: " + str(uri_items[3]))
+                dispatcher.send(signal=ev.Event.EVENT__REQ_JOB_PAUSE, 
+                                sender="WEBSERVER", 
+                                data=str(uri_items[3]))
+            elif uri_items[2] == "resume":
+                syslog.syslog(syslog.LOG_INFO, "resume request received for job: " + str(uri_items[3]))
+                dispatcher.send(signal=ev.Event.EVENT__REQ_JOB_RESUME, 
+                                sender="WEBSERVER",
+                                data=str(uri_items[3]))
+            elif uri_items[2] == "delete":
+                syslog.syslog(syslog.LOG_INFO, "delete request received for job: " + str(uri_items[3]))
+                dispatcher.send(signal=ev.Event.EVENT__REQ_JOB_DELETE,
+                                sender="WEBSERVER",
+                                data=str(uri_items[3]))
+        elif uri_items[1] == "archives":
+            if len(uri_items) < 3:
+                response = self.view_archives(self.path)
+            elif uri_items[2] == "start":
+                syslog.syslog(syslog.LOG_INFO, "archived job start request received for job: " + str(uri_items[3]))
+                dispatcher.send(signal=ev.Event.EVENT__REQ_ARCHIVES_START,
+                                sender="WEBSERVER",
+                                data=str(uri_items[3]))
+            elif uri_items[2] == "restart":
+                syslog.syslog(syslog.LOG_INFO, "archived job restart request received for job: " + str(uri_items[3]))
+                dispatcher.send(signal=ev.Event.EVENT__REQ_ARCHIVES_RESTART,
+                                sender="WEBSERVER",
+                                data=str(uri_items[3]))
+            elif uri_items[2] == "delete":
+                syslog.syslog(syslog.LOG_INFO, "archived job delete request received for job: " + str(uri_items[3]))
+                dispatcher.send(signal=ev.Event.EVENT__REQ_ARCHIVES_DELETE,
+                                sender="WEBSERVER",
+                                data=str(uri_items[3]))
         else:
             response = "{}"
 

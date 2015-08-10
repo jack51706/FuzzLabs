@@ -21,3 +21,10 @@ class Event:
     class EVENT__REQ_JOB_DELETE: pass
     class EVENT__REQ_ARCHIVES_LIST: pass
     class EVENT__RSP_ARCHIVES_LIST: pass
+    class EVENT__REQ_ARCHIVES_START: pass
+    class EVENT__RSP_ARCHIVES_START: pass
+    class EVENT__REQ_ARCHIVES_RESTART: pass
+    class EVENT__RSP_ARCHIVES_RESTART: pass
+    class EVENT__REQ_ARCHIVES_DELETE: pass
+    class EVENT__RSP_ARCHIVES_DELETE: pass
+

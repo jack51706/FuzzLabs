@@ -296,27 +296,27 @@ fuzzlabsApp.factory('JobsService', ['$interval', '$http', function($interval, $h
     factory.delete_job = function(job_id) {
         var c_engine = factory.get_current_engine_cons();
         if (c_engine.password.length > 0) {
-            $http.post('http://' + c_engine.address + '/delete/' + job_id, {'secret': c_engine.password})
+            $http.post('http://' + c_engine.address + '/jobs/delete/' + job_id, {'secret': c_engine.password})
         } else {
-            $http.get('http://' + c_engine.address + '/delete/' + job_id);
+            $http.get('http://' + c_engine.address + '/jobs/delete/' + job_id);
         }
     }
 
     factory.pause_job = function(job_id) {
         var c_engine = factory.get_current_engine_cons();
         if (c_engine.password.length > 0) {
-            $http.post('http://' + c_engine.address + '/pause/' + job_id, {'secret': c_engine.password})
+            $http.post('http://' + c_engine.address + '/jobs/pause/' + job_id, {'secret': c_engine.password})
         } else {
-            $http.get('http://' + c_engine.address + '/pause/' + job_id);
+            $http.get('http://' + c_engine.address + '/jobs/pause/' + job_id);
         }
     }
 
     factory.start_job = function(job_id) {
         var c_engine = factory.get_current_engine_cons();
         if (c_engine.password.length > 0) {
-            $http.post('http://' + c_engine.address + '/resume/' + job_id, {'secret': c_engine.password})
+            $http.post('http://' + c_engine.address + '/jobs/resume/' + job_id, {'secret': c_engine.password})
         } else {
-            $http.get('http://' + c_engine.address + '/resume/' + job_id);
+            $http.get('http://' + c_engine.address + '/jobs/resume/' + job_id);
         }
     }
 

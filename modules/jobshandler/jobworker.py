@@ -31,7 +31,6 @@ class jobworker():
         self.config            = config
         self.running           = True
         self.core              = None
-        self.do_archive        = True
 
         self.job_id            = job_id
         self.job_path          = None
@@ -49,7 +48,6 @@ class jobworker():
 
     def _q_handle_shutdown(self, cmd):
         syslog.syslog(syslog.LOG_INFO, "w[%s] shutdown request received" % self.id)
-        self.do_archive = False
         self.core.terminate()
 
     # -------------------------------------------------------------------------
@@ -295,7 +293,7 @@ class jobworker():
 
         syslog.syslog(syslog.LOG_INFO, "w[%s]: job %s finished" % (self.id, self.job_id))
         try:
-            if self.do_archive: self.archive_job()
+            self.archive_job()
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR, "w[%s] failed to archive job %s (%s)" %
                               (self.id, self.job_id, str(ex)))
