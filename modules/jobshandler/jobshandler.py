@@ -85,20 +85,33 @@ class jobshandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def delete_worker(self, worker_id):
+
         w_remove = None
         s_remove = None
 
         for worker in self.workers:
-            if worker["id"] == worker_id: w_remove = worker
+            if worker["id"] == worker_id: 
+                w_remove = worker
+
+        if not w_remove: return
+
+        self.workers.remove(w_remove)
+        w_remove["c_queue"].put({
+                    "from": self.id,
+                    "to": worker["id"],
+                    "command": "shutdown"
+            })
+
+        w_remove["c_queue"].close()
+        w_remove["c_queue"].join_thread()
 
         for status in self.job_status:
             if worker_id == status["worker"]: s_remove = status
-
         if s_remove: self.job_status.remove(s_remove)
+
         if w_remove:
             try:
-                worker["process"].join()
-                self.workers.remove(w_remove)
+                w_remove["process"].join()
             except Exception, ex:
                 syslog.syslog(syslog.LOG_ERR, "failed to stop worker %s (%s)" %
                               (worker, str(ex)))
@@ -221,7 +234,6 @@ class jobshandler(threading.Thread):
         syslog.syslog(syslog.LOG_INFO, "initializing worker %s ..." % worker["id"])
 
         worker["pid"]      = None
-        worker["j_job_id"] = job_id
         worker["c_queue"]  = multiprocessing.Queue()
         worker["p_queue"]  = multiprocessing.Queue()
         worker["instance"] = jobworker(self.id,
@@ -261,14 +273,9 @@ class jobshandler(threading.Thread):
 
     def stop(self):
         for worker in self.workers:
-            worker["c_queue"].put({
-                "from": self.id,
-                "to": worker["id"],
-                "command": "shutdown"
-            })
             self.delete_worker(worker["id"])
-            worker["process"].join()
-            self.workers = []
+
+        self.workers = []
         self.running = False
 	syslog.syslog(syslog.LOG_INFO, "all workers stopped")
         return

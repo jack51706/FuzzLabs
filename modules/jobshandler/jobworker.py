@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import time
 import Queue
 import shutil
 import syslog
@@ -49,7 +50,7 @@ class jobworker():
     def _q_handle_shutdown(self, cmd):
         syslog.syslog(syslog.LOG_INFO, "w[%s] shutdown request received" % self.id)
         self.do_archive = False
-        self.stop_worker()
+        self.core.terminate()
 
     # -------------------------------------------------------------------------
     # 
@@ -103,9 +104,10 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def _q_handle_job_delete(self, cmd):
+        if self.running == False: return
         if cmd["data"] == self.job_id:
             self.do_archive = False
-            self.stop_worker()
+            self.core.terminate()
 
     # -------------------------------------------------------------------------
     #
@@ -119,12 +121,13 @@ class jobworker():
 
     def handle(self, cmd):
         if not self.validate_queue_message(cmd): return
-        if not self.core: return
         try:
+            if not self.core: return
             getattr(self, '_q_handle_' + cmd["command"], None)(cmd)
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR, "w[%s]: failed to execute queue handler '%s' (%s)" % 
                               (self.id, cmd["command"], str(ex)))
+            return
 
     # -------------------------------------------------------------------------
     #
@@ -155,14 +158,39 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def stop_worker(self):
-        self.report_finished()
-        del(self.c_queue)
-        del(self.p_queue)
-        self.running = False
-        if self.core: self.core.terminate()
-        del(self.core)
+        try:
+            self.report_finished()
+        except Exception, ex:
+            pass
+
+        try:
+            # Remove everything from the queue
+            while not self.c_queue.empty(): self.c_queue.get()
+        except Exception, ex:
+            pass
+
+        """
+        try:
+            del(self.c_queue)
+        except Exception, ex:
+            pass
+        try:
+            del(self.p_queue)
+        except Exception, ex:
+            pass
+        try:
+            del(self.core)
+        except Exception, ex:
+            pass
+        """
+
+        try:
+            self.p_queue.close()
+            self.p_queue.join_thread()
+        except Exception, ex:
+            pass
+
         syslog.syslog(syslog.LOG_INFO, "w[%s] terminated" % self.id)
-        sys.exit(0)
 
     # -------------------------------------------------------------------------
     #
@@ -207,9 +235,8 @@ class jobworker():
         try:
             self.__import_request_file()
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to load descriptor" +\
-                              " for job %s (%s)" %
-                              (self.id, self.job_id, str(ex)))
+            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to load descriptor for job %s (%s)" %
+                          (self.id, self.job_id, str(ex)))
             return False
 
         try:
@@ -244,39 +271,36 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def archive_job(self):
-        try:
-            if os.path.isdir(self.archived_jobs_dir + "/" + self.job_id):
-                shutil.rmtree(self.archived_jobs_dir + "/" + self.job_id)
-            shutil.move(self.jobs_dir + "/" + self.job_id, self.archived_jobs_dir + "/")
-            return True
-        except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "failed to archive terminated job %s (%s)" %
-                              (self.job_id, str(ex)))
-            return False
+        if os.path.isdir(self.archived_jobs_dir + "/" + self.job_id):
+            shutil.rmtree(self.archived_jobs_dir + "/" + self.job_id)
+        shutil.move(self.jobs_dir + "/" + self.job_id, self.archived_jobs_dir + "/")
 
     # -------------------------------------------------------------------------
     # 
     # -------------------------------------------------------------------------
 
     def start_fuzzing(self):
-        try: self.core
-        except NameError: return
-
-        if not self.core: return
         try:
+            if not self.core: return
             self.core.fuzz()
+            self.running = False
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR, "w[%s] failed to execute job %s (%s)" %
                               (self.id, self.job_id, str(ex)))
-
-        self.job_status = self.core.get_status()
+            return
 
         try:
-            syslog.syslog(syslog.LOG_INFO, "w[%s]: job %s finished" % (self.id, self.job_id))
+            self.job_status = self.core.get_status()
+        except Exception, ex:
+            pass
+
+        syslog.syslog(syslog.LOG_INFO, "w[%s]: job %s finished" % (self.id, self.job_id))
+        try:
             if self.do_archive: self.archive_job()
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to archive finished job %s (%s)" %
+            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to archive job %s (%s)" %
                               (self.id, self.job_id, str(ex)))
+            return
 
     # -------------------------------------------------------------------------
     # 
@@ -284,10 +308,8 @@ class jobworker():
 
     def listener(self):
         while self.running:
-            try:
-                self.handle(self.c_queue.get_nowait())
-            except Exception, ex:
-                pass
+            try: self.handle(self.c_queue.get_nowait())
+            except Exception, ex: pass
 
     # -------------------------------------------------------------------------
     # 
@@ -309,19 +331,11 @@ class jobworker():
         syslog.syslog(syslog.LOG_INFO, "worker %s executing job %s" % (self.id, self.job_id))
         job_data = self.load_job_data(self.jobs_dir + "/" +\
                                        self.job_id + "/" + self.job_id + ".job")
-        if not job_data:
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to load data for job %s " %
-                              (self.id, self.job_id))
-            self.stop_worker()
 
-        self.job_path = self.jobs_dir + "/" + self.job_id
-        self.job_data = job_data
+        if job_data:
+            self.job_path = self.jobs_dir + "/" + self.job_id
+            self.job_data = job_data
+            if self.setup_core(): self.start_fuzzing()
 
-        if not self.setup_core():
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to execute job %s " %
-                              (self.id, self.job_id))
-            self.stop_worker()
-
-        self.start_fuzzing()
         self.stop_worker()
 

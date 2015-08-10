@@ -257,6 +257,7 @@ class web_interface_handler (BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_everything (self):
         post_data = {}
+        response = {}
         if self.command == "POST":
             post_data = self.get_post_data()
         

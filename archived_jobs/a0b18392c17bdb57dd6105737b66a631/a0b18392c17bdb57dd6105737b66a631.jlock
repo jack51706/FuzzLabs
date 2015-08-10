@@ -1,19 +1,18 @@
 {
     "session": {
-        "sleep_time": 0,
-        "restart_sleep_time": 0,
-        "timeout": 0,
+        "sleep_time": 0.1,
+        "restart_sleep_time": 0.1,
+        "timeout": 0.5,
         "skip": 0
     },
     "target": {
         "transport": {
-            "media": "file",
-            "protocol": "file"
+            "media": "network",
+            "protocol": "tcp"
         },
         "endpoint": {
-            "path": "/mnt/test1", 
-            "filename": "test", 
-            "extension": "mpg"
+            "address": "127.0.0.1", 
+            "port": 80
         },
         "conditions": {
             "fail_connection": ["log", "restart"],
@@ -22,10 +21,11 @@
         }
     },
     "request": {
-        "request_file": "file_TEST",
+        "request_file": "network_HTTP",
         "graph": 
         [
-            {"current": "TEST"}
+            {"current": "HTTP"}
         ]
     }
 }
+
