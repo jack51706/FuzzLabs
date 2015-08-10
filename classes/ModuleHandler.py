@@ -29,9 +29,9 @@ class ModuleHandler():
         """
 
         dirs = []
-        for f in os.listdir(self.modules_dir):
-            if not os.path.isfile(os.path.join(self.modules_dir,f)): 
-                dirs.append(f)
+        for entry in os.listdir(self.modules_dir):
+            if not os.path.isfile(os.path.join(self.modules_dir, entry)): 
+                dirs.append(entry)
         return dirs
 
     # -------------------------------------------------------------------------
@@ -67,8 +67,9 @@ class ModuleHandler():
                         mod["instance"].start()
                         self.loaded_modules.append(mod)
                     except Exception, ex:
-                        syslog.syslog(syslog.LOG_ERR, 'failed to load module: ' + \
-                                          mod["name"] + " (%s)" % str(ex))
+                        syslog.syslog(syslog.LOG_ERR,
+                                      'failed to load module: ' + \
+                                       mod["name"] + " (%s)" % str(ex))
 
     # -------------------------------------------------------------------------
     #
@@ -143,14 +144,16 @@ class ModuleHandler():
             modtime = os.path.getmtime(self.modules_dir + "/" + \
                                        module["name"]) * 1000000
             if module["mtime"] != modtime:
-                syslog.syslog(syslog.LOG_WARNING, 'module ' + module["name"] + \
-                                  ' changed, reloading')
+                syslog.syslog(syslog.LOG_WARNING,
+                              'module ' + module["name"] + \
+                              ' changed, reloading')
 
                 self.unload_module(module)
 
                 if self.is_module_loaded(module["name"]):
-                    syslog.syslog(syslog.LOG_ERR, 'failed to reload module: ' + \
-                                      module["name"])
+                    syslog.syslog(syslog.LOG_ERR,
+                                  "failed to reload module: %s" %
+                                  module["name"])
                     continue
 
                 self.load_module(module)
@@ -169,13 +172,14 @@ class ModuleHandler():
 
     def __load_module_by_name(self, name):
         if self.is_module_loaded(name):
-            syslog.syslog(syslog.LOG_WARNING, name + ' module already loaded, skipping')
+            syslog.syslog(syslog.LOG_WARNING, 
+                          name + ' module already loaded, skipping')
             return None
 
-        TC=1
-        while self.lock and TC < 10:
+        counter = 1
+        while self.lock and counter < 10:
             time.sleep(1)
-            TC=TC+1
+            counter += 1
 
         self.lock = True
 
@@ -192,7 +196,9 @@ class ModuleHandler():
             l_mod = reload(l_mod)
             sys.path.remove(module_dir)
         except Exception as ex:
-            syslog.syslog(syslog.LOG_ERR, "failed to import module " + name + " (%s)" % str(ex))
+            syslog.syslog(syslog.LOG_ERR,
+                          "failed to import module " + name +\
+                          " (%s)" % str(ex))
             self.lock = False
             return None
 
@@ -207,7 +213,8 @@ class ModuleHandler():
                                                     name) * 1000000
             mod_details["instance"] = l_inst
         except Exception as ex:
-            syslog.syslog(syslog.LOG_ERR, "failed to load module " + name + " (%s)" % str(ex))
+            syslog.syslog(syslog.LOG_ERR,
+                          "failed to load module " + name + " (%s)" % str(ex))
 
         syslog.syslog(syslog.LOG_INFO, "module loaded: " + str(mod_details))
         self.lock = False

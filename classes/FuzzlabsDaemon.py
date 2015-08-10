@@ -55,17 +55,22 @@ class FuzzlabsDaemon():
         try:
             self.modules = mh.ModuleHandler(self.root, self.config)
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, 'failed to load modules (%s)' % str(ex))
+            syslog.syslog(syslog.LOG_ERR, 
+                          'failed to load modules (%s)' % str(ex))
 
         while self.running:
             time.sleep(5)
-            try: self.modules.update_modules()
+            try:
+                self.modules.update_modules()
             except Exception, ex: 
-                syslog.syslog(syslog.LOG_ERR, 'failed to check module updates %s' % str(ex))
+                syslog.syslog(syslog.LOG_ERR,
+                              'failed to check module updates %s' % str(ex))
                 raise ex
 
-        try: self.modules.unload_modules()
+        try:
+            self.modules.unload_modules()
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, 'failed to unload modules %s' % str(ex))
+            syslog.syslog(syslog.LOG_ERR,
+                          'failed to unload modules %s' % str(ex))
             raise ex
 
