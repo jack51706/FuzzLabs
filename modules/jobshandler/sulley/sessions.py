@@ -11,7 +11,6 @@ import json
 import base64
 import syslog
 import socket
-import cPickle
 import threading
 
 import media
@@ -365,10 +364,10 @@ class session (pgraph.graph):
         data["total_num_mutations"] = self.total_num_mutations
         data["total_mutant_index"]  = self.total_mutant_index
         data["pause_flag"]          = self.pause_flag
-        data["crash_logs"]           = json.dumps(self.crash_logs)
+        data["crash_logs"]          = json.dumps(self.crash_logs)
 
         fh = open(self.directory + "/" + self.session_filename, "wb+")
-        fh.write(cPickle.dumps(data, protocol=2))
+        fh.write(json.dumps(data))
         fh.close()
 
     # -----------------------------------------------------------------------------------
@@ -579,7 +578,7 @@ class session (pgraph.graph):
 
         try:
             fh   = open(self.directory + "/" + self.session_filename, "rb")
-            data = cPickle.loads(fh.read())
+            data = json.loads(fh.read())
             fh.close()
         except:
             return
@@ -862,24 +861,20 @@ class session (pgraph.graph):
                     self.dump_crash_data(self.previous_sent)
                     if self.previous_sent != None:
                         self.previous_sent['request'] = ""
-	            self.crash_logs.append(self.previous_sent)
+	            self.crash_logs.append(base64.b64encode(self.previous_sent))
                     self.crash_count = self.crash_count + 1
                 elif event == "fail_receive":
                     self.dump_crash_data(self.current_sent)
                     if self.current_sent != None:
                         self.current_sent['request'] = ""
-                    self.crash_logs.append(self.current_sent)
+	            self.crash_logs.append(base64.b64encode(self.current_sent))
                     self.warning_count = self.warning_count + 1
                 else:
                     self.dump_crash_data(self.previous_sent)
                     if self.previous_sent != None:
                         self.previous_sent['request'] = ""
-	            self.crash_logs.append(self.previous_sent)
+	            self.crash_logs.append(base64.b64encode(self.previous_sent))
                     self.warning_count = self.warning_count + 1
-
-            if action == "restart":
-                # TODO: later...
-                pass
 
     # -----------------------------------------------------------------------------------
     #

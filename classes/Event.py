@@ -19,4 +19,5 @@ class Event:
     class EVENT__REQ_ISSUES_LIST: pass
     class EVENT__RSP_ISSUES_LIST: pass
     class EVENT__REQ_JOB_DELETE: pass
-
+    class EVENT__REQ_ARCHIVES_LIST: pass
+    class EVENT__RSP_ARCHIVES_LIST: pass
