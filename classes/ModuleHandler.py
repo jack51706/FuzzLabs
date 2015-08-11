@@ -185,7 +185,7 @@ class ModuleHandler():
 
         syslog.syslog(syslog.LOG_INFO, "loading module " + name)
         module_dir = self.modules_dir + "/" + name
-        if os.path.isdir(module_dir) == False:
+        if not os.path.isdir(module_dir):
             syslog.syslog(syslog.LOG_ERR, 'module ' + name + ' not found')
             return None
 

@@ -103,7 +103,7 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def _q_handle_job_delete(self, cmd):
-        if self.running == False: return
+        if not self.running: return
         if cmd["data"] == self.job_id:
             self.core.terminate()
 
