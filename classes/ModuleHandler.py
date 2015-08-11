@@ -7,6 +7,14 @@ import sys
 import time
 import syslog
 
+__author__     = "Zsolt Imre"
+__copyright__  = "Copyright 2015, Zsolt Imre / DCNWS / FuzzLabs"
+__license__    = "GPLv2"
+__version__    = "2.0.0"
+__maintainer__ = "Zsolt Imre"
+__email__      = "imrexzsolt@gmail.com"
+__status__     = "Development"
+
 class ModuleHandler():
     """
     Handle loading, unloading and reloading of modules.

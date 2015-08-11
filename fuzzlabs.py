@@ -10,6 +10,14 @@ from daemon import runner
 from classes import ConfigurationHandler as ch
 from classes import FuzzlabsDaemon as fd
 
+__author__     = "Zsolt Imre"
+__copyright__  = "Copyright 2015, Zsolt Imre / DCNWS / FuzzLabs"
+__license__    = "GPLv2"
+__version__    = "1.0.0"
+__maintainer__ = "Zsolt Imre"
+__email__      = "imrexzsolt@gmail.com"
+__status__     = "Development"
+
 # -----------------------------------------------------------------------------
 #
 # -----------------------------------------------------------------------------

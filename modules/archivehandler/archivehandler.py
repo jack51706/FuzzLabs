@@ -11,6 +11,14 @@ import threading
 from pydispatch import dispatcher
 from classes import Event as ev
 
+__author__     = "Zsolt Imre"
+__copyright__  = "Copyright 2015, Zsolt Imre / DCNWS / FuzzLabs"
+__license__    = "GPLv2"
+__version__    = "2.0.0"
+__maintainer__ = "Zsolt Imre"
+__email__      = "imrexzsolt@gmail.com"
+__status__     = "Development"
+
 # =============================================================================
 #
 # =============================================================================
@@ -20,9 +28,8 @@ class archivehandler(threading.Thread):
     def descriptor(self):
         return(dict([
             ('type', 'module'),
-            ('version', '0.1'),
-            ('author', 'Zsolt Imre'),
-            ('author-email', 'imrexzsolt@gmail.com')
+            ('version', __version__),
+            ('name', 'archivehandler')
         ]))
 
     # -------------------------------------------------------------------------
