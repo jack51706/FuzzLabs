@@ -1,5 +1,5 @@
 """
- Class to handle modules.
+Manage FuzzLabs modules.
 """
 
 import os
@@ -8,8 +8,24 @@ import time
 import syslog
 
 class ModuleHandler():
+    """
+    Handle loading, unloading and reloading of modules.
+    """
+
+    # -------------------------------------------------------------------------
+    #
+    # -------------------------------------------------------------------------
 
     def __init__(self, root, config):
+        """
+        Initialize variables and modules.
+
+        @type  root:     String
+        @param root:     Full path to the FuzzLabs root directory
+        @type  config:   Dictionary
+        @param config:   The complete configuration as a dictionary
+        """
+
         self.root = root
         self.config = config
         self.lock = False
@@ -25,8 +41,12 @@ class ModuleHandler():
 
     def get_directories(self):
         """
-         Get the list of modules from the 'modules' directory.
+        Get the list of modules from the 'modules' directory.
+
+        @rtype:          List
+        @return:         List of module paths
         """
+
 
         dirs = []
         for entry in os.listdir(self.modules_dir):
@@ -40,8 +60,14 @@ class ModuleHandler():
 
     def is_module_loaded(self, name):
         """
-         Check if a module is loaded by comparing _name_ with the name of the
-         loaded modules from the list.
+        Check if a module is loaded by comparing _name_ with the name of the
+        loaded modules from the list.
+
+        @type  name:     String
+        @param name:     Name of the module
+
+        @rtype:          Boolean
+        @return:         Whether the module has been loaded yet
         """
 
         for loaded_module in self.loaded_modules:
@@ -55,8 +81,8 @@ class ModuleHandler():
 
     def __init_modules(self):
         """
-         Initial load of modules. All modules not already loaded will get 
-         initialized and started.
+        Initial load of modules. All modules not already loaded will get 
+        initialized and started.
         """
 
         for module_name in self.get_directories():
@@ -77,10 +103,16 @@ class ModuleHandler():
 
     def unload_module(self, module):
         """
-         Unload a module. This is done by fetching the instance of each
-         module from the loaded modules list and call the stop() method of the
-         module. Once the module is stopped it gets removed from the list of
-         loaded modules.
+        Unload a module. This is done by fetching the instance of each module
+        from the loaded modules list and call the stop() method of the module.
+        Once the module is stopped it gets removed from the list of loaded
+        modules.
+
+        @type  module:   Dictionary
+        @param module:   A dictionary representing a loaded module
+
+        @rtype:          Boolean
+        @return:         Whether the module has been unloaded or not
         """
 
         syslog.syslog(syslog.LOG_INFO, 'unloading module: ' + module["name"])
@@ -100,8 +132,8 @@ class ModuleHandler():
 
     def unload_modules(self):
         """
-         Unload all modules. This is done by calling unload_module() and 
-         passing the details of the module to be unloaded.
+        Unload all modules. This is done by calling unload_module() and 
+        passing the details of the module to be unloaded.
         """
 
         unloaded = []
@@ -117,8 +149,14 @@ class ModuleHandler():
 
     def load_module(self, module):
         """
-         Load a single module defined by _module_. The name of the module is 
-         extracted and passed to __load_module_by_name() to get it loaded.
+        Load a single module defined by _module_. The name of the module is 
+        extracted and passed to __load_module_by_name() to get it loaded.
+
+        @type  module:   Dictionary
+        @param module:   A dictionary representing a loaded module
+
+        @rtype:          Boolean
+        @return:         Whether the module has been loaded or not
         """
 
         try:
@@ -137,7 +175,7 @@ class ModuleHandler():
 
     def update_modules(self):
         """
-         Reload modules which have been modified. 
+        Reload modules which have been modified. 
         """
 
         for module in self.loaded_modules:
@@ -171,6 +209,16 @@ class ModuleHandler():
     # -------------------------------------------------------------------------
 
     def __load_module_by_name(self, name):
+        """
+        Load a module specified by its name.
+
+        @type  name:     String
+        @param name:     Name of the module to be loaded
+
+        @rtype:          Mixed
+        @return:         None = not loaded, Dictionary = loaded module
+        """
+
         if self.is_module_loaded(name):
             syslog.syslog(syslog.LOG_WARNING, 
                           name + ' module already loaded, skipping')

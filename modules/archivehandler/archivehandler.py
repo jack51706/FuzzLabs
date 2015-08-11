@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+"""
+Handler for archived jobs.
+"""
 
 import os
 import os.path
@@ -28,6 +30,15 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def __init__(self, root, config):
+        """
+        Initialize the archive handler.
+
+        @type  root:     String
+        @param root:     Full path to the FuzzLabs root directory
+        @type  config:   Dictionary
+        @param config:   The complete configuration as a dictionary
+        """
+
         threading.Thread.__init__(self)
         self.root              = root
         self.config            = config
@@ -43,6 +54,10 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def is_running(self):
+        """
+        Return archive handler status.
+        """
+
         return self.running
 
     # -------------------------------------------------------------------------
@@ -50,6 +65,10 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def stop(self):
+        """
+        Stop archive handler.
+        """
+
         self.running = False
 
     # -------------------------------------------------------------------------
@@ -57,6 +76,16 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def load_job_data(self, f_path):
+        """
+        Load the job descriptor as a dictionary from the job file.
+
+        @type  f_path:   String
+        @param f_path:   Full path to the job descriptor file.
+
+        @rtype:          Mixed
+        @return:         Job descriptor (dict) or None if failed to load
+        """
+
         try:
             return json.load(open(f_path, 'r'))
         except Exception, ex:
@@ -70,6 +99,13 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def get_archived_jobs(self):
+        """
+        Get a list of archived jobs.
+
+        @rtype:          List
+        @return:         Name of archived jobs as a list
+        """
+
         archived = []
         for dirpath, dirnames, filenames in os.walk(self.archived_jobs_dir):
             for dirname in dirnames:

@@ -1,5 +1,5 @@
 """
- Provide an interface to handle the main configuration.
+Manage the configuration file of FuzzLabs.
 """
 
 import os.path
@@ -12,14 +12,21 @@ class ConfigurationHandler:
     read from the JSON file, parsed and stored in a variable. The configuration
     can be retrieved using the get() method.
     """
+
     # -------------------------------------------------------------------------
     #
     # -------------------------------------------------------------------------
 
-    def __init__(self, config_path = None):
-        """ Initialize variables and reload (load) configuration. """
+    def __init__(self, c_path = None):
+        """ 
+        Initialize variables and reload (load) configuration.
+
+        @type  c_path:   String
+        @param c_path:   The path to the configuration file
+        """
+
         self.config = None
-        self.file = config_path
+        self.file = c_path
         self.reload()
 
     # -------------------------------------------------------------------------
@@ -27,7 +34,10 @@ class ConfigurationHandler:
     # -------------------------------------------------------------------------
 
     def __loadConfiguration(self):
-        """ Open the configuration file and read, then parse its content. """
+        """
+        Open the configuration file and read, then parse its content.
+        """
+
         try:
             file_desc = open(self.file, "r")
             fcntl.flock(file_desc, fcntl.LOCK_EX)
@@ -41,10 +51,19 @@ class ConfigurationHandler:
     #
     # -------------------------------------------------------------------------
 
-    def __isConfigFileExists(self, file_name):
-        """ Check whether the configuration file exists or not. """
+    def __isFileExists(self, f_name):
+        """
+        Check whether the file exists or not.
+
+        @type  f_name:   String
+        @param f_name:   Full path to the file
+
+        @rtype:          Boolean
+        @return:         Presence of the file reported as boolean
+        """
+
         status = False
-        if os.path.isfile(file_name) and os.access(file_name, os.R_OK):
+        if os.path.isfile(f_name) and os.access(f_name, os.R_OK):
             status = True
         else:
             status = False
@@ -59,7 +78,8 @@ class ConfigurationHandler:
         Reload the configuration by overwriting it by calling 
         __loadConfiguration().  
         """
-        if self.__isConfigFileExists(self.file):
+
+        if self.__isFileExists(self.file):
             try:
                 self.__loadConfiguration()
             except Exception, ex:
@@ -72,6 +92,12 @@ class ConfigurationHandler:
     # -------------------------------------------------------------------------
 
     def get(self):
-        """ Return the parsed configuration data. """
+        """
+        Return the parsed configuration data.
+
+        @rtype:          Dictionary
+        @return:         The complete configuration as a dictionary.
+        """
+
         return self.config
 

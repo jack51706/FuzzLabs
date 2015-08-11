@@ -19,7 +19,15 @@ class FuzzlabsDaemon():
     # -------------------------------------------------------------------------
 
     def __init__(self, root, config):
-        """ Initialize FuzzLabs daemon. """
+        """
+        Initialize FuzzLabs daemon.
+
+        @type  root:     String
+        @param root:     Full path to the FuzzLabs root directory
+        @type  config:   Dictionary
+        @param config:   The complete configuration as a dictionary
+        """
+
         self.root = root
         self.config = config
         self.modules = None
@@ -36,7 +44,10 @@ class FuzzlabsDaemon():
     # -------------------------------------------------------------------------
 
     def __sigterm_handler(self, signum, frame):
-        """ Handle SIGTERM signal and abort execution. """
+        """
+        Handle SIGTERM signal and abort execution.
+        """
+
         syslog.syslog(syslog.LOG_INFO, 'DCNWS FuzzLabs is stopping')
         self.running = False
 
@@ -45,7 +56,10 @@ class FuzzlabsDaemon():
     # -------------------------------------------------------------------------
 
     def run(self):
-        """ Main function of FuzzLabs. """
+        """
+        Main function of FuzzLabs.
+        """
+
         syslog.syslog(syslog.LOG_INFO, 'DCNWS FuzzLabs is initializing')
 
         os.setsid()
