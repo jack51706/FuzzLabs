@@ -49,8 +49,8 @@ class archivehandler(threading.Thread):
         self.root              = root
         self.config            = config
         self.running           = True
-        self.jobs_dir          = self.root + "/jobs" 
-        self.archived_jobs_dir = self.root + "/archived_jobs" 
+        self.jobs_dir          = self.root + "/jobs/queue" 
+        self.archived_jobs_dir = self.root + "/jobs/archived" 
         self.processing        = False
 
         syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_DAEMON)

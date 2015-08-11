@@ -62,8 +62,8 @@ class jobshandler(threading.Thread):
         self.id                = self.generate_id()
         self.config            = config
         self.running           = True
-        self.jobs_dir          = self.root + "/jobs" 
-        self.archived_jobs_dir = self.root + "/archived_jobs" 
+        self.jobs_dir          = self.root + "/jobs/queue" 
+        self.archived_jobs_dir = self.root + "/jobs/archived" 
         self.job_status        = []
         self.jobs_registered   = []
         self.workers           = []
