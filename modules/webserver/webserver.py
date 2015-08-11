@@ -281,8 +281,10 @@ class web_interface_handler (BaseHTTPServer.BaseHTTPRequestHandler):
     # -------------------------------------------------------------------------
 
     def check_auth(self, config, postvars):
-        if not "secret" in config["general"]: return True
-        if not "secret" in postvars: return False
+        if not "secret" in config["general"]:
+            return True
+        if not "secret" in postvars:
+            return False
         if str(config["general"]["secret"]) == str(postvars["secret"]):
             return True
         syslog.syslog(syslog.LOG_ERR,

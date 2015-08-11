@@ -2,14 +2,10 @@
 
 import os
 import os.path
-import re
-import sys
 import json
-import time
 import shutil
 import syslog
 import threading
-from threading import Thread
 from pydispatch import dispatcher
 from classes import Event as ev
 
@@ -85,7 +81,8 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def __handle_archives_list(self, sender):
-        if self.processing: return
+        if self.processing:
+            return
         self.processing = True
 
         report = []
@@ -96,12 +93,14 @@ class archivehandler(threading.Thread):
             job_details = {"id": job, "job": "", "session": ""}
 
             for files in os.listdir(c_path + "/" + job + "/"):
+                l_path = c_path + "/" + job + "/" + files
                 e_file = files.split(".")
-                if len(e_file) < 2 or e_file[0] != job: continue
+                if len(e_file) < 2 or e_file[0] != job:
+                    continue
                 if e_file[1] == "job" or e_file[1] == "jlock":
-                    job_details["job"] = self.load_job_data(c_path + "/" + job + "/" + files)
+                    job_details["job"] = self.load_job_data(l_path)
                 if e_file[1] == "session":
-                    job_details["session"] = self.load_job_data(c_path + "/" + job + "/" + files)
+                    job_details["session"] = self.load_job_data(l_path)
                 if e_file[1] == "crashes":
                     # Deal with this later...
                     pass
@@ -124,11 +123,13 @@ class archivehandler(threading.Thread):
         a_job_path = self.archived_jobs_dir + "/" + data + "/"
         try:
             if os.path.isfile(a_job_path + data + ".jlock"):
-                shutil.move(a_job_path + data + ".jlock", a_job_path + data + ".job")
+                shutil.move(a_job_path + data + ".jlock",
+                            a_job_path + data + ".job")
             if not os.path.isfile(a_job_path + data + ".job"): 
                 syslog.syslog(syslog.LOG_ERR,
                               "archive handler failed to start job %s" % data)
-            shutil.move(self.archived_jobs_dir + "/" + data, self.jobs_dir + "/")
+            shutil.move(self.archived_jobs_dir + "/" + data,
+                        self.jobs_dir + "/")
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR,
                           "archive handler failed to start job %s (%s)" %
@@ -142,7 +143,8 @@ class archivehandler(threading.Thread):
         a_job_path = self.archived_jobs_dir + "/" + data + "/"
         try:
             if os.path.isfile(a_job_path + data + ".jlock"):
-                shutil.move(a_job_path + data + ".jlock", a_job_path + data + ".job")
+                shutil.move(a_job_path + data + ".jlock",
+                            a_job_path + data + ".job")
             if not os.path.isfile(a_job_path + data + ".job"): 
                 syslog.syslog(syslog.LOG_ERR,
                               "archive handler failed to restart job %s (%s)" %
@@ -151,7 +153,8 @@ class archivehandler(threading.Thread):
                 os.remove(a_job_path + data + ".session")
             if os.path.isfile(a_job_path + data + ".crashes"):
                 os.remove(a_job_path + data + ".crashes")
-            shutil.move(self.archived_jobs_dir + "/" + data, self.jobs_dir + "/")
+            shutil.move(self.archived_jobs_dir + "/" + data,
+                        self.jobs_dir + "/")
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR,
                           "archive handler failed to start job %s (%s)" %
@@ -180,9 +183,15 @@ class archivehandler(threading.Thread):
                            signal=ev.Event.EVENT__REQ_ARCHIVES_LIST,
                            sender=dispatcher.Any)
 
-        dispatcher.connect(self.__handle_job_start, signal=ev.Event.EVENT__REQ_ARCHIVES_START, sender=dispatcher.Any)
-        dispatcher.connect(self.__handle_job_restart, signal=ev.Event.EVENT__REQ_ARCHIVES_RESTART, sender=dispatcher.Any)
-        dispatcher.connect(self.__handle_job_delete, signal=ev.Event.EVENT__REQ_ARCHIVES_DELETE, sender=dispatcher.Any)
+        dispatcher.connect(self.__handle_job_start,
+                           signal=ev.Event.EVENT__REQ_ARCHIVES_START,
+                           sender=dispatcher.Any)
+        dispatcher.connect(self.__handle_job_restart,
+                           signal=ev.Event.EVENT__REQ_ARCHIVES_RESTART,
+                           sender=dispatcher.Any)
+        dispatcher.connect(self.__handle_job_delete,
+                           signal=ev.Event.EVENT__REQ_ARCHIVES_DELETE,
+                           sender=dispatcher.Any)
 
         while self.running:
             pass

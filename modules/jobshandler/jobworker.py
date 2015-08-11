@@ -47,7 +47,8 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def _q_handle_shutdown(self, cmd):
-        syslog.syslog(syslog.LOG_INFO, "w[%s] shutdown request received" % self.id)
+        syslog.syslog(syslog.LOG_INFO,
+                      "w[%s] shutdown request received" % self.id)
         self.core.terminate()
 
     # -------------------------------------------------------------------------
@@ -122,8 +123,9 @@ class jobworker():
             if not self.core: return
             getattr(self, '_q_handle_' + cmd["command"], None)(cmd)
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s]: failed to execute queue handler '%s' (%s)" % 
-                              (self.id, cmd["command"], str(ex)))
+            syslog.syslog(syslog.LOG_ERR,
+                          "w[%s]: failed to execute queue handler '%s' (%s)" % 
+                          (self.id, cmd["command"], str(ex)))
             return
 
     # -------------------------------------------------------------------------
@@ -212,16 +214,18 @@ class jobworker():
                        self.job_id + "/" + \
                        self.job_id + ".jlock"
             if os.path.isfile(job_lock):
-                syslog.syslog(syslog.LOG_ERR, "w[%s] job %s is locked, exiting" % 
-                                  (self.id, self.job_id))
+                syslog.syslog(syslog.LOG_ERR,
+                              "w[%s] job %s is locked, exiting" % 
+                              (self.id, self.job_id))
                 return None
 
             shutil.move(f_path, job_lock)
             data = json.load(open(job_lock, 'r'))
             return data
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to load job data (%s)" % 
-                              (self.id, str(ex)))
+            syslog.syslog(syslog.LOG_ERR,
+                          "w[%s] failed to load job data (%s)" % 
+                          (self.id, str(ex)))
             return None
 
     # -------------------------------------------------------------------------
@@ -232,7 +236,8 @@ class jobworker():
         try:
             self.__import_request_file()
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to load descriptor for job %s (%s)" %
+            syslog.syslog(syslog.LOG_ERR,
+                          "w[%s] failed to load descriptor for job %s (%s)" %
                           (self.id, self.job_id, str(ex)))
             return False
 
@@ -246,8 +251,9 @@ class jobworker():
             self.core.add_target(
                 sessions.target(self.job_data["target"]["endpoint"]))
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to initialize job %s (%s)" %
-                              (self.id, self.job_id, str(ex)))
+            syslog.syslog(syslog.LOG_ERR,
+                          "w[%s] failed to initialize job %s (%s)" %
+                          (self.id, self.job_id, str(ex)))
             return False
 
         try:
@@ -255,10 +261,12 @@ class jobworker():
                 if path.get('next') == None:
                     self.core.connect(s_get(path["current"]))
                 else:
-                    self.core.connect(s_get(path["current"]), s_get(path["next"]))
+                    self.core.connect(s_get(path["current"]),
+                                      s_get(path["next"]))
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to process graph for job %s (%s)" %
-                              (self.id, self.job_id, str(ex)))
+            syslog.syslog(syslog.LOG_ERR,
+                          "w[%s] failed to process graph for job %s (%s)" %
+                          (self.id, self.job_id, str(ex)))
             return False
 
         return True
@@ -270,7 +278,8 @@ class jobworker():
     def archive_job(self):
         if os.path.isdir(self.archived_jobs_dir + "/" + self.job_id):
             shutil.rmtree(self.archived_jobs_dir + "/" + self.job_id)
-        shutil.move(self.jobs_dir + "/" + self.job_id, self.archived_jobs_dir + "/")
+        shutil.move(self.jobs_dir + "/" + self.job_id,
+                    self.archived_jobs_dir + "/")
 
     # -------------------------------------------------------------------------
     # 
@@ -282,8 +291,9 @@ class jobworker():
             self.core.fuzz()
             self.running = False
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to execute job %s (%s)" %
-                              (self.id, self.job_id, str(ex)))
+            syslog.syslog(syslog.LOG_ERR,
+                          "w[%s] failed to execute job %s (%s)" %
+                          (self.id, self.job_id, str(ex)))
             return
 
         try:
@@ -291,12 +301,14 @@ class jobworker():
         except Exception, ex:
             pass
 
-        syslog.syslog(syslog.LOG_INFO, "w[%s]: job %s finished" % (self.id, self.job_id))
+        syslog.syslog(syslog.LOG_INFO,
+                      "w[%s]: job %s finished" % (self.id, self.job_id))
         try:
             self.archive_job()
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s] failed to archive job %s (%s)" %
-                              (self.id, self.job_id, str(ex)))
+            syslog.syslog(syslog.LOG_ERR,
+                          "w[%s] failed to archive job %s (%s)" %
+                          (self.id, self.job_id, str(ex)))
             return
 
     # -------------------------------------------------------------------------
@@ -325,9 +337,11 @@ class jobworker():
                           "data": os.getpid()
                          })
 
-        syslog.syslog(syslog.LOG_INFO, "worker %s executing job %s" % (self.id, self.job_id))
+        syslog.syslog(syslog.LOG_INFO,
+                      "worker %s executing job %s" % (self.id, self.job_id))
         job_data = self.load_job_data(self.jobs_dir + "/" +\
-                                       self.job_id + "/" + self.job_id + ".job")
+                                      self.job_id + "/" +\
+                                      self.job_id + ".job")
 
         if job_data:
             self.job_path = self.jobs_dir + "/" + self.job_id

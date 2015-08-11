@@ -180,8 +180,9 @@ class jobshandler(threading.Thread):
         for worker in self.workers:
             if worker_id == worker["id"]:
                 if self.config["general"]["debug"] > 4:
-                    syslog.syslog(syslog.LOG_INFO, "sending to worker %s, command: %s, data: %s" % 
-                                      (worker["id"], command, str(data)))
+                    syslog.syslog(syslog.LOG_INFO,
+                                  "sending to worker %s, cmd: %s, data: %s" % 
+                                  (worker["id"], command, str(data)))
 
                 worker["c_queue"].put({
                     "from": self.id,
@@ -204,8 +205,9 @@ class jobshandler(threading.Thread):
         try:
             getattr(self, '_q_handle_' + cmd["command"], None)(cmd)
         except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, "w[%s]: failed to execute queue handler '%s' (%s)" %
-                              (self.id, cmd["command"], str(ex)))
+            syslog.syslog(syslog.LOG_ERR,
+                          "w[%s]: failed to execute queue handler '%s' (%s)" %
+                          (self.id, cmd["command"], str(ex)))
             return
 
     # -------------------------------------------------------------------------
@@ -232,7 +234,8 @@ class jobshandler(threading.Thread):
         worker = {}
         worker["id"]       = self.generate_id()
 
-        syslog.syslog(syslog.LOG_INFO, "initializing worker %s ..." % worker["id"])
+        syslog.syslog(syslog.LOG_INFO,
+                      "initializing worker %s ..." % worker["id"])
 
         worker["pid"]      = None
         worker["c_queue"]  = multiprocessing.Queue()
@@ -256,8 +259,9 @@ class jobshandler(threading.Thread):
 
     def kill_worker(self, worker):
         if worker["pid"] != 0 and worker["pid"] != None:
-	    syslog.syslog(syslog.LOG_INFO, "killing defunct worker %s, pid: %d" % 
-                              (worker["id"], worker["pid"]))
+	    syslog.syslog(syslog.LOG_INFO,
+                          "killing defunct worker %s, pid: %d" % 
+                          (worker["id"], worker["pid"]))
             os.kill(worker["pid"], signal.SIGKILL)
             self.delete_worker(worker["id"])
 
@@ -295,7 +299,8 @@ class jobshandler(threading.Thread):
 
                 worker = self.start_worker(job_id)
                 self.jobs_registered.append(job_id)
-                syslog.syslog(syslog.LOG_INFO, "registered new job %s" % job_id)
+                syslog.syslog(syslog.LOG_INFO,
+                              "registered new job %s" % job_id)
 
     # -------------------------------------------------------------------------
     #
@@ -344,15 +349,24 @@ class jobshandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def run(self):
-        syslog.syslog(syslog.LOG_INFO, "job handler started with ID %s" % self.id)
+        syslog.syslog(syslog.LOG_INFO,
+                      "job handler started with ID %s" % self.id)
 
         l = threading.Thread(target=self.listener)
         l.start()
 
-        dispatcher.connect(self.__handle_job_status, signal=ev.Event.EVENT__REQ_JOBS_LIST, sender=dispatcher.Any)
-        dispatcher.connect(self.__handle_job_pause, signal=ev.Event.EVENT__REQ_JOB_PAUSE, sender=dispatcher.Any)
-        dispatcher.connect(self.__handle_job_resume, signal=ev.Event.EVENT__REQ_JOB_RESUME, sender=dispatcher.Any)
-        dispatcher.connect(self.__handle_job_delete, signal=ev.Event.EVENT__REQ_JOB_DELETE, sender=dispatcher.Any)
+        dispatcher.connect(self.__handle_job_status,
+                           signal=ev.Event.EVENT__REQ_JOBS_LIST,
+                           sender=dispatcher.Any)
+        dispatcher.connect(self.__handle_job_pause,
+                           signal=ev.Event.EVENT__REQ_JOB_PAUSE,
+                           sender=dispatcher.Any)
+        dispatcher.connect(self.__handle_job_resume,
+                           signal=ev.Event.EVENT__REQ_JOB_RESUME,
+                           sender=dispatcher.Any)
+        dispatcher.connect(self.__handle_job_delete,
+                           signal=ev.Event.EVENT__REQ_JOB_DELETE,
+                           sender=dispatcher.Any)
 
         while self.running:
             self.broadcast("job_status", None)
