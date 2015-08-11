@@ -103,7 +103,7 @@ class archivehandler(threading.Thread):
         Get a list of archived jobs.
 
         @rtype:          List
-        @return:         Name of archived jobs as a list
+        @return:         Name of the archived jobs
         """
 
         archived = []
@@ -117,6 +117,18 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def __handle_archives_list(self, sender):
+        """
+        Handle EVENT__REQ_ARCHIVES_LIST events sent by the web server. The 
+        event is sent by the web server's archive collector in order to fetch
+        the list of archived jobs.
+
+        @type  sender:   String
+        @param sender:   Sender identification string
+
+        @rtype:          List
+        @return:         A list of archived jobs described by dictionaries
+        """
+
         if self.processing:
             return
         self.processing = True
@@ -156,6 +168,18 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def __handle_job_start(self, sender, data):
+        """
+        Handle EVENT__REQ_ARCHIVES_START events sent by the web server. The
+        event is sent by the web server when the user requests an arhived job
+        to be started. The session file of the job is kept, meaning that the
+        job will resume from the state where it was when it got terminated.
+
+        @type  sender:   String
+        @param sender:   Sender identification string
+        @type  data:     String
+        @param data:     The name/ID of the job to be started
+        """
+
         a_job_path = self.archived_jobs_dir + "/" + data + "/"
         try:
             if os.path.isfile(a_job_path + data + ".jlock"):
@@ -176,6 +200,18 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def __handle_job_restart(self, sender, data):
+        """  
+        Handle EVENT__REQ_ARCHIVES_RESTART events sent by the web server. The
+        event is sent by the web server when the user requests an arhived job
+        to be restarted. The files containing the session and crash details
+        are destroyed, meaning the job will start from the beginning.
+        
+        @type  sender:   String 
+        @param sender:   Sender identification string
+        @type  data:     String
+        @param data:     The name/ID of the job to be started
+        """
+
         a_job_path = self.archived_jobs_dir + "/" + data + "/"
         try:
             if os.path.isfile(a_job_path + data + ".jlock"):
@@ -201,6 +237,18 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def __handle_job_delete(self, sender, data):
+        """
+        Handle EVENT__REQ_ARCHIVES_DELETE events sent by the web server. The
+        event is sent by the web server when the user requests an arhived job
+        to be deleted. All files and directories related to the job will get
+        deleted.
+
+        @type  sender:   String
+        @param sender:   Sender identification string
+        @type  data:     String
+        @param data:     The name/ID of the job to be started
+        """
+
         try:
             shutil.rmtree(self.archived_jobs_dir + "/" + data)
         except Exception, ex:
@@ -213,6 +261,11 @@ class archivehandler(threading.Thread):
     # -------------------------------------------------------------------------
 
     def run(self):
+        """
+        The main method of the archive handler. Basically, the archive handler
+        is just listens for and handles events received from other modules.
+        """
+
         syslog.syslog(syslog.LOG_INFO, "archive handler started")
 
         dispatcher.connect(self.__handle_archives_list,

@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+"""
+Job worker implementation.
+"""
 
 import os
 import sys
@@ -23,6 +25,23 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def __init__(self, parent, id, job_id, c_queue, p_queue, root, config):
+        """
+        Initialize the worker
+
+        @type  parent:   String
+        @param parent:   The ID of the parent
+        @type  id:       String
+        @param id:       The ID of the worker
+        @type  c_queue:  multiprocessing.Queue
+        @param c_queue:  The queue the client receives messages on
+        @type  p_queue:  multiprocessing.Queue
+        @param p_queue:  The queue used to send messages to the parent
+        @type  root:     String
+        @param root:     The root directory of FuzzLabs
+        @type  config:   Dictionary
+        @param config:   A dictionary containing the FuzzLabs configuration
+        """
+
         self.root              = root
         self.parent            = parent
         self.id                = id
@@ -47,6 +66,11 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def _q_handle_shutdown(self, cmd):
+        """
+        Handle worker shutdown request sent by the parent. The "cmd" argument
+        is not used.
+        """
+
         syslog.syslog(syslog.LOG_INFO,
                       "w[%s] shutdown request received" % self.id)
         self.core.terminate()
@@ -56,6 +80,11 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def _q_handle_ping(self, cmd):
+        """
+        Reply to the ping message sent by the parent. The "cmd" argument is
+        not used. 
+        """
+
         self.p_queue.put({
                           "to": self.parent,
                           "from": self.id,
@@ -67,6 +96,11 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def _q_handle_job_status(self, cmd):
+        """
+        Reply to the job status request sent by the parent. The "cmd" argument
+        is not used.
+        """
+
         if not self.core: return {}
 
         self.job_status = self.core.get_status()
@@ -87,6 +121,13 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def _q_handle_job_pause(self, cmd):
+        """
+        Pause the job as requested by the parent.
+
+        @type  cmd:      Dictionary
+        @param cmd:      The job pause message as a dictionary
+        """
+
         if cmd["data"] == self.job_id:
             self.core.set_pause()
 
@@ -95,6 +136,13 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def _q_handle_job_resume(self, cmd):
+        """
+        Resume the job as requested by the parent.
+
+        @type  cmd:      Dictionary
+        @param cmd:      The job resume message as a dictionary
+        """
+
         if cmd["data"] == self.job_id:
             self.core.set_resume()
 
@@ -103,6 +151,13 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def _q_handle_job_delete(self, cmd):
+        """
+        Delete the job as requested by the parent.
+
+        @type  cmd:      Dictionary
+        @param cmd:      The job delete message as a dictionary
+        """
+
         if not self.running: return
         if cmd["data"] == self.job_id:
             self.core.terminate()
@@ -111,13 +166,16 @@ class jobworker():
     #
     # -------------------------------------------------------------------------
 
-    """
-     Handle the received message. The handler function is dynamically looked
-     up and called, this way handling of new commands can be easily implemented
-     by just adding a handler function.
-    """
-
     def handle(self, cmd):
+        """
+        Handle the received message. The handler function is dynamically
+        looked up and called, this way handling of new commands can be easily
+        implemented by just adding a handler function.
+
+        @type  cmd:      Dictionary
+        @param cmd:      The message as a dictionary.
+        """
+
         if not self.validate_queue_message(cmd): return
         try:
             if not self.core: return
@@ -126,13 +184,19 @@ class jobworker():
             syslog.syslog(syslog.LOG_ERR,
                           "w[%s]: failed to execute queue handler '%s' (%s)" % 
                           (self.id, cmd["command"], str(ex)))
-            return
 
     # -------------------------------------------------------------------------
     #
     # -------------------------------------------------------------------------
 
     def validate_queue_message(self, message):
+        """
+        Perform basic validation of a message received via the queue.
+
+        @type  message:  Dictionary
+        @param message:  The message as a dictionary
+        """
+
         if not message.has_key("from"): return False
         if not message.has_key("to"): return False
         if not message.has_key("command"): return False
@@ -145,6 +209,10 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def report_finished(self):
+        """
+        Report to the parent that the job has been finished.
+        """
+
         self.p_queue.put({
                           "to": self.parent,
                           "from": self.id,
@@ -157,6 +225,10 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def stop_worker(self):
+        """
+        Shut down the worker process.
+        """
+
         try:
             self.report_finished()
         except Exception, ex:
@@ -195,11 +267,11 @@ class jobworker():
     #
     # -------------------------------------------------------------------------
 
-    """
-     Load the descriptor.
-    """
-
     def __import_request_file(self):
+        """
+        Load the protocol/file descriptor.
+        """
+
         r_folder = self.root + "/requests"
         if r_folder not in sys.path: sys.path.insert(0, r_folder)
         __import__(self.job_data['request']['request_file'])
@@ -209,6 +281,17 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def load_job_data(self, f_path):
+        """
+        Load the job descriptor.
+
+        @type  f_path:   String
+        @param f_path:   Full path of the job descriptor
+
+        @rtype:          Mixed
+        @return:         Job description as a dictionary or None if failed to
+                         load
+        """
+
         try:
             job_lock = self.jobs_dir + "/" + \
                        self.job_id + "/" + \
@@ -233,6 +316,13 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def setup_core(self):
+        """
+        Set up the fuzzing core.
+
+        @rtype:          Boolean
+        @return:         True if success, otherwise False
+        """
+
         try:
             self.__import_request_file()
         except Exception, ex:
@@ -276,6 +366,10 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def archive_job(self):
+        """
+        Archive the current job.
+        """
+
         if os.path.isdir(self.archived_jobs_dir + "/" + self.job_id):
             shutil.rmtree(self.archived_jobs_dir + "/" + self.job_id)
         shutil.move(self.jobs_dir + "/" + self.job_id,
@@ -286,6 +380,10 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def start_fuzzing(self):
+        """
+        Start the fuzzing.
+        """
+
         try:
             if not self.core: return
             self.core.fuzz()
@@ -316,6 +414,10 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def listener(self):
+        """
+        Listen for messages on the queue.
+        """
+
         while self.running:
             try: self.handle(self.c_queue.get_nowait())
             except Exception, ex: pass
@@ -325,6 +427,10 @@ class jobworker():
     # -------------------------------------------------------------------------
 
     def run(self):
+        """
+        Main function of the worker.
+        """
+
         syslog.syslog(syslog.LOG_INFO, "worker started: %s, pid: %d" % 
                           (self.id, os.getpid()))
         l = threading.Thread(target=self.listener)
