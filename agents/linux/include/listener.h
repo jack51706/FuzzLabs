@@ -1,9 +1,12 @@
+#include <strings.h>
+#include <pthread.h>
 #include <syslog.h>
 #include <json/json.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include "common.h"
 
 typedef struct {
@@ -15,6 +18,14 @@ typedef struct {
     void *sin;
     int s_addr_len;
 } Connection;
+
+// The message structure should be as simple as:
+// {"command": "<command>", "data": "<data>"}
+
+typedef struct {
+    char *command;
+    char *data;
+} Message;
 
 void listener(void *l_details);
 void handle_connection(void *conn);

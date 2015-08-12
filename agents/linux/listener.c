@@ -4,12 +4,73 @@
 //
 // ----------------------------------------------------------------------------
 
+void json_parse(json_object * jobj) {
+    enum json_type type;
+
+    json_object_object_foreach(jobj, key, val) { 
+
+    // printf("type: ",type);
+    type = json_object_get_type(val);
+    switch (type) {
+        case json_type_boolean: 
+            break; 
+        case json_type_double: 
+            break; 
+        case json_type_int: 
+            break; 
+        case json_type_string:
+            // Handle val
+            break; 
+        case json_type_object: 
+            // jobj = json_object_object_get(jobj, key);
+            json_parse(jobj); 
+            break;
+        case json_type_array:
+            // json_parse_array(jobj, key);
+            break;
+        }
+    }
+} 
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+void *process_message(char *data) {
+    json_object *json = json_tokener_parse(data); 
+    if (json == NULL) return(NULL);
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
 void handle_connection(void *conn) {
+    int running = 1;
     Connection *c = (Connection *)conn;
+    int sd = c->sock;
+    int rc = 0;
     struct sockaddr_in *sin = (struct sockaddr_in*)c->sin;
     char *client_ip = (char *)inet_ntoa(sin->sin_addr);
-    syslog(LOG_ERR, "Accepted connection from: %s", client_ip);
+    char read_buffer[4096];		// We use a 4096 bytes receive buffer
+					// which should be more than enough to
+					// handle any command received from
+					// the engine.
     free(conn);
+
+    syslog(LOG_INFO, "Accepted connection from engine: %s", client_ip);
+
+    while (running == 1) {
+        memset(read_buffer, 0x00, 4096);
+        rc = recv(sd, read_buffer, 4096, 0);
+        if (rc <= 0) break;
+        if (process_message(read_buffer) == NULL) {
+            send(sd, "{}", 2, 0);
+        }
+        read_buffer[4095] = 0x00;
+    }
+
+    syslog(LOG_INFO, "Disconnected from engine: %s", client_ip);
 }
 
 // ----------------------------------------------------------------------------

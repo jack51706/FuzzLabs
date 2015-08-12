@@ -4,7 +4,7 @@ LDIR = ./lib
 
 LIBS=-lm -l json -l pthread
 CC=gcc
-CFLAGS=-I${IDIR}
+CFLAGS=-I${IDIR} -std=c99
 _DEPS = main.h common.h listener.h
 _OBJ = main.o common.o listener.o
 

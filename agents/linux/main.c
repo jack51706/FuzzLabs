@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
     int daemon = 0;
     int running = 1;
     int port = AGENT_DEFAULT_PORT;
-    pthread_t tid[1];
+    pthread_t tid;
 
     while ((c = getopt (argc, argv, "hvdp:")) != -1)
     switch (c) {
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     l = malloc(sizeof(Listener));
     l->port = port;
 
-    if (pthread_create(&(tid[0]), NULL, &listener, (void *)l) != 0) {
+    if (pthread_create(&tid, NULL, &listener, (void *)l) != 0) {
         syslog (LOG_ERR, "failed to create listener thread");
     }
 
