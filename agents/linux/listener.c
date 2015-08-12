@@ -4,41 +4,57 @@
 //
 // ----------------------------------------------------------------------------
 
-void json_parse(json_object * jobj) {
+void *get_json_value(json_object *jobj) {
+    void *value;
+
     enum json_type type;
-
-    json_object_object_foreach(jobj, key, val) { 
-
-    // printf("type: ",type);
-    type = json_object_get_type(val);
+    type = json_object_get_type(jobj);
     switch (type) {
-        case json_type_boolean: 
-            break; 
-        case json_type_double: 
-            break; 
-        case json_type_int: 
-            break; 
+        case json_type_boolean:
+            return (void *)json_object_get_boolean(jobj);
+            break;
+        case json_type_int:
+            return (void *)json_object_get_int(jobj);
+            break;
         case json_type_string:
-            // Handle val
-            break; 
-        case json_type_object: 
-            // jobj = json_object_object_get(jobj, key);
-            json_parse(jobj); 
+            return (void *)json_object_get_string(jobj);
             break;
-        case json_type_array:
-            // json_parse_array(jobj, key);
-            break;
-        }
     }
-} 
+    return NULL;
+}
 
 // ----------------------------------------------------------------------------
 //
 // ----------------------------------------------------------------------------
 
-void *process_message(char *data) {
+void *get_value(char *req_key, char *data) {
     json_object *json = json_tokener_parse(data); 
     if (json == NULL) return(NULL);
+    enum json_type type;
+
+    json_object_object_foreach(json, key, val) { 
+        if (strcmp(req_key, key) == 0) {
+            return get_json_value(val);
+        }
+    }
+
+    return NULL;
+} 
+
+// ----------------------------------------------------------------------------
+// TODO: Here to define and handle the commands...
+// ----------------------------------------------------------------------------
+
+char *process_command(char *command, char *data) {
+    syslog(LOG_INFO, "command received: %s", command);
+
+    if (strncmp(command, "status", 6) == 0) {
+        // TODO
+    } else if (strncmp(command, "ping", 4) == 0) {
+        // TODO
+    } else {
+        return NULL;
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -51,6 +67,8 @@ void handle_connection(void *conn) {
     int sd = c->sock;
     int rc = 0;
     struct sockaddr_in *sin = (struct sockaddr_in*)c->sin;
+    char *command;
+    char *response;
     char *client_ip = (char *)inet_ntoa(sin->sin_addr);
     char read_buffer[4096];		// We use a 4096 bytes receive buffer
 					// which should be more than enough to
@@ -64,10 +82,19 @@ void handle_connection(void *conn) {
         memset(read_buffer, 0x00, 4096);
         rc = recv(sd, read_buffer, 4096, 0);
         if (rc <= 0) break;
-        if (process_message(read_buffer) == NULL) {
-            send(sd, "{}", 2, 0);
-        }
         read_buffer[4095] = 0x00;
+        command = get_value("command", read_buffer);
+        if (command == NULL) {
+	    send(sd, "{}", 2, 0);
+        } else {
+            response = process_command(command, read_buffer);
+            if (response == NULL) {
+	        send(sd, "{}", 2, 0);
+            } else {
+	        send(sd, response, strlen(response), 0);
+                free(response);
+            }
+        }
     }
 
     syslog(LOG_INFO, "Disconnected from engine: %s", client_ip);
