@@ -1,23 +1,24 @@
+#define _POSIX_SOURCE
 #include "listener.h"
 
 // ----------------------------------------------------------------------------
 //
 // ----------------------------------------------------------------------------
 
-void *get_json_value(json_object *jobj) {
+void *get_json_value(int r_type, json_object *jobj) {
     void *value;
 
     enum json_type type;
     type = json_object_get_type(jobj);
     switch (type) {
         case json_type_boolean:
-            return (void *)json_object_get_boolean(jobj);
+            if (type == r_type) return (void *)json_object_get_boolean(jobj);
             break;
         case json_type_int:
-            return (void *)json_object_get_int(jobj);
+            if (type == r_type) return (void *)json_object_get_int(jobj);
             break;
         case json_type_string:
-            return (void *)json_object_get_string(jobj);
+            if (type == r_type) return (void *)json_object_get_string(jobj);
             break;
     }
     return NULL;
@@ -27,14 +28,15 @@ void *get_json_value(json_object *jobj) {
 //
 // ----------------------------------------------------------------------------
 
-void *get_value(char *req_key, char *data) {
+void *get_value(int r_type, char *req_key, char *data) {
     json_object *json = json_tokener_parse(data); 
     if (json == NULL) return(NULL);
+
     enum json_type type;
 
     json_object_object_foreach(json, key, val) { 
         if (strcmp(req_key, key) == 0) {
-            return get_json_value(val);
+            return get_json_value(r_type, val);
         }
     }
 
@@ -42,16 +44,70 @@ void *get_value(char *req_key, char *data) {
 } 
 
 // ----------------------------------------------------------------------------
-// TODO: Here to define and handle the commands...
+//
+// ----------------------------------------------------------------------------
+
+int kill_process(unsigned int pid) {
+    int rc = kill(pid, SIGKILL);
+    int error = errno;
+    if (rc == -1) {
+        if (error == EINVAL || error == EPERM) return 0;
+        if (error == ESRCH) return 1;		// Even if it is considered as
+                                                // an error that the process
+                                                // does not exist, this is how
+                                                // we report that we got rid
+                                                // of it anyway. So, this is 
+                                                // good for us.
+        return 0;
+    }
+    return 1;
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+int get_process_id(int pid) {
+    if (pid > 65535 || pid < 1) return(0);
+    return(pid);
+}
+
+// ----------------------------------------------------------------------------
+// TODO
 // ----------------------------------------------------------------------------
 
 char *process_command(char *command, char *data) {
     syslog(LOG_INFO, "command received: %s", command);
 
-    if (strncmp(command, "status", 6) == 0) {
+    if (strncmp(command, "ping", 6) == 0) {
         // TODO
-    } else if (strncmp(command, "ping", 4) == 0) {
+        return NULL;
+    } else if (strncmp(command, "process_list", 12) == 0) {
         // TODO
+        return NULL;
+    } else if (strncmp(command, "attach_process", 14) == 0) {
+        // TODO
+        return NULL;
+    } else if (strncmp(command, "start_process", 13) == 0) {
+        // TODO
+        return NULL;
+    } else if (strncmp(command, "restart_process", 15) == 0) {
+        // TODO
+        return NULL;
+    } else if (strncmp(command, "kill_process", 12) == 0) {
+        int pid = get_process_id((int)get_value(json_type_int, "data", data));
+        if (pid == 0) return NULL;
+        if (kill_process(pid) == 1) {
+            char *msg = malloc(28);
+            memset(msg, 0x00, 28);
+            strncpy(msg, "{\"kill_process\": \"success\"}", 28);
+            return(msg);
+        } else {
+            char *msg = malloc(27);
+            memset(msg, 0x00, 27);
+            strncpy(msg, "{\"kill_process\": \"failed\"}", 27);
+            return(msg);
+        }
     } else {
         return NULL;
     }
@@ -83,7 +139,7 @@ void handle_connection(void *conn) {
         rc = recv(sd, read_buffer, 4096, 0);
         if (rc <= 0) break;
         read_buffer[4095] = 0x00;
-        command = get_value("command", read_buffer);
+        command = get_value(json_type_string, "command", read_buffer);
         if (command == NULL) {
 	    send(sd, "{}", 2, 0);
         } else {

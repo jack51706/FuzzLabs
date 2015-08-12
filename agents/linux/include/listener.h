@@ -1,12 +1,15 @@
+#include <stdlib.h>
 #include <strings.h>
 #include <pthread.h>
 #include <syslog.h>
 #include <json/json.h>
 #include <string.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
 #include "common.h"
 
 typedef struct {
