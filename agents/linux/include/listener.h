@@ -30,6 +30,11 @@ typedef struct {
     char *data;
 } Message;
 
-void listener(void *l_details);
+void *get_json_value(int r_type, json_object *jobj);
+void *get_value(int r_type, char *req_key, char *data);
+int kill_process(unsigned int pid);
+int validate_process_id(int pid);
+char *process_command(char *command, char *data);
 void handle_connection(void *conn);
+void listener(void *l_details);
 

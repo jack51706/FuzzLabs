@@ -67,7 +67,7 @@ int kill_process(unsigned int pid) {
 //
 // ----------------------------------------------------------------------------
 
-int get_process_id(int pid) {
+int validate_process_id(int pid) {
     if (pid > 65535 || pid < 1) return(0);
     return(pid);
 }
@@ -95,7 +95,7 @@ char *process_command(char *command, char *data) {
         // TODO
         return NULL;
     } else if (strncmp(command, "kill_process", 12) == 0) {
-        int pid = get_process_id((int)get_value(json_type_int, "data", data));
+        int pid = validate_process_id((int)get_value(json_type_int, "data", data));
         if (pid == 0) return NULL;
         if (kill_process(pid) == 1) {
             char *msg = malloc(28);
