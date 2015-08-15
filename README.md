@@ -8,5 +8,5 @@ For more information please refer to the Wiki.
 
 ## Authors
 
- - Zsolt Imre (imrexzsolt [4T] gmail.com)
+ - Zsolt Imre
 

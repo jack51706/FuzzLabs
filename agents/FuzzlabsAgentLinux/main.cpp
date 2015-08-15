@@ -1,5 +1,25 @@
+/* 
+ * File:   main.cpp
+ * Author: keyman
+ *
+ * Created on 14 August 2015, 11:35
+ */
+
+#include <cstdlib>
+#include <cstdio>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <syslog.h>
+#include <getopt.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "main.h"
-#include "common.h"
+#include "listener.h"
+
+using namespace std;
 
 // ----------------------------------------------------------------------------
 //
@@ -64,5 +84,46 @@ void print_help() {
            "-p", "Port the agent should listen on (default: 27000)",
            "-v", "Display engine version and exit",
            "-h", "Print this help message");
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+int main(int argc, char** argv) {
+    int c = 0;
+    int daemon = 0;
+    int port = AGENT_DEFAULT_PORT;
+
+    while ((c = getopt(argc, argv, "hvdp:")) != -1) {
+        switch (c) {
+            case 'h':
+                print_help();
+                break;
+            case 'v':
+                print_version();
+                exit(0);
+            case 'p':
+                port = atoi(optarg);
+                if (port > 65535 || port < 1024) {
+                    port = AGENT_DEFAULT_PORT;
+                }
+                break;
+            case 'd':
+                daemon = 1;
+                break;
+            default:
+                break;
+        }
+    }
+
+   if (daemon == 1) daemonize();
+
+    openlog("fuzzlabs-agent", LOG_PID, LOG_DAEMON);
+    syslog(LOG_NOTICE, "Fuzzlabs Agent is running.");
+
+    listener(port);
+    
+    return 0;
 }
 
