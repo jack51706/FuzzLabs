@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/cJSON.o \
 	${OBJECTDIR}/connection.o \
 	${OBJECTDIR}/listener.o \
 	${OBJECTDIR}/main.o \
@@ -46,8 +47,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-m64
+CXXFLAGS=-m64
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -64,7 +65,12 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fuzzlabsagentlinux: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fuzzlabsagentlinux ${OBJECTFILES} ${LDLIBSOPTIONS} -lm -ljson -lpthread
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fuzzlabsagentlinux ${OBJECTFILES} ${LDLIBSOPTIONS} -lm -lpthread
+
+${OBJECTDIR}/cJSON.o: cJSON.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/cJSON.o cJSON.c
 
 ${OBJECTDIR}/connection.o: connection.cpp 
 	${MKDIR} -p ${OBJECTDIR}

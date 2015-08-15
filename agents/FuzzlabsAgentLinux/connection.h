@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -26,6 +27,7 @@ private:
 public:
     Connection(int c_fd, struct sockaddr_in *c_sin);
     int socket();
+    void terminate();
     char *address();
     int transmit(char *data, unsigned int len);
     int receive(char *data);

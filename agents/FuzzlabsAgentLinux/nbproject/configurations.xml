@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>cJSON.h</itemPath>
       <itemPath>connection.h</itemPath>
       <itemPath>listener.h</itemPath>
       <itemPath>main.h</itemPath>
@@ -17,6 +18,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>cJSON.c</itemPath>
       <itemPath>connection.cpp</itemPath>
       <itemPath>listener.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
@@ -44,10 +46,17 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <ccTool>
+          <architecture>2</architecture>
+        </ccTool>
         <linkerTool>
-          <commandLine>-lm -ljson -lpthread</commandLine>
+          <commandLine>-lm -lpthread</commandLine>
         </linkerTool>
       </compileType>
+      <item path="cJSON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="cJSON.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="connection.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="connection.h" ex="false" tool="3" flavor2="0">
@@ -81,7 +90,7 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
-          <commandLine>-lm -l json -l pthread</commandLine>
+          <architecture>2</architecture>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -90,9 +99,13 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <commandLine>-lm -ljson -lpthread</commandLine>
+          <commandLine>-lm -lpthread</commandLine>
         </linkerTool>
       </compileType>
+      <item path="cJSON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="cJSON.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="connection.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="connection.h" ex="false" tool="3" flavor2="0">

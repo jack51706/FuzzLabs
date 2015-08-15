@@ -14,6 +14,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/ptrace.h>
+#include <errno.h>
+#include <syslog.h>
 #include "status.h"
 
 // ----------------------------------------------------------------------------
@@ -23,6 +25,7 @@
 class Monitor {  
 private:
     int running;
+    int pid;
     Status *p_status;
     char **p_args;
     char *p_full;
@@ -32,6 +35,7 @@ public:
     Monitor(char *cmd_line);
     int start();
     Status *status();
+    int terminate();
 };
 
 #ifdef	__cplusplus

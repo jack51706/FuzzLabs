@@ -68,7 +68,7 @@ char **Monitor::parseArgs(char *str) {
 // ----------------------------------------------------------------------------
 
 Monitor::Monitor(char *cmd_line) {
-    // c_status = P_NOTINIT;
+    pid = 0;
     p_args = Monitor::parseArgs((char *)cmd_line);
     p_full = NULL;
 
@@ -78,6 +78,27 @@ Monitor::Monitor(char *cmd_line) {
         strcpy(p_full, p_args[0]);
         p_args[0] = getCommandName(p_args[0]);
     }
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+int Monitor::terminate() {
+    if (pid < 1) return 1;
+    int rc = kill(pid, SIGKILL);
+    int error = errno;
+    if (rc == -1) {
+        if (error == EINVAL || error == EPERM) return 0;
+        if (error == ESRCH) return 1;           // Even if it is considered as
+                                                // an error that the process
+                                                // does not exist, this is how
+                                                // we report that we got rid
+                                                // of it anyway. So, this is
+                                                // good for us.
+        return 0;
+    }
+    return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -96,18 +117,21 @@ int Monitor::start() {
     running = 1;
     p_status = new Status();
     int status = 0;
-    pid_t child;
+    pid_t child = 0;
 
+    // TODO: There is an issue with p_full and p_args
+    syslog(LOG_INFO, "starting process: %s (%s)", p_full, p_args[0]);
+    
     child = fork();
     if(child == 0) {
         if (p_full != NULL && p_args != NULL &&
             p_args[0] != NULL) {
-            p_status->setPid(child);
             ptrace(PTRACE_TRACEME, 0, NULL, NULL);
             p_status->setState(P_RUNNING);
             execv(p_full, p_args);
             p_status->setPid(-1);
             p_status->setState(P_ERROR);
+            syslog(LOG_ERR, "failed to start process: %d", errno);
         } else {
             p_status->setPid(-1);
             p_status->setState(P_ERROR);
@@ -115,22 +139,29 @@ int Monitor::start() {
     } else {
         wait(NULL);
         ptrace(PTRACE_CONT, child, NULL, NULL);
-
+        syslog(LOG_INFO, "process started with pid: %d", child);
+        p_status->setPid(child);
         while(running) {
             wait(&status);
             if (WIFEXITED(status)) {
                 p_status->setState(P_TERM);
                 p_status->setExitCode(WEXITSTATUS(status));
+                syslog(LOG_INFO, "process exited with exit code: %d",
+                        WEXITSTATUS(status));
                 break;
             }
             if (WIFSIGNALED(status)) {
-                p_status->setState(P_SEGFAULT);
+                p_status->setState(P_SIGTERM);
                 p_status->setSignal(WTERMSIG(status));
+                syslog(LOG_INFO, "process terminated by signal: %d",
+                        WTERMSIG(status));
                 break;
             }
             if (WIFSTOPPED(status)) {
                 p_status->setState(P_TERM);
                 p_status->setSignal(WSTOPSIG(status));
+                syslog(LOG_INFO, "process stopped by signal: %d",
+                        WSTOPSIG(status));
                 break;
             }
         }

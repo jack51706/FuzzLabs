@@ -12,6 +12,8 @@
 #include <pthread.h>
 #include <syslog.h>
 #include <string.h>
+#include "monitor.h"
+#include "cJSON.h"
 
 #define AGENT_MAX_CONN          10
 
@@ -20,7 +22,7 @@
 
 typedef struct {
     char *command;
-    char *data;
+    cJSON *j_data;
 } Message;
 
 #ifdef	__cplusplus

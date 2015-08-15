@@ -8,12 +8,14 @@
 #ifndef STATUS_H
 #define	STATUS_H
 
+#include <signal.h>
+
 enum p_status {
     P_ERROR = -1,
     P_NOTINIT,
     P_RUNNING,
     P_TERM,
-    P_SEGFAULT
+    P_SIGTERM
 };
 
 // ----------------------------------------------------------------------------
@@ -33,6 +35,8 @@ public:
     void setPid(int p_pid);
     void setSignal(int p_sig);
     void setExitCode(int p_e_code);
+    int getState();
+    int getPid();
 };
 
 #ifdef	__cplusplus
