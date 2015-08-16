@@ -67,14 +67,43 @@ cJSON *createRegisterObject(char *reg_name, unsigned long long int value) {
 //
 // ----------------------------------------------------------------------------
 
-int check_monitor(Monitor *monitor, Connection *conn) {
-    if (monitor == NULL || monitor->isRunning() == 0) return(0);
+int handle_command_kill(Connection *conn, Monitor *monitor) {
+    if (monitor != NULL) {
+        if (monitor->terminate()) {
+            conn->transmit("{\"command\": \"kill\", \"data\": \"success\"}", 38);
+        } else {
+            conn->transmit("{\"command\": \"kill\", \"data\": \"failed\"}", 37);
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+int handle_command_ping(Connection *conn) {
+    conn->transmit("{\"command\": \"ping\", \"data\": \"pong\"}", 35);
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+int handle_command_status(Connection *conn, Monitor *monitor, Message *msg) {
+    if (monitor == NULL || monitor->isRunning() == 0) {
+        conn->transmit("{\"command\": \"status\", \"data\": \"OK\"}", 35);
+        return(0);
+    }
     Status *m_status = monitor->status();
     
     if (m_status->getPid() < 1 || 
-        m_status->getState() <= P_RUNNING) return(0);
+        m_status->getState() <= P_RUNNING) {
+        conn->transmit("{\"command\": \"status\", \"data\": \"OK\"}", 35);
+        return(0);
+    }
     
-    cJSON *root = cJSON_CreateObject();  
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddStringToObject(root, "command", "status");
     cJSON_AddStringToObject(root, "status", "terminated");
     cJSON_AddNumberToObject(root, "process_id", m_status->getPid());
     cJSON_AddNumberToObject(root, "term_condition", m_status->getState());
@@ -109,28 +138,6 @@ int check_monitor(Monitor *monitor, Connection *conn) {
 //
 // ----------------------------------------------------------------------------
 
-int handle_command_kill(Connection *conn, Monitor *monitor) {
-    if (monitor != NULL) {
-        if (monitor->terminate()) {
-            conn->transmit("{\"kill\": \"success\"}", 19);
-        } else {
-            conn->transmit("{\"kill\": \"failed\"}", 18);
-        }
-    }
-}
-
-// ----------------------------------------------------------------------------
-//
-// ----------------------------------------------------------------------------
-
-int handle_command_ping(Connection *conn) {
-    conn->transmit("{\"command\": \"pong\"}", 19);
-}
-
-// ----------------------------------------------------------------------------
-//
-// ----------------------------------------------------------------------------
-
 int handle_command_start(Connection *conn, Monitor *monitor, Message *msg) {
     pthread_t tid;
     char *cmd_line = (char *)get_data(msg->j_data);
@@ -138,25 +145,24 @@ int handle_command_start(Connection *conn, Monitor *monitor, Message *msg) {
     if (cmd_line == NULL) {
         syslog(LOG_ERR, "[%s]: program not specified in data", 
                 conn->address());
-        conn->transmit("{\"start\": \"failed\"}", 19);
+        conn->transmit("{\"command\": \"start\", \"data\": \"failed\"}", 38);
         return(0);
     }
     
     if (monitor->setTarget(cmd_line)) {
         syslog(LOG_ERR, "[%s]: monitor failed to process command line", 
                 conn->address());
-        conn->transmit("{\"start\": \"failed\"}", 19);
+        conn->transmit("{\"command\": \"start\", \"data\": \"failed\"}", 38);
         return(0);
     }
 
     if (pthread_create(&tid, NULL, &start_monitor, monitor) != 0) {
         syslog(LOG_ERR, "[%s]: monitor failed to start process", 
                 conn->address());
-        conn->transmit("{\"start\": \"failed\"}", 19);
+        conn->transmit("{\"command\": \"start\", \"data\": \"failed\"}", 38);
         return(0);
     }
-    
-    conn->transmit("{\"start\": \"success\"}", 20);
+    conn->transmit("{\"command\": \"start\", \"data\": \"success\"}", 39);
     return(1);
 }
 
@@ -179,6 +185,8 @@ unsigned int process_command(Connection *conn, Monitor *monitor, char *data) {
         handle_command_kill(conn, monitor);
     } else if (!strcmp(message->command, "start")) {
         handle_command_start(conn, monitor, message);
+    } else if (!strcmp(message->command, "status")) {
+        handle_command_status(conn, monitor, message);
     }
     
     if (message->j_data != NULL) cJSON_Delete(message->j_data);
@@ -198,7 +206,6 @@ static void *handle_connection(void *c) {
     syslog(LOG_INFO, "accepted connection from engine: %s", conn->address());
 
     while(r_len != 0) {
-        check_monitor(monitor, conn);
         r_len = conn->receive(data);
         if (r_len < 1) continue;
         process_command(conn, monitor, data);

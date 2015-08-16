@@ -334,7 +334,7 @@ class jobworker():
                 sessions.target(self.job_data["target"]["endpoint"]))
 
             if ("agent" in self.job_data["target"]):
-                rc = session.add_agent(self.job_data["target"]["agent"])
+                rc = self.core.add_agent(self.job_data["target"]["agent"])
                 if (rc == False):
                     syslog.syslog(syslog.LOG_ERR,
                           "w[%s] failed to set up agent for job %s" %

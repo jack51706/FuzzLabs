@@ -159,7 +159,9 @@ class network(media):
             if self.proto == "tcp":
                 self.socket.connect((self.target_address, self.target_port))
         except Exception, e:
-            raise Exception, ["failed to connect to target", str(e)]
+            raise Exception, ["failed to connect to target %s:%d" %
+                              (self.target_address, self.target_port),
+                             str(e)]
 
     # -----------------------------------------------------------------------------------
     #

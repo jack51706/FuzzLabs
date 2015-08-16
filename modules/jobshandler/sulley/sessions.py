@@ -11,6 +11,7 @@ import json
 import base64
 import syslog
 import socket
+import select
 import threading
 
 import media
@@ -74,20 +75,171 @@ class connection (pgraph.edge.edge):
 #
 # =======================================================================================
 
-class agent:
+class agent():
 
-    def __init__(self, a_address, a_port):
-        self.address = a_address
-        self.port = a_port
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def __init__(self, config, session_id, settings=None):
+        """
+        Initialize the module.
+
+        @type  config:       Dictionary
+        @param config:       The complete configuration as a dictionary
+        @type  session_id:   String
+        @param session_id:   The ID of the job this agent connection belongs to
+        @type  settings:     Dictionary
+        @param settings:     The configuration settings used to communicate with
+                             the agent
+        """
+
+        self.config = config
+        self.session_id = session_id
+        self.address = None
+        self.port = None
+        self.command = None
+
+        syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_DAEMON)
+
+        if settings != None:
+            if "address" in settings:
+                self.address = settings["address"]
+            else:
+                syslog.syslog(syslog.LOG_ERR, self.session_id +\
+                              ": agent address is not set")
+
+            if "port" in settings:
+                self.port = settings["port"]
+            else:
+                syslog.syslog(syslog.LOG_ERR, self.session_id +\
+                              ": agent port is not set")
+
+            if "command" in settings:
+                self.command = settings["command"]
+            else:
+                syslog.syslog(syslog.LOG_ERR, self.session_id +\
+                              ": command to execute not set for agent")
+
+        self.sock = None
+        self.running = True
+
+        syslog.syslog(syslog.LOG_INFO, self.session_id +\
+                              ": agent connection set: %s:%d:%s" %
+                              (self.address,
+                              self.port,
+                              self.command))
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
 
     def check_alive(self):
-        pass
+        message = json.dumps({"command": "ping"})
+        self.sock.send(message)
+        return self.check_response()
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
 
     def start(self, cmd):
-        pass
+        message = json.dumps({"command": "start", "data": self.command})
+        self.sock.send(message)
+        return self.check_response()
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def status(self, cmd):
+        message = json.dumps({"command": "status"})
+        self.sock.send(message)
+        return self.check_response()
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
 
     def kill(self):
-        pass
+        message = json.dumps({"command": "kill"})
+        self.sock.send(message)
+        return self.check_response()
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def connect(self):
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        except Exception, ex:
+            self.sock = None
+            return False
+
+        try:
+            self.sock.connect((self.address, self.port))
+        except Exception, ex:
+            try: self.sock.close()
+            except: pass
+            self.sock = None
+            return False
+
+        return True
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def disconnect(self):
+        self.sock.shutdown(socket.SHUT_RDWR)
+        self.sock.close()
+        self.sock = None
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def recv(self, timeout=1):
+        self.sock.setblocking(0)
+     
+        t_data = [];
+        data = '';
+     
+        begin = time.time()
+        while 1:
+            if t_data and time.time() - begin > timeout:
+                break
+            elif time.time()-begin > timeout*2:
+                break
+         
+            try:
+                data = self.sock.recv(4096)
+                if data:
+                    t_data.append(data)
+                    begin = time.time()
+                else:
+                    time.sleep(0.1)
+            except:
+                pass
+     
+        self.sock.setblocking(1)
+        return ''.join(t_data)
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def check_response(self):
+        command = None
+
+        data = self.recv()
+        try:
+            command = json.loads(data)
+        except Exception, ex:
+            return None
+
+        return command
 
 # =======================================================================================
 #
@@ -252,16 +404,6 @@ class session (pgraph.graph):
     #
     # -----------------------------------------------------------------------------------
 
-    def add_agent(self, a_details):
-        if "address" in a_details and "port" in a_details and "command" in a_details:
-            self.agent_settings = a_details
-            return True
-        return False
-
-    # -----------------------------------------------------------------------------------
-    #
-    # -----------------------------------------------------------------------------------
-
     def add_node (self, node):
         '''
         Add a pgraph node to the graph. We overload this routine to automatically 
@@ -405,6 +547,16 @@ class session (pgraph.graph):
     #
     # -----------------------------------------------------------------------------------
 
+    def add_agent(self, a_details):
+        if "address" in a_details and "port" in a_details and "command" in a_details:
+            self.agent_settings = a_details
+            return True
+        return False
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
     def fuzz (self, this_node=None, path=[]):
         '''
         Call this routine to get the ball rolling. No arguments are necessary as they are
@@ -417,11 +569,17 @@ class session (pgraph.graph):
         '''
 
         # Initialize agent
-        #   1. Make sure only initialize of self.agent == None
-        #   2. Initialize the agent with the IP address of the target
+        #   1. Make sure only initialize of self.agent == None - DONE
+        #   2. Initialize the agent with the IP address of the target - DONE
         # If the agent cannot be initialized make sure the user is aware of it
 
-        # TODO
+        if self.agent == None and self.agent_settings != None:
+            try:
+                self.agent = agent(self.config, self.session_id, self.agent_settings)
+                self.agent.connect()
+            except Exception, ex:
+                syslog.syslog(syslog.LOG_ERR, self.session_id +
+                              ": failed to establish agent connection (%s)" % str(ex))
 
         # if no node is specified, we start from root and initialize the session.
         if not this_node:
