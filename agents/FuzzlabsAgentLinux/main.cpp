@@ -5,17 +5,6 @@
  * Created on 14 August 2015, 11:35
  */
 
-#include <cstdlib>
-#include <cstdio>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <syslog.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include "main.h"
 #include "listener.h"
 
@@ -55,7 +44,7 @@ void daemonize() {
 
     int fd;
     for (fd = sysconf(_SC_OPEN_MAX); fd>0; fd--) {
-        close (fd);
+        close(fd);
     }
 }
 
@@ -79,9 +68,11 @@ void print_help() {
            "\t%s\t- %s\n"
            "\t%s\t- %s\n"
            "\t%s\t- %s\n"
+           "\t%s\t- %s\n"
            "\t%s\t- %s\n",
            "-d", "Run agent as a daemon in the background",
            "-p", "Port the agent should listen on (default: 27000)",
+           "-c", "Maximum number of connections to accept (default: 10)",
            "-v", "Display engine version and exit",
            "-h", "Print this help message");
 }
@@ -93,9 +84,10 @@ void print_help() {
 int main(int argc, char** argv) {
     int c = 0;
     int daemon = 0;
+    unsigned int max_conn = AGENT_MAX_CONN;
     int port = AGENT_DEFAULT_PORT;
 
-    while ((c = getopt(argc, argv, "hvdp:")) != -1) {
+    while ((c = getopt(argc, argv, "hvdc:p:")) != -1) {
         switch (c) {
             case 'h':
                 print_help();
@@ -103,11 +95,12 @@ int main(int argc, char** argv) {
             case 'v':
                 print_version();
                 exit(0);
+            case 'c':
+                max_conn = atoi(optarg);
+                if (max_conn > 2048 || max_conn < 1) max_conn = AGENT_MAX_CONN;
             case 'p':
                 port = atoi(optarg);
-                if (port > 65535 || port < 1024) {
-                    port = AGENT_DEFAULT_PORT;
-                }
+                if (port > 65535 || port < 1024) port = AGENT_DEFAULT_PORT;
                 break;
             case 'd':
                 daemon = 1;
@@ -122,8 +115,11 @@ int main(int argc, char** argv) {
     openlog("fuzzlabs-agent", LOG_PID, LOG_DAEMON);
     syslog(LOG_NOTICE, "Fuzzlabs Agent is running.");
 
-    listener(port);
+    try {
+        listener(port, max_conn);
+    } catch (char *ex) {
+        syslog(LOG_ERR, "%s", ex);
+    }
     
     return 0;
 }
-

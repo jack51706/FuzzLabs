@@ -9,6 +9,8 @@
 #define	STATUS_H
 
 #include <signal.h>
+#include <string.h>
+#include <stdlib.h>
 
 enum p_status {
     P_ERROR = -1,
@@ -28,15 +30,18 @@ private:
     int signal;
     int e_code;
     p_status c_status;
-    void sigToString();
 public:
     Status();
+    void reset();
     void setState(p_status s);
     void setPid(int p_pid);
     void setSignal(int p_sig);
     void setExitCode(int p_e_code);
+    int getExitCode();
     int getState();
     int getPid();
+    int getSignalNum();
+    void getSignalStr(char *buf, unsigned int len);
 };
 
 #ifdef	__cplusplus

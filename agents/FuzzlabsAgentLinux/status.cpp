@@ -5,7 +5,21 @@
 // ----------------------------------------------------------------------------
 
 Status::Status() {
-    
+    pid = -1;
+    signal = -1;
+    e_code = -1;
+    c_status = P_NOTINIT;
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+void Status::reset() {
+    pid = -1;
+    signal = -1;
+    e_code = -1;
+    c_status = P_NOTINIT;    
 }
 
 // ----------------------------------------------------------------------------
@@ -44,73 +58,6 @@ int Status::getPid() {
 //
 // ----------------------------------------------------------------------------
 
-void Status::sigToString() {
-    switch(signal) {
-        case SIGABRT:
-            break;
-        case SIGALRM:
-            break;
-        case SIGFPE:
-            break;
-        case SIGHUP:
-            break;
-        case SIGILL:
-            break;
-        case SIGINT:
-            break;
-        case SIGKILL:
-            break;
-        case SIGPIPE:
-            break;
-        case SIGQUIT:
-            break;
-        case SIGSEGV:
-            break;
-        case SIGTERM:
-            break;
-        case SIGUSR1:
-            break;
-        case SIGUSR2:
-            break;
-        case SIGCHLD:
-            break;
-        case SIGCONT:
-            break;
-        case SIGSTOP:
-            break;
-        case SIGTSTP:
-            break;
-        case SIGTTIN:
-            break;
-        case SIGTTOU:
-            break;
-        case SIGBUS:
-            break;
-        case SIGPOLL:
-            break;
-        case SIGPROF:
-            break;
-        case SIGSYS:
-            break;
-        case SIGTRAP:
-            break;
-        case SIGURG:
-            break;
-        case SIGVTALRM:
-            break;
-        case SIGXCPU:
-            break;
-        case SIGXFSZ:
-            break;
-        default:
-            break;
-    }
-}
-
-// ----------------------------------------------------------------------------
-//
-// ----------------------------------------------------------------------------
-
 void Status::setSignal(int p_sig) {
     signal = p_sig;
 }
@@ -119,6 +66,33 @@ void Status::setSignal(int p_sig) {
 //
 // ----------------------------------------------------------------------------
 
+int Status::getSignalNum() {
+    return(signal);
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+void Status::getSignalStr(char *buf, unsigned int len) {
+    memset(buf, 0x00, len);
+    char *t_s_signal = strsignal(signal);
+    if (t_s_signal == NULL) return;
+    strncpy(buf, t_s_signal, len - 1);
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
 void Status::setExitCode(int p_e_code) {
     e_code = p_e_code;
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+int Status::getExitCode() {
+    return(e_code);
 }

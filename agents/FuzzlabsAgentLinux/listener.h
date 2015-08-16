@@ -8,6 +8,8 @@
 #ifndef LISTENER_H
 #define	LISTENER_H
 
+#include <cstdio>
+#include <exception>
 #include <stdlib.h>
 #include <pthread.h>
 #include <syslog.h>
@@ -25,15 +27,7 @@ typedef struct {
     cJSON *j_data;
 } Message;
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-void listener(int port);
-    
-#ifdef	__cplusplus
-}
-#endif
+void listener(unsigned int port, unsigned int max_conn);
 
 #endif	/* LISTENER_H */
 

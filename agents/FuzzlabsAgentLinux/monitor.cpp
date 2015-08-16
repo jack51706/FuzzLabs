@@ -1,6 +1,17 @@
 #include "monitor.h"
 
 // ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+Monitor::Monitor() {
+    p_status = new Status();
+    pid = 0;
+    p_args = NULL;
+    p_full = NULL;
+}
+
+// ----------------------------------------------------------------------------
 // Get the command name from the first argument. The result will be used as
 // the second argument for exec...()
 //
@@ -67,17 +78,21 @@ char **Monitor::parseArgs(char *str) {
 //
 // ----------------------------------------------------------------------------
 
-Monitor::Monitor(char *cmd_line) {
-    pid = 0;
-    p_args = Monitor::parseArgs((char *)cmd_line);
+int Monitor::setTarget(char *cmd_line) {
+    if (p_args != NULL) free(p_args);
     p_full = NULL;
-
+    
+    p_args = Monitor::parseArgs((char *)cmd_line);
+    if (p_args == NULL) return(1);
+    
     if (p_args != NULL && p_args[0] != NULL) {
         p_full = (char *)malloc(strlen((char *)p_args[0]) + 1);
         memset(p_full, 0x00, strlen((char *)p_args[0]) + 1);
         strcpy(p_full, p_args[0]);
         p_args[0] = getCommandName(p_args[0]);
     }
+    if (p_args[0] == NULL) return(1);
+    return(0);
 }
 
 // ----------------------------------------------------------------------------
@@ -86,19 +101,24 @@ Monitor::Monitor(char *cmd_line) {
 
 int Monitor::terminate() {
     if (pid < 1) return 1;
-    int rc = kill(pid, SIGKILL);
-    int error = errno;
-    if (rc == -1) {
-        if (error == EINVAL || error == EPERM) return 0;
-        if (error == ESRCH) return 1;           // Even if it is considered as
+    int rc = 0;
+    int error;
+    
+    if (kill(pid, SIGKILL) == -1) {
+        error = errno;
+        if (error == EINVAL || error == EPERM) rc = 0;
+        if (error == ESRCH) rc = 1;             // Even if it is considered as
                                                 // an error that the process
                                                 // does not exist, this is how
                                                 // we report that we got rid
                                                 // of it anyway. So, this is
                                                 // good for us.
-        return 0;
+    } else {
+        rc = 1;
     }
-    return 1;
+
+    p_status->reset();
+    return(rc);
 }
 
 // ----------------------------------------------------------------------------
@@ -113,13 +133,36 @@ Status *Monitor::status() {
 //
 // ----------------------------------------------------------------------------
 
+void Monitor::stop() {
+    running = 0;
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+int Monitor::isRunning() {
+    return(running);
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
+struct user_regs_struct Monitor::getRegisters() {
+    return regs;    
+}
+
+// ----------------------------------------------------------------------------
+//
+// ----------------------------------------------------------------------------
+
 int Monitor::start() {
     running = 1;
-    p_status = new Status();
     int status = 0;
     pid_t child = 0;
 
-    // TODO: There is an issue with p_full and p_args
+    p_status->reset();
     syslog(LOG_INFO, "starting process: %s (%s)", p_full, p_args[0]);
     
     child = fork();
@@ -143,6 +186,7 @@ int Monitor::start() {
         p_status->setPid(child);
         while(running) {
             wait(&status);
+            // ptrace(PTRACE_GETREGS, child, NULL, &regs);
             if (WIFEXITED(status)) {
                 p_status->setState(P_TERM);
                 p_status->setExitCode(WEXITSTATUS(status));
@@ -165,5 +209,6 @@ int Monitor::start() {
                 break;
             }
         }
+        syslog(LOG_INFO, "monitor for %s stopped", p_full);
     }
 }

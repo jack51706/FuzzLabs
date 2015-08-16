@@ -16,6 +16,7 @@
 #include <sys/ptrace.h>
 #include <errno.h>
 #include <syslog.h>
+#include <sys/user.h>
 #include "status.h"
 
 // ----------------------------------------------------------------------------
@@ -29,21 +30,19 @@ private:
     Status *p_status;
     char **p_args;
     char *p_full;
+    struct user_regs_struct regs;
+    
     char *getCommandName(char *str);
     char **parseArgs(char *str);
 public:
-    Monitor(char *cmd_line);
+    Monitor();
+    int setTarget(char *cmd_line);
     int start();
+    void stop();
+    int isRunning();
     Status *status();
     int terminate();
+    struct user_regs_struct getRegisters();
 };
-
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-#ifdef	__cplusplus
-}
-#endif
 
 #endif	/* MONITOR_H */
