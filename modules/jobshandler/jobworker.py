@@ -247,21 +247,6 @@ class jobworker():
         except Exception, ex:
             pass
 
-        """
-        try:
-            del(self.c_queue)
-        except Exception, ex:
-            pass
-        try:
-            del(self.p_queue)
-        except Exception, ex:
-            pass
-        try:
-            del(self.core)
-        except Exception, ex:
-            pass
-        """
-
         try:
             self.p_queue.close()
             self.p_queue.join_thread()
@@ -347,6 +332,14 @@ class jobworker():
                                  self.job_data["target"]["conditions"])
             self.core.add_target(
                 sessions.target(self.job_data["target"]["endpoint"]))
+
+            if ("agent" in self.job_data["target"]):
+                rc = session.add_agent(self.job_data["target"]["agent"])
+                if (rc == False):
+                    syslog.syslog(syslog.LOG_ERR,
+                          "w[%s] failed to set up agent for job %s" %
+                          (self.id, self.job_id))
+                    return False
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR,
                           "w[%s] failed to initialize job %s (%s)" %

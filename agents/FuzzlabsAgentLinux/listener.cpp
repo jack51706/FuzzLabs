@@ -135,18 +135,29 @@ int handle_command_start(Connection *conn, Monitor *monitor, Message *msg) {
     pthread_t tid;
     char *cmd_line = (char *)get_data(msg->j_data);
     
-    if (cmd_line == NULL) 
-        syslog(LOG_ERR, "[%s]: program not specified in data", conn->address());
+    if (cmd_line == NULL) {
+        syslog(LOG_ERR, "[%s]: program not specified in data", 
+                conn->address());
+        conn->transmit("{\"start\": \"failed\"}", 19);
+        return(0);
+    }
     
     if (monitor->setTarget(cmd_line)) {
         syslog(LOG_ERR, "[%s]: monitor failed to process command line", 
                 conn->address());
+        conn->transmit("{\"start\": \"failed\"}", 19);
+        return(0);
     }
 
     if (pthread_create(&tid, NULL, &start_monitor, monitor) != 0) {
         syslog(LOG_ERR, "[%s]: monitor failed to start process", 
                 conn->address());
+        conn->transmit("{\"start\": \"failed\"}", 19);
+        return(0);
     }
+    
+    conn->transmit("{\"start\": \"success\"}", 20);
+    return(1);
 }
 
 // ----------------------------------------------------------------------------
@@ -237,3 +248,4 @@ void listener(unsigned int port, unsigned int max_conn) {
             throw "failed to accept connection";
     }
 }
+

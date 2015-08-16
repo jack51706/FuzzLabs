@@ -74,6 +74,25 @@ class connection (pgraph.edge.edge):
 #
 # =======================================================================================
 
+class agent:
+
+    def __init__(self, a_address, a_port):
+        self.address = a_address
+        self.port = a_port
+
+    def check_alive(self):
+        pass
+
+    def start(self, cmd):
+        pass
+
+    def kill(self):
+        pass
+
+# =======================================================================================
+#
+# =======================================================================================
+
 class session (pgraph.graph):
 
     # -----------------------------------------------------------------------------------
@@ -113,6 +132,8 @@ class session (pgraph.graph):
         self.transport_media     = None
         self.proto               = transport['protocol'].lower()
         self.conditions          = conditions
+        self.agent               = None
+        self.agent_settings      = None
 
         self.session_filename    = self.session_id + ".session"
         self.skip                = 0
@@ -226,6 +247,16 @@ class session (pgraph.graph):
                   }}
 
         return(s_data)
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def add_agent(self, a_details):
+        if "address" in a_details and "port" in a_details and "command" in a_details:
+            self.agent_settings = a_details
+            return True
+        return False
 
     # -----------------------------------------------------------------------------------
     #
@@ -384,6 +415,13 @@ class session (pgraph.graph):
         @type  path:      List
         @param path:      (Optional, def=[]) Nodes along the path to the current one.
         '''
+
+        # Initialize agent
+        #   1. Make sure only initialize of self.agent == None
+        #   2. Initialize the agent with the IP address of the target
+        # If the agent cannot be initialized make sure the user is aware of it
+
+        # TODO
 
         # if no node is specified, we start from root and initialize the session.
         if not this_node:

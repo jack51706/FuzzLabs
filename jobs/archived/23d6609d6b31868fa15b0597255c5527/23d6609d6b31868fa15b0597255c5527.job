@@ -1,0 +1,35 @@
+{
+    "session": {
+        "sleep_time": 0,
+        "restart_sleep_time": 0,
+        "timeout": 0,
+        "skip": 0
+    },
+    "target": {
+        "transport": {
+            "media": "network",
+            "protocol": "tcp"
+        },
+        "endpoint": {
+            "address": "192.168.1.64",
+            "port": 6667
+        },
+        "agent": {
+            "address": "192.168.1.64",
+            "port": 27000,
+            "command": "/home/keyman/vuln"
+        },
+        "conditions": {
+            "fail_connection": ["log", "restart"],
+            "fail_receive": [],
+            "fail_send": ["log"]
+        }
+    },
+    "request": {
+        "request_file": "network_TEST",
+        "graph": 
+        [
+            {"current": "TEST"}
+        ]
+    }
+}
