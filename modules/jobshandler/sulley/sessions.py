@@ -135,42 +135,71 @@ class agent():
     # -----------------------------------------------------------------------------------
 
     def check_alive(self):
+        if self.sock == None: return None
         message = json.dumps({"command": "ping"})
         self.sock.send(message)
-        return self.check_response()
+        data = self.check_response()
+        if data == None or "command" not in data or
+           data["command"] != "ping" or "data" not in data:
+            syslog.syslog(syslog.LOG_ERR, "unexpected response from agent: %s" %
+                                          str(data))
+            return None
+        return(data["data"])
 
     # -----------------------------------------------------------------------------------
     #
     # -----------------------------------------------------------------------------------
 
     def start(self, cmd):
+        if self.sock == None: return None
         message = json.dumps({"command": "start", "data": self.command})
         self.sock.send(message)
-        return self.check_response()
+        data = self.check_response()
+        if data == None or "command" not in data or
+           data["command"] != "start" or "data" not in data:
+            syslog.syslog(syslog.LOG_ERR, "unexpected response from agent: %s" %
+                                          str(data))
+            return None
+        return(data["data"])
 
     # -----------------------------------------------------------------------------------
     #
     # -----------------------------------------------------------------------------------
 
     def status(self, cmd):
+        if self.sock == None: return None
         message = json.dumps({"command": "status"})
         self.sock.send(message)
-        return self.check_response()
+        data = self.check_response()
+        if data == None or "command" not in data or
+           data["command"] != "status" or "data" not in data:
+            syslog.syslog(syslog.LOG_ERR, "unexpected response from agent: %s" %
+                                          str(data))
+            return None
+        return(data["data"])
 
     # -----------------------------------------------------------------------------------
     #
     # -----------------------------------------------------------------------------------
 
     def kill(self):
+        if self.sock == None: return None
         message = json.dumps({"command": "kill"})
         self.sock.send(message)
-        return self.check_response()
+        data = self.check_response()
+        if data == None or "command" not in data or
+           data["command"] != "kill" or "data" not in data:
+            syslog.syslog(syslog.LOG_ERR, "unexpected response from agent: %s" %
+                                          str(data))
+            return None
+        return(data["data"])
 
     # -----------------------------------------------------------------------------------
     #
     # -----------------------------------------------------------------------------------
 
     def connect(self):
+        if self.sock != None: self.disconnect()
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except Exception, ex:
@@ -192,6 +221,7 @@ class agent():
     # -----------------------------------------------------------------------------------
 
     def disconnect(self):
+        if self.sock == None: return None
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
         self.sock = None
@@ -201,6 +231,7 @@ class agent():
     # -----------------------------------------------------------------------------------
 
     def recv(self, timeout=1):
+        if self.sock == None: return None
         self.sock.setblocking(0)
      
         t_data = [];
@@ -234,6 +265,7 @@ class agent():
         command = None
 
         data = self.recv()
+        if data == None: return None
         try:
             command = json.loads(data)
         except Exception, ex:
@@ -295,6 +327,16 @@ class session (pgraph.graph):
         self.timeout             = 5.0
         self.crash_threshold     = 3
         self.restart_sleep_time  = 300
+
+        # State reason holds information about why the job is in a given
+        # state. For example, a job can be in a paused state because the
+        # user requested the pause, or, because of an error, e.g.: no
+        # connection to the agent, or the target has crashed.
+        # Similarly with the running state: it can be because a user 
+        # requested a job or because the scheduler started a job.
+        # (scheduler is not yet available, but planned)
+
+        self.state_reason        = ""
 
         if settings.get('skip') != None: 
             self.skip = settings['skip']
@@ -390,6 +432,7 @@ class session (pgraph.graph):
                   "media": self.media,
                   "protocol": self.proto,
                   "state": state,
+                  "state_reason": self.state_reason,
                   "crashes": self.crash_count,
                   "warnings": self.warning_count,
                   "progress": {
@@ -568,19 +611,6 @@ class session (pgraph.graph):
         @param path:      (Optional, def=[]) Nodes along the path to the current one.
         '''
 
-        # Initialize agent
-        #   1. Make sure only initialize of self.agent == None - DONE
-        #   2. Initialize the agent with the IP address of the target - DONE
-        # If the agent cannot be initialized make sure the user is aware of it
-
-        if self.agent == None and self.agent_settings != None:
-            try:
-                self.agent = agent(self.config, self.session_id, self.agent_settings)
-                self.agent.connect()
-            except Exception, ex:
-                syslog.syslog(syslog.LOG_ERR, self.session_id +
-                              ": failed to establish agent connection (%s)" % str(ex))
-
         # if no node is specified, we start from root and initialize the session.
         if not this_node:
             # we can't fuzz if we don't have at least one target and one request.
@@ -598,6 +628,23 @@ class session (pgraph.graph):
 
             self.total_mutant_index  = 0
             self.total_num_mutations = self.num_mutations()
+
+        # ///////////////////////////// WORK IN PROGRESS ///////////////////////////////
+        #
+        # If no errors above and not already connected to the agent, initialize the
+        # agent connection.
+        # If the agent cannot be initialized make sure the user is aware of it.
+
+        if self.agent == None and self.agent_settings != None:
+            try:
+                self.agent = agent(self.config, self.session_id, self.agent_settings)
+                self.agent.connect()
+            except Exception, ex:
+                syslog.syslog(syslog.LOG_ERR, self.session_id +
+                              ": failed to establish agent connection (%s)" % str(ex))
+
+        #
+        # ///////////////////////////// WORK IN PROGRESS ///////////////////////////////
 
         target = self.target
 

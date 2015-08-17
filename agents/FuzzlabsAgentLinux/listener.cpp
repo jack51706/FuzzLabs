@@ -104,7 +104,7 @@ int handle_command_status(Connection *conn, Monitor *monitor, Message *msg) {
     
     cJSON *root = cJSON_CreateObject();
     cJSON_AddStringToObject(root, "command", "status");
-    cJSON_AddStringToObject(root, "status", "terminated");
+    cJSON_AddStringToObject(root, "data", "terminated");
     cJSON_AddNumberToObject(root, "process_id", m_status->getPid());
     cJSON_AddNumberToObject(root, "term_condition", m_status->getState());
     cJSON_AddNumberToObject(root, "exit_code", m_status->getExitCode());
