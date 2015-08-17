@@ -111,6 +111,10 @@ class jobworker():
         if not self.core: return {}
 
         self.job_status = self.core.get_status()
+        if self.job_status == None:
+            self.job_status = {}
+            return {}
+
         self.job_status.update({"path": self.job_path, 
                                 "data": self.job_data
                                })

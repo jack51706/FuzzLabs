@@ -94,11 +94,12 @@ class agent():
                              the agent
         """
 
-        self.config = config
+        self.config     = config
         self.session_id = session_id
-        self.address = None
-        self.port = None
-        self.command = None
+        self.address    = None
+        self.port       = None
+        self.command    = None
+        self.conn_retry = 5
 
         syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_DAEMON)
 
@@ -121,6 +122,9 @@ class agent():
                 syslog.syslog(syslog.LOG_ERR, self.session_id +\
                               ": command to execute not set for agent")
 
+            if "conn_retry" in settings:
+                self.conn_retry = settings["conn_retry"]
+
         self.sock = None
         self.running = True
 
@@ -135,32 +139,56 @@ class agent():
     # -----------------------------------------------------------------------------------
 
     def check_alive(self):
-        if self.sock == None: return None
+        if self.sock == None: return False
         message = json.dumps({"command": "ping"})
         self.sock.send(message)
         data = self.check_response()
-        if data == None or "command" not in data or
-           data["command"] != "ping" or "data" not in data:
-            syslog.syslog(syslog.LOG_ERR, "unexpected response from agent: %s" %
-                                          str(data))
-            return None
-        return(data["data"])
+
+        if data == None: return False
+        if "command" not in data: return False
+        if "data" not in data: return False
+        if data["command"] != "ping": return False
+        if data["data"] != "pong": return False
+
+        return True
 
     # -----------------------------------------------------------------------------------
     #
     # -----------------------------------------------------------------------------------
 
-    def start(self, cmd):
-        if self.sock == None: return None
+    def do_start(self):
+        if self.sock == None: return False
+        if not self.command: return False
         message = json.dumps({"command": "start", "data": self.command})
         self.sock.send(message)
         data = self.check_response()
-        if data == None or "command" not in data or
-           data["command"] != "start" or "data" not in data:
-            syslog.syslog(syslog.LOG_ERR, "unexpected response from agent: %s" %
-                                          str(data))
-            return None
-        return(data["data"])
+
+        if data == None: return False
+        if "command" not in data: return False
+        if "data" not in data: return False
+        if data["command"] != "start": return False
+        if data["data"] != "success": return False
+
+        return True
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def start(self):
+        retry = 0
+        c_stat = self.do_start()
+        while not c_stat:
+            if retry == self.conn_retry: return False
+            time.sleep(20)
+            retry += 1
+            syslog.syslog(syslog.LOG_ERR, self.session_id +
+                          ": agent failed to start command, retrying ...")
+            c_stat = self.do_start()
+
+        syslog.syslog(syslog.LOG_INFO, self.session_id +
+                      ": process %s started successfully" % self.command)
+        return True
 
     # -----------------------------------------------------------------------------------
     #
@@ -171,7 +199,7 @@ class agent():
         message = json.dumps({"command": "status"})
         self.sock.send(message)
         data = self.check_response()
-        if data == None or "command" not in data or
+        if data == None or "command" not in data or \
            data["command"] != "status" or "data" not in data:
             syslog.syslog(syslog.LOG_ERR, "unexpected response from agent: %s" %
                                           str(data))
@@ -187,7 +215,7 @@ class agent():
         message = json.dumps({"command": "kill"})
         self.sock.send(message)
         data = self.check_response()
-        if data == None or "command" not in data or
+        if data == None or "command" not in data or \
            data["command"] != "kill" or "data" not in data:
             syslog.syslog(syslog.LOG_ERR, "unexpected response from agent: %s" %
                                           str(data))
@@ -198,7 +226,7 @@ class agent():
     #
     # -----------------------------------------------------------------------------------
 
-    def connect(self):
+    def do_connect(self):
         if self.sock != None: self.disconnect()
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -215,6 +243,27 @@ class agent():
             return False
 
         return True
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def connect(self):
+        reconn = 0
+        c_stat = self.do_connect()
+        while not c_stat:
+            if reconn == self.conn_retry: return False
+            time.sleep(1)
+            reconn += 1
+            syslog.syslog(syslog.LOG_ERR, self.session_id +
+                          ": failed to estabilish connection to the agent, retrying...")
+            c_stat = self.do_connect()
+
+        if self.check_alive(): return True
+
+        syslog.syslog(syslog.LOG_ERR, self.session_id +
+                      ": failed to estabilish connection to the agent")
+        return False
 
     # -----------------------------------------------------------------------------------
     #
@@ -396,6 +445,8 @@ class session (pgraph.graph):
     # -----------------------------------------------------------------------------------
 
     def get_status(self):
+
+        if not self.fuzz_node: return None
 
         if self.fuzz_node.name:
             current_name = self.fuzz_node.name
@@ -642,6 +693,23 @@ class session (pgraph.graph):
             except Exception, ex:
                 syslog.syslog(syslog.LOG_ERR, self.session_id +
                               ": failed to establish agent connection (%s)" % str(ex))
+                self.finished_flag = True
+                self.stop_flag = True
+                return
+
+        # Get the agent to execute 
+            try:
+                self.agent.start()
+            except Exception, ex:
+                syslog.syslog(syslog.LOG_ERR, self.session_id +
+                              ": agent failed to execute command (%s)" % str(ex))
+                self.finished_flag = True
+                self.stop_flag = True
+                return
+
+            syslog.syslog(syslog.LOG_INFO, self.session_id +
+                          ": process started, waiting 3 seconds...")
+            time.sleep(3)
 
         #
         # ///////////////////////////// WORK IN PROGRESS ///////////////////////////////
