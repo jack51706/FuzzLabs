@@ -782,6 +782,13 @@ class session (pgraph.graph):
                         try:
                             self.transport_media.connect()
                         except Exception, ex:
+                            # TODO:
+                            #   1. pause the job
+                            #   2. if agent is set for the job:
+                            #       2.1. check if agent responds to ping
+                            #       2.2. check if remote command has crashed
+                            #   3. report status
+
                             syslog.syslog(syslog.LOG_ERR, self.session_id + ": " + str(ex))
                             self.handle_crash("fail_connection", 
                                               "failed to connect to target, possible crash?")
@@ -792,6 +799,13 @@ class session (pgraph.graph):
                         try:
                             self.pre_send(self.transport_media.media_socket())
                         except Exception, ex:
+                            # TODO:
+                            #   1. pause the job
+                            #   2. if agent is set for the job:
+                            #       2.1. check if agent responds to ping
+                            #       2.2. check if remote command has crashed
+                            #   3. report status
+
                             if self.config['general']['debug'] > 0:
                                 syslog.syslog(syslog.LOG_ERR, self.session_id + ": pre_send() failed (%s)" % str(ex))
                             self.handle_crash("fail_send", 
@@ -811,6 +825,13 @@ class session (pgraph.graph):
                                 syslog.syslog(syslog.LOG_ERR, self.session_id + 
                                                   ": failed to transmit a node up the " +
                                                   "path (%s)" % str(ex))
+                            # TODO:
+                            #   1. pause the job
+                            #   2. if agent is set for the job:
+                            #       2.1. check if agent responds to ping
+                            #       2.2. check if remote command has crashed
+                            #   3. report status
+
                             self.handle_crash("fail_send", 
                                               "failed to transmit a node up the path, possible crash?")
                             continue
@@ -822,6 +843,13 @@ class session (pgraph.graph):
                                           self.fuzz_node, edge, 
                                           self.transport_media.media_target())
                         except Exception, ex:
+                            # TODO:
+                            #   1. pause the job
+                            #   2. if agent is set for the job:
+                            #       2.1. check if agent responds to ping
+                            #       2.2. check if remote command has crashed
+                            #   3. report status
+
                             if self.config['general']['debug'] > 0:
                                 syslog.syslog(syslog.LOG_ERR, self.session_id + 
                                                   ": failed transmitting fuzz node (%s)" % str(ex))
@@ -837,12 +865,19 @@ class session (pgraph.graph):
                     try:
                         self.post_send(self.transport_media.media_socket())
                     except Exception, ex:
-                            if self.config['general']['debug'] > 0:
-                                syslog.syslog(syslog.LOG_ERR, self.session_id + 
-                                                  ": post_send() failed %s" % str(ex))
-                            self.handle_crash("fail_send", 
-                                              "post_send() failed, possible crash?")
-                            continue
+                        # TODO:
+                        #   1. pause the job
+                        #   2. if agent is set for the job:
+                        #       2.1. check if agent responds to ping
+                        #       2.2. check if remote command has crashed
+                        #   3. report status
+
+                        if self.config['general']['debug'] > 0:
+                            syslog.syslog(syslog.LOG_ERR, self.session_id + 
+                                              ": post_send() failed %s" % str(ex))
+                        self.handle_crash("fail_send", 
+                                          "post_send() failed, possible crash?")
+                        continue
 
                     # done with the socket.
 
@@ -1109,6 +1144,13 @@ class session (pgraph.graph):
             if self.config['general']['debug'] > 1:
                 syslog.syslog(syslog.LOG_INFO, self.session_id + ": packet sent: " + repr(data) )
         except Exception, e:
+            # TODO:
+            #   1. pause the job
+            #   2. if agent is set for the job:
+            #       2.1. check if agent responds to ping
+            #       2.2. check if remote command has crashed
+            #   3. report status
+
             if self.config['general']['debug'] > 0:
                 syslog.syslog(syslog.LOG_WARNING, self.session_id + ": failed to send, socket error: " + str(e))
             self.handle_crash("fail_receive", "failed to send data, possible crash?")
@@ -1123,6 +1165,13 @@ class session (pgraph.graph):
                 syslog.syslog(syslog.LOG_INFO, self.session_id + ": received: [%d] %s" 
                                   % (len(self.last_recv), repr(self.last_recv)) )
         else:
+            # TODO:
+            #   1. pause the job
+            #   2. if agent is set for the job:
+            #       2.1. check if agent responds to ping
+            #       2.2. check if remote command has crashed
+            #   3. report status
+
             if self.config['general']['debug'] > 1:
                 syslog.syslog(syslog.LOG_WARNING, self.session_id + ": nothing received on socket")
             self.handle_crash("fail_receive", "nothing received on socket, possible crash?")
