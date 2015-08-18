@@ -215,12 +215,13 @@ class agent():
         message = json.dumps({"command": "kill"})
         self.sock.send(message)
         data = self.check_response()
-        if data == None or "command" not in data or \
-           data["command"] != "kill" or "data" not in data:
-            syslog.syslog(syslog.LOG_ERR, "unexpected response from agent: %s" %
-                                          str(data))
-            return None
-        return(data["data"])
+
+        if data == None: return False
+        if "command" not in data: return False
+        if "data" not in data: return False
+        if data["command"] != "kill": return False
+        if data["data"] != "success": return False
+        return True
 
     # -----------------------------------------------------------------------------------
     #
@@ -680,8 +681,6 @@ class session (pgraph.graph):
             self.total_mutant_index  = 0
             self.total_num_mutations = self.num_mutations()
 
-        # ///////////////////////////// WORK IN PROGRESS ///////////////////////////////
-        #
         # If no errors above and not already connected to the agent, initialize the
         # agent connection.
         # If the agent cannot be initialized make sure the user is aware of it.
@@ -711,8 +710,6 @@ class session (pgraph.graph):
                           ": process started, waiting 3 seconds...")
             time.sleep(3)
 
-        #
-        # ///////////////////////////// WORK IN PROGRESS ///////////////////////////////
 
         target = self.target
 
@@ -874,6 +871,24 @@ class session (pgraph.graph):
         self.finished_flag = True
         self.stop_flag = True
         syslog.syslog(syslog.LOG_INFO, self.session_id + ": job finished")
+
+        # If we have an agent, try to clean that up properly.
+
+        if self.agent != None and self.agent_settings != None:
+            try:
+                if not self.agent.kill():
+                    syslog.syslog(syslog.LOG_ERR, self.session_id +
+                                  ": failed to terminate remote process")
+                self.agent.disconnect()
+                self.agent = None
+                self.agent_settings = None
+            except Exception, ex:
+                syslog.syslog(syslog.LOG_ERR, self.session_id +
+                              ": failed to clean up agent connection (%s)" % str(ex))
+
+        self.agent = None
+        self.agent_settings = None
+
         return
 
     # -----------------------------------------------------------------------------------
