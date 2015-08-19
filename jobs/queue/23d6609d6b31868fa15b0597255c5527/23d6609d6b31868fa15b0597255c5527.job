@@ -23,7 +23,7 @@
         "conditions": {
             "fail_connection": ["log", "restart"],
             "fail_receive": [],
-            "fail_send": ["log"]
+            "fail_send": ["log", "restart"]
         }
     },
     "request": {

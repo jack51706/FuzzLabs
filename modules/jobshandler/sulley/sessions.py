@@ -766,6 +766,7 @@ class session (pgraph.graph):
                 if self.restart_interval and self.total_mutant_index % self.restart_interval == 0:
                     if self.config['general']['debug'] > 0:
                         syslog.syslog(syslog.LOG_WARNING, self.session_id + ": restart interval reached")
+                    # TODO: this has to be updated properly...
                     self.restart_target(self.transport_media.media_target())
 
                 # if we don't need to skip the current test case.
@@ -782,13 +783,6 @@ class session (pgraph.graph):
                         try:
                             self.transport_media.connect()
                         except Exception, ex:
-                            # TODO:
-                            #   1. pause the job
-                            #   2. if agent is set for the job:
-                            #       2.1. check if agent responds to ping
-                            #       2.2. check if remote command has crashed
-                            #   3. report status
-
                             syslog.syslog(syslog.LOG_ERR, self.session_id + ": " + str(ex))
                             self.handle_crash("fail_connection", 
                                               "failed to connect to target, possible crash?")
@@ -799,13 +793,6 @@ class session (pgraph.graph):
                         try:
                             self.pre_send(self.transport_media.media_socket())
                         except Exception, ex:
-                            # TODO:
-                            #   1. pause the job
-                            #   2. if agent is set for the job:
-                            #       2.1. check if agent responds to ping
-                            #       2.2. check if remote command has crashed
-                            #   3. report status
-
                             if self.config['general']['debug'] > 0:
                                 syslog.syslog(syslog.LOG_ERR, self.session_id + ": pre_send() failed (%s)" % str(ex))
                             self.handle_crash("fail_send", 
@@ -825,13 +812,6 @@ class session (pgraph.graph):
                                 syslog.syslog(syslog.LOG_ERR, self.session_id + 
                                                   ": failed to transmit a node up the " +
                                                   "path (%s)" % str(ex))
-                            # TODO:
-                            #   1. pause the job
-                            #   2. if agent is set for the job:
-                            #       2.1. check if agent responds to ping
-                            #       2.2. check if remote command has crashed
-                            #   3. report status
-
                             self.handle_crash("fail_send", 
                                               "failed to transmit a node up the path, possible crash?")
                             continue
@@ -843,13 +823,6 @@ class session (pgraph.graph):
                                           self.fuzz_node, edge, 
                                           self.transport_media.media_target())
                         except Exception, ex:
-                            # TODO:
-                            #   1. pause the job
-                            #   2. if agent is set for the job:
-                            #       2.1. check if agent responds to ping
-                            #       2.2. check if remote command has crashed
-                            #   3. report status
-
                             if self.config['general']['debug'] > 0:
                                 syslog.syslog(syslog.LOG_ERR, self.session_id + 
                                                   ": failed transmitting fuzz node (%s)" % str(ex))
@@ -865,13 +838,6 @@ class session (pgraph.graph):
                     try:
                         self.post_send(self.transport_media.media_socket())
                     except Exception, ex:
-                        # TODO:
-                        #   1. pause the job
-                        #   2. if agent is set for the job:
-                        #       2.1. check if agent responds to ping
-                        #       2.2. check if remote command has crashed
-                        #   3. report status
-
                         if self.config['general']['debug'] > 0:
                             syslog.syslog(syslog.LOG_ERR, self.session_id + 
                                               ": post_send() failed %s" % str(ex))
@@ -1225,42 +1191,6 @@ class session (pgraph.graph):
     #
     # -----------------------------------------------------------------------------------
 
-    def handle_crash(self, event, message):
-        for action in self.conditions[event]:
-            if action == "log":
-                syslog.syslog(syslog.LOG_ERR, self.session_id + ": " + str(message))
-
-                self.crashing_primitives[self.fuzz_node.mutant] = \
-                    self.crashing_primitives.get(self.fuzz_node.mutant,0) +1
-
-                # Crash data is dumped into the crash file. After, the request data is
-                # cleared out before storing into the crash log. This way long requests
-                # will not eat up the memory and the engine still contains a reference
-                # to the crash data in the crash log file.
-
-                if event == "fail_connection":
-                    self.dump_crash_data(self.previous_sent)
-                    if self.previous_sent != None:
-                        self.previous_sent['request'] = ""
-	            self.crash_logs.append(base64.b64encode(self.previous_sent))
-                    self.crash_count = self.crash_count + 1
-                elif event == "fail_receive":
-                    self.dump_crash_data(self.current_sent)
-                    if self.current_sent != None:
-                        self.current_sent['request'] = ""
-	            self.crash_logs.append(base64.b64encode(self.current_sent))
-                    self.warning_count = self.warning_count + 1
-                else:
-                    self.dump_crash_data(self.previous_sent)
-                    if self.previous_sent != None:
-                        self.previous_sent['request'] = ""
-	            self.crash_logs.append(base64.b64encode(self.previous_sent))
-                    self.warning_count = self.warning_count + 1
-
-    # -----------------------------------------------------------------------------------
-    #
-    # -----------------------------------------------------------------------------------
-
     def internal_callback(self, node):
         node_data = ""
         try:
@@ -1284,4 +1214,116 @@ class session (pgraph.graph):
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR, self.session_id + ": failed to store session status (%s)" % str(ex))
 
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def handle_crash(self, event, message):
+        """
+        Handle a potential crash situation according to the configuration and the
+        environment.
+
+        The job configuration describes the actions to be taken for event. A sample
+        configuration looks like below.
+
+        "conditions": {
+            "fail_connection": ["log", "restart"],
+            "fail_receive": [],
+            "fail_send": ["log", "restart"]
+        }
+
+        In the sample above the keys below the condition key are the events. The
+        events can be described as:
+
+          - fail_connection: failed to connect to the fuzz target. This can happen
+                             when the target crashes and the port can no longer be
+                             contacted.
+          - fail_receive:    failed to receive data from the target. This can happen
+                             if the service normally does not respond or, if the
+                             service gets into a non-responsive condition as the result
+                             of the fuzzing.
+          - fail_send:       failed to send fuzz data (mutation) to the target. This
+                             indicates a potential issue found.
+
+        The assignable actions are as follows.
+
+          - log:             generate a log message signaling that something happened.
+          - restart:         restart the target process. (if agent available)
+
+        Please note that the actions associated with an event are executed in the order
+        defined in the configuration.
+
+        @type  event:    String
+        @param event:    The identifier of the event
+        @type  message:  String
+        @param message:  The string description of the event
+        """
+
+        # TODO:
+        #   1. pause the job
+        #   2. if agent is set for the job:
+        #       2.1. check if agent responds to ping
+        #       2.2. check if remote command has crashed
+        #   3. report status
+        #   4. if no agent (can't restart process) just keep the job paused and make
+        #      sure the user knows why the job was paused
+
+        for action in self.conditions[event]:
+            if action == "log":     self.handle_event_action_log(event, message)
+            if action == "restart": self.handle_event_action_restart(event, message)
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def handle_event_action_log(event, message):
+        syslog.syslog(syslog.LOG_ERR, self.session_id + ": " + str(message))
+
+        self.crashing_primitives[self.fuzz_node.mutant] = \
+            self.crashing_primitives.get(self.fuzz_node.mutant,0) +1
+
+        # Crash data is dumped into the crash file. After, the request data is
+        # cleared out before storing into the crash log. This way long requests
+        # will not eat up the memory and the engine still contains a reference
+        # to the crash data in the crash log file.
+
+        # If we could not make a connection to the target then it was the
+        # previous request (or one of the prev. requests) that resulted in
+        # the crash of the service. As we cannot be completely sure which
+        # one of the prev. requests caused the crash, the best we can do
+        # is to log the previous request.
+
+        if event == "fail_connection":
+            self.dump_crash_data(self.previous_sent)
+            if self.previous_sent != None:
+                self.previous_sent['request'] = ""
+            self.crash_logs.append(base64.b64encode(self.previous_sent))
+            self.crash_count = self.crash_count + 1
+
+        # If we haven't received anything it is very likely that the cause
+        # of the issue is the current request, therefore we save that.
+
+        elif event == "fail_receive":
+            self.dump_crash_data(self.current_sent)
+            if self.current_sent != None:
+                self.current_sent['request'] = ""
+            self.crash_logs.append(base64.b64encode(self.current_sent))
+            self.warning_count = self.warning_count + 1
+
+        # If we can't send the request, similarly to fail_connection, it
+        # was one of the previous requests to cause the issue.
+
+        else:
+            self.dump_crash_data(self.previous_sent)
+            if self.previous_sent != None:
+                self.previous_sent['request'] = ""
+            self.crash_logs.append(base64.b64encode(self.previous_sent))
+            self.warning_count = self.warning_count + 1
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def handle_event_action_restart(event, message):
+        pass
 
