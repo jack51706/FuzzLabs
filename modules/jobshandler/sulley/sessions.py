@@ -903,23 +903,29 @@ class session (pgraph.graph):
         if path:
             path.pop()
 
-        self.finished_flag = True
-        self.stop_flag = True
-        syslog.syslog(syslog.LOG_INFO, self.session_id + ": job finished")
+        if self.total_mutant_index == self.total_num_mutations:
+            self.finished_flag = True
+            self.stop_flag = True
+            syslog.syslog(syslog.LOG_INFO, self.session_id + ": job finished")
+            self.agent_cleanup()
 
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def agent_cleanup:
         # If we have an agent, try to clean that up properly.
 
-        if self.agent != None and self.agent_settings != None:
-            try:
-                if not self.agent.kill():
-                    syslog.syslog(syslog.LOG_ERR, self.session_id +
-                                  ": failed to terminate remote process")
-                self.agent.disconnect()
-                self.agent = None
-                self.agent_settings = None
-            except Exception, ex:
+        try:
+            if not self.agent.kill():
                 syslog.syslog(syslog.LOG_ERR, self.session_id +
-                              ": failed to clean up agent connection (%s)" % str(ex))
+                              ": failed to terminate remote process")
+            self.agent.disconnect()
+            self.agent = None
+            self.agent_settings = None
+        except Exception, ex:
+            syslog.syslog(syslog.LOG_ERR, self.session_id +
+                          ": failed to clean up agent connection (%s)" % str(ex))
 
         self.agent = None
         self.agent_settings = None
