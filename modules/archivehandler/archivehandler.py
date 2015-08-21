@@ -154,7 +154,7 @@ class archivehandler(threading.Thread):
                 if e_file[1] == "job" or e_file[1] == "jlock":
                     job_details["job"] = self.load_job_data(l_path)
                 if e_file[1] == "session":
-                    job_details["session"] = self.load_job_data(l_path)
+                    job_details["status"] = self.load_job_data(l_path)
                 if e_file[1] == "crashes":
                     # Deal with this later...
                     pass
@@ -225,8 +225,8 @@ class archivehandler(threading.Thread):
                             a_job_path + data + ".job")
             if not os.path.isfile(a_job_path + data + ".job"): 
                 syslog.syslog(syslog.LOG_ERR,
-                              "archive handler failed to restart job %s (%s)" %
-                              (data, str(ex)))
+                              "archive handler failed to restart job %s" %
+                              data)
             if os.path.isfile(a_job_path + data + ".session"):
                 os.remove(a_job_path + data + ".session")
             if os.path.isfile(a_job_path + data + ".crashes"):

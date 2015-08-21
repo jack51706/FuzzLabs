@@ -18,12 +18,13 @@
             "address": "192.168.1.64",
             "port": 27000,
             "command": "/home/keyman/vuln",
-            "conn_retry": 5
+            "conn_retry": 5,
+            "conn_retry_delay": 60
         },
         "conditions": {
-            "fail_connection": ["log", "restart"],
-            "fail_receive": [],
-            "fail_send": ["log", "restart"]
+            "fail_connection": ["handle"],
+            "fail_receive": ["pass"],
+            "fail_send": ["handle"]
         }
     },
     "request": {

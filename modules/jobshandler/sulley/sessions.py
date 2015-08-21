@@ -94,12 +94,13 @@ class agent():
                              the agent
         """
 
-        self.config     = config
-        self.session_id = session_id
-        self.address    = None
-        self.port       = None
-        self.command    = None
-        self.conn_retry = 5
+        self.config           = config
+        self.session_id       = session_id
+        self.address          = None
+        self.port             = None
+        self.command          = None
+        self.conn_retry       = 5
+        self.conn_retry_delay = 20
 
         syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_DAEMON)
 
@@ -124,6 +125,9 @@ class agent():
 
             if "conn_retry" in settings:
                 self.conn_retry = settings["conn_retry"]
+
+            if "conn_retry_delay" in settings:
+                self.conn_retry_delay = settings["conn_retry_delay"]
 
         self.sock = None
         self.running = True
@@ -176,11 +180,12 @@ class agent():
     # -----------------------------------------------------------------------------------
 
     def start(self):
+        self.kill()
         retry = 0
         c_stat = self.do_start()
         while not c_stat:
             if retry == self.conn_retry: return False
-            time.sleep(20)
+            time.sleep(self.conn_retry_delay)
             retry += 1
             syslog.syslog(syslog.LOG_ERR, self.session_id +
                           ": agent failed to start command, retrying ...")
@@ -188,13 +193,17 @@ class agent():
 
         syslog.syslog(syslog.LOG_INFO, self.session_id +
                       ": process %s started successfully" % self.command)
+
+        time.sleep(3)
+        if not self.check_alive(): return False
+
         return True
 
     # -----------------------------------------------------------------------------------
     #
     # -----------------------------------------------------------------------------------
 
-    def status(self, cmd):
+    def status(self):
         if self.sock == None: return None
         message = json.dumps({"command": "status"})
         self.sock.send(message)
@@ -254,7 +263,7 @@ class agent():
         c_stat = self.do_connect()
         while not c_stat:
             if reconn == self.conn_retry: return False
-            time.sleep(1)
+            time.sleep(self.conn_retry_delay)
             reconn += 1
             syslog.syslog(syslog.LOG_ERR, self.session_id +
                           ": failed to estabilish connection to the agent, retrying...")
@@ -412,7 +421,6 @@ class session (pgraph.graph):
         self.crashing_primitives = {}
         self.crash_count         = 0
         self.warning_count       = 0
-        self.crash_logs          = []
         self.previous_sent       = None
         self.current_sent        = None
 
@@ -629,10 +637,11 @@ class session (pgraph.graph):
         data["restart_interval"]    = self.restart_interval
         data["timeout"]             = self.timeout
         data["crash_threshold"]     = self.crash_threshold
+        data["crashes"]             = self.crash_count
+        data["warnings"]            = self.warning_count
         data["total_num_mutations"] = self.total_num_mutations
         data["total_mutant_index"]  = self.total_mutant_index
         data["pause_flag"]          = self.pause_flag
-        data["crash_logs"]          = json.dumps(self.crash_logs)
 
         fh = open(self.directory + "/" + self.session_filename, "wb+")
         fh.write(json.dumps(data))
@@ -927,10 +936,11 @@ class session (pgraph.graph):
         self.restart_interval    = data["restart_interval"]
         self.timeout             = data["timeout"]
         self.crash_threshold     = data["crash_threshold"]
+        self.crash_count         = data["crashes"]
+        self.warning_count       = data["warnings"]
         self.total_num_mutations = data["total_num_mutations"]
         self.total_mutant_index  = data["total_mutant_index"]
         self.pause_flag          = data["pause_flag"]
-        self.crash_logs          = json.loads(data["crash_logs"])
 
 
     # -----------------------------------------------------------------------------------
@@ -1116,16 +1126,9 @@ class session (pgraph.graph):
             self.transport_media.send(data)
             if self.config['general']['debug'] > 1:
                 syslog.syslog(syslog.LOG_INFO, self.session_id + ": packet sent: " + repr(data) )
-        except Exception, e:
-            # TODO:
-            #   1. pause the job
-            #   2. if agent is set for the job:
-            #       2.1. check if agent responds to ping
-            #       2.2. check if remote command has crashed
-            #   3. report status
-
+        except Exception, ex:
             if self.config['general']['debug'] > 0:
-                syslog.syslog(syslog.LOG_WARNING, self.session_id + ": failed to send, socket error: " + str(e))
+                syslog.syslog(syslog.LOG_WARNING, self.session_id + ": failed to send, socket error: " + str(ex))
             self.handle_crash("fail_receive", "failed to send data, possible crash?")
 
         try:
@@ -1138,55 +1141,9 @@ class session (pgraph.graph):
                 syslog.syslog(syslog.LOG_INFO, self.session_id + ": received: [%d] %s" 
                                   % (len(self.last_recv), repr(self.last_recv)) )
         else:
-            # TODO:
-            #   1. pause the job
-            #   2. if agent is set for the job:
-            #       2.1. check if agent responds to ping
-            #       2.2. check if remote command has crashed
-            #   3. report status
-
             if self.config['general']['debug'] > 1:
                 syslog.syslog(syslog.LOG_WARNING, self.session_id + ": nothing received on socket")
             self.handle_crash("fail_receive", "nothing received on socket, possible crash?")
-
-    # -----------------------------------------------------------------------------------
-    #
-    # -----------------------------------------------------------------------------------
-
-    def dump_crash_data(self, crash_data):
-        '''
-        Dump crash data to disk.
-        '''
-
-        if not self.directory:
-            return
-
-        data = self.load_crash_data()
-        if (data == None or len(data) == 0):
-            data = []
-
-        try:
-            data.append(crash_data)
-            fh = open(self.directory + "/" + self.session_id + ".crash", "wb+")
-            fh.write(json.dumps(data))
-            fh.close()
-        except Exception, ex:
-            syslog.syslog(syslog.LOG_ERR, self.session_id + 
-                              ": failed to save crash data (%s)" % str(ex))
-
-    # -----------------------------------------------------------------------------------
-    #
-    # -----------------------------------------------------------------------------------
-
-    def load_crash_data(self):
-        data = None
-        try:
-            fh   = open(self.directory + "/" + self.session_id + ".crash", "rb")
-            data = json.loads(fh.read())
-            fh.close()
-        except Exception, e:
-            return None
-        return data
 
     # -----------------------------------------------------------------------------------
     #
@@ -1209,11 +1166,58 @@ class session (pgraph.graph):
                 "target": self.target.details,
                 "name": str(self.fuzz_node.name),
                 "mutant_index": self.fuzz_node.mutant_index,
+                "process_status": {},
                 "request": node_data
             }
             self.current_sent['id'] = md5.new(json.dumps(self.current_sent)).hexdigest()
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR, self.session_id + ": failed to store session status (%s)" % str(ex))
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def dump_crash_data(self, crash_data, process_status = None):
+        '''
+        Dump crash data to disk.
+        '''
+
+        if not self.directory:
+            return
+
+        if crash_data == None:
+            return
+
+        if process_status == None:
+            process_status = {}
+
+        data = self.load_crash_data()
+        if (data == None or len(data) == 0):
+            data = []
+
+        try:
+            crash_data["process_status"] = process_status
+            data.append(crash_data)
+            fh = open(self.directory + "/" + self.session_id + ".crash", "wb+")
+            fh.write(json.dumps(data))
+            fh.close()
+        except Exception, ex:
+            syslog.syslog(syslog.LOG_ERR, self.session_id +
+                              ": failed to save crash data (%s)" % str(ex))
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def load_crash_data(self):
+        data = None
+        try:
+            fh   = open(self.directory + "/" + self.session_id + ".crash", "rb")
+            data = json.loads(fh.read())
+            fh.close()
+        except Exception, e:
+            return None
+        return data
 
     # -----------------------------------------------------------------------------------
     #
@@ -1228,9 +1232,9 @@ class session (pgraph.graph):
         configuration looks like below.
 
         "conditions": {
-            "fail_connection": ["log", "restart"],
-            "fail_receive": [],
-            "fail_send": ["log", "restart"]
+            "fail_connection": ["action-1", "action-2"],
+            "fail_receive": ["pass"],
+            "fail_send": ["action-1", "action-2"]
         }
 
         In the sample above the keys below the condition key are the events. The
@@ -1246,38 +1250,44 @@ class session (pgraph.graph):
           - fail_send:       failed to send fuzz data (mutation) to the target. This
                              indicates a potential issue found.
 
-        The assignable actions are as follows.
-
-          - log:             generate a log message signaling that something happened.
-          - restart:         restart the target process. (if agent available)
-
-        Please note that the actions associated with an event are executed in the order
-        defined in the configuration.
-
         @type  event:    String
         @param event:    The identifier of the event
         @type  message:  String
         @param message:  The string description of the event
         """
 
-        # TODO:
-        #   1. pause the job
-        #   2. if agent is set for the job:
-        #       2.1. check if agent responds to ping
-        #       2.2. check if remote command has crashed
-        #   3. report status
-        #   4. if no agent (can't restart process) just keep the job paused and make
-        #      sure the user knows why the job was paused
-
         for action in self.conditions[event]:
-            if action == "log":     self.handle_event_action_log(event, message)
-            if action == "restart": self.handle_event_action_restart(event, message)
+            if action == "pass": continue
+            if action == "handle": self.handle_event_action_default(event, message)
 
     # -----------------------------------------------------------------------------------
     #
     # -----------------------------------------------------------------------------------
 
-    def handle_event_action_log(event, message):
+    def handle_event_action_default(self, event, message):
+        """
+        Handle cases where we suspect the target has crashed.
+        """
+
+        p_status = None
+        process_running = False
+
+        # Something has definitely happened. Check the agent (if any) to see the process
+        # status.
+
+        if self.agent != None and self.agent_settings != None:
+            if self.agent.check_alive():
+                p_status = self.agent.status()
+            else:
+                syslog.syslog(syslog.LOG_ERR,
+                              self.session_id + ": could not contact agent, " +\
+                              "crash might be a false positive")
+
+            if p_status == "OK":
+                process_running = True
+                syslog.syslog(syslog.LOG_ERR,
+                              self.session_id + ": the process is still running")
+
         syslog.syslog(syslog.LOG_ERR, self.session_id + ": " + str(message))
 
         self.crashing_primitives[self.fuzz_node.mutant] = \
@@ -1295,36 +1305,57 @@ class session (pgraph.graph):
         # is to log the previous request.
 
         if event == "fail_connection":
-            self.dump_crash_data(self.previous_sent)
+            self.dump_crash_data(self.previous_sent, p_status)
             if self.previous_sent != None:
                 self.previous_sent['request'] = ""
-            self.crash_logs.append(base64.b64encode(self.previous_sent))
-            self.crash_count = self.crash_count + 1
+            if process_running:
+                self.warning_count = self.warning_count + 1
+            else:
+                self.crash_count = self.crash_count + 1
 
         # If we haven't received anything it is very likely that the cause
         # of the issue is the current request, therefore we save that.
 
         elif event == "fail_receive":
-            self.dump_crash_data(self.current_sent)
+            self.dump_crash_data(self.current_sent, p_status)
             if self.current_sent != None:
                 self.current_sent['request'] = ""
-            self.crash_logs.append(base64.b64encode(self.current_sent))
-            self.warning_count = self.warning_count + 1
+            if process_running:
+                self.warning_count = self.warning_count + 1
+            else:
+                self.crash_count = self.crash_count + 1
 
         # If we can't send the request, similarly to fail_connection, it
         # was one of the previous requests to cause the issue.
 
         else:
-            self.dump_crash_data(self.previous_sent)
+            self.dump_crash_data(self.previous_sent, p_status)
             if self.previous_sent != None:
                 self.previous_sent['request'] = ""
-            self.crash_logs.append(base64.b64encode(self.previous_sent))
-            self.warning_count = self.warning_count + 1
+            if process_running:
+                self.warning_count = self.warning_count + 1
+            else:
+                self.crash_count = self.crash_count + 1
+
+        # In any of the above cases we pause the job or continue if we have an agent
+        # and could restart the process.
+
+        self.export_file()
+        if self.agent != None and self.agent_settings != None:
+            while not self.restart_process(): pass
+        else:
+            self.set_pause()
+            self.pause()
 
     # -----------------------------------------------------------------------------------
     #
     # -----------------------------------------------------------------------------------
 
-    def handle_event_action_restart(event, message):
-        pass
+    def restart_process(self):
+        if not self.agent.start():
+            syslog.syslog(syslog.LOG_ERR,
+                          self.session_id + ": failed to restart process, pausing job.")
+            self.set_pause()
+            self.pause()
+        return self.agent.check_alive()
 

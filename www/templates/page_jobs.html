@@ -11,6 +11,8 @@
                 <th>Endpoint</th>
                 <th>Node</th>
                 <th>Progress</th>
+                <th>Crashes</th>
+                <th>Warnings</th>
                 <th></th>
             </tr>
         </thead>
@@ -71,6 +73,8 @@
                         </progressbar>
                     </div>
                 </td>
+                <td>{{job.crashes}}</td>
+                <td>{{job.warnings}}</td>
                 <td>
                     <div ng-if="job.state == 'running'" id="job_action">
                         <button class="job_action" title="Pause Job" job_id="{{job.id}}" id="pause_job">&#9646;&#9646;</button>

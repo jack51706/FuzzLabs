@@ -6,6 +6,8 @@
                 <th>Transport</th>
                 <th>Endpoint</th>
                 <th>Progress</th>
+                <th>Crashes</th>
+                <th>Warnings</th>
                 <th></th>
             </tr>
         </thead>
@@ -27,16 +29,22 @@
                     </table>
                 </td>
                 <td class="jobs_col_progbar">
-                    <div ng-if="job.session != ''">
-                        <progressbar type="danger" id="job_progress" max="job.session.total_num_mutations" value="job.session.total_mutant_index">
+                    <div ng-if="job.status != ''">
+                        <progressbar type="danger" id="job_progress" max="job.status.total_num_mutations" value="job.status.total_mutant_index">
                             <span style="color:black; white-space:nowrap;">
-                                {{job.session.total_mutant_index}} / {{job.session.total_num_mutations}}
+                                {{job.status.total_mutant_index}} / {{job.status.total_num_mutations}}
                             </span>
                         </progressbar>
                     </div>
-                    <div ng-if="job.session == ''">
+                    <div ng-if="job.status == ''">
                         <span style="color:black; white-space:nowrap;">Not Available</span>
                     </div>
+                </td>
+                <td>
+                    {{job.status.crashes}}
+                </td>
+                <td>
+                    {{job.status.warnings}}
                 </td>
                 <td>
                     <button class="job_action" title="Start Job" job_id="{{job.id}}" id="start_archived">&#x25B6;</button>
