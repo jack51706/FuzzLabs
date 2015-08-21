@@ -2,7 +2,7 @@
 # (Very) Basic HTTP Fuzzer
 # - used only for testing, a better implementation is required. -
 # This file is part of the FuzzLabs Fuzzing Framework
-# Author: Zsolt Imre
+# Author: FuzzLabs
 # =============================================================================
 
 from sulley import *

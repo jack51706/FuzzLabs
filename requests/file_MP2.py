@@ -1,7 +1,7 @@
 # ================================================================================
 # Basic MP2 Descriptor
 # This file is part of the FuzzLabs Fuzzing Framework
-# Author: Zsolt Imre
+# Author: FuzzLabs
 # ================================================================================
 
 from sulley import *

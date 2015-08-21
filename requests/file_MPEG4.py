@@ -1,7 +1,7 @@
 # ================================================================================
 # Basic MPEG-4 Descriptor
 # This file is part of the FuzzLabs Fuzzing Framework
-# Author: Zsolt Imre
+# Author: FuzzLabs
 # ================================================================================
 
 from sulley import *

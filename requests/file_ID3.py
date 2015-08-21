@@ -1,10 +1,10 @@
-__author__ = 'Artur Gemes'
-
 # =============================================================================
 # ID3 Tag Fuzzer
 # Only version 2.3.0 was covered. (Plus extended header of 2.4.0)
 # TODO: implement version 2.4.0 specific changes as well, based on:
 #       http://id3.org/id3v2.4.0-structure
+#
+# Author: Artur Gemes (NCC Group)
 # =============================================================================
 
 from sulley import *

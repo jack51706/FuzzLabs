@@ -1,7 +1,7 @@
 # =============================================================================
 # Basic MPEG-1 Descriptor
 # This file is part of the FuzzLabs Fuzzing Framework
-# Author: Zsolt Imre
+# Author: FuzzLabs
 #
 # Based on:
 #     http://andrewduncan.net/mpeg/mpeg-1.html

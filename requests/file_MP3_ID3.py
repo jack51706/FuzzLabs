@@ -1,6 +1,8 @@
 # =============================================================================
 # ID3 Tag Fuzzer
-# Author: Artur Gemes, Zsolt Imre
+# Authors:
+#  - Artur Gemes (NCC Group)
+#  - FuzzLabs
 # =============================================================================
 
 from sulley import *

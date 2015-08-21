@@ -2,7 +2,7 @@
 # JPEG Image Descriptor - SMALL
 # This file is part of the FuzzLabs Fuzzing Framework
 #
-# Author: Zsolt Imre
+# Author: FuzzLabs
 # Date: 21/07/2015
 # 
 # Original file MD5 sum:    4dde17f30fee6e6120a58d890a4ec572

@@ -2,7 +2,10 @@
 # Basic PNG Image Descriptor 
 # This file is part of the FuzzLabs Fuzzing Framework
 #
-# Author: Artur Gemes, Zsolt Imre
+# Authors:
+#  - Artur Gemes (NCC Group)
+#  - FuzzLabs
+#
 # Date: 23/07/2015
 # 
 # =============================================================================
