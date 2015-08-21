@@ -873,13 +873,14 @@ class session (pgraph.graph):
             self.finished_flag = True
             self.stop_flag = True
             syslog.syslog(syslog.LOG_INFO, self.session_id + ": job finished")
-            self.agent_cleanup()
+            if self.agent != None and self.agent_settings != None:
+                self.agent_cleanup()
 
     # -----------------------------------------------------------------------------------
     #
     # -----------------------------------------------------------------------------------
 
-    def agent_cleanup:
+    def agent_cleanup(self):
         # If we have an agent, try to clean that up properly.
 
         try:

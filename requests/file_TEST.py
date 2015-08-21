@@ -5,18 +5,11 @@
 
 from sulley import *
 
-s_initialize("TEST")
+s_initialize("TEST_1")
+s_static("FIRST-")
+s_byte(0x00, full_range=True)
+s_initialize("TEST_2")
+s_static("SECOND-")
+s_byte(0x00, full_range=True)
 
-s_byte(0x00, full_range=True)
-s_byte(0x00, full_range=True)
-s_string("TEST")
-s_string("TEST")
-s_string("TEST")
-s_string("TEST")
-s_string("TEST")
-s_string("TEST")
-s_string("TEST")
-s_string("TEST")
-s_string("TEST")
-s_string("TEST")
 

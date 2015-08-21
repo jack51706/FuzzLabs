@@ -11,9 +11,9 @@
             "protocol": "file"
         },
         "endpoint": {
-            "path": "/tmp/jpegs", 
+            "path": "/tmp/test", 
             "filename": "test", 
-            "extension": "jpg"
+            "extension": "txt"
         },
         "conditions": {
             "fail_connection": ["log", "restart"],
@@ -22,10 +22,11 @@
         }
     },
     "request": {
-        "request_file": "file_JPEG_B",
+        "request_file": "file_TEST",
         "graph": 
         [
-            {"current": "JPEG"}
+            {"current": "TEST_1"},
+            {"current": "TEST_1", "next": "TEST_2"}
         ]
     }
 }
