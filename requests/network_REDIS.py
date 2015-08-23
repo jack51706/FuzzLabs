@@ -457,25 +457,61 @@ s_delim(" ")
 s_int(500, format="ascii")
 s_static("\r\n")
 
-
-
 # -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
+# http://redis.io/commands/expireat
 # -----------------------------------------------------------------------------
 
-s_initialize("INCR")
-s_static("INCR")
-s_delim(" ")
-s_string("test")
-s_static("\r\n")
-
-s_initialize("INCR_BY")
-s_static("INCRBY")
+s_initialize("EXPIREAT")
+s_static("EXPIREAT")
 s_delim(" ")
 s_string("test")
 s_delim(" ")
-s_int(1000, format="ascii")
+s_int(1293840000, format="ascii")
 s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/getbit
+# -----------------------------------------------------------------------------
+
+s_initialize("GETBIT")
+s_static("GETBIT")
+s_delim(" ")
+s_string("test")
+s_delim(" ")
+s_int(1, format="ascii")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/setbit
+# -----------------------------------------------------------------------------
+
+s_initialize("SETBIT")
+s_static("SETBIT")
+s_delim(" ")
+s_string("test")
+s_delim(" ")
+s_int(1, format="ascii")
+s_delim(" ")
+s_int(0, format="ascii")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/getrange
+# -----------------------------------------------------------------------------
+
+s_initialize("GETRANGE")
+s_static("GETRANGE")
+s_delim(" ")
+s_string("test")
+s_delim(" ")
+s_int(0, format="ascii")
+s_delim(" ")
+s_int(1, format="ascii")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/getset
+# -----------------------------------------------------------------------------
 
 s_initialize("GETSET")
 s_static("GETSET")
@@ -484,6 +520,254 @@ s_string("test")
 s_delim(" ")
 s_string("test")
 s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hset
+# -----------------------------------------------------------------------------
+
+s_initialize("HSET")
+s_static("HSET")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_static("\"")
+s_string("h_test")
+s_static("\"")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hdel
+# -----------------------------------------------------------------------------
+
+s_initialize("HDEL")
+s_static("HDEL")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_string("h_test")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hexists
+# -----------------------------------------------------------------------------
+
+s_initialize("HEXISTS")
+s_static("HEXISTS")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_string("h_test")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hget
+# -----------------------------------------------------------------------------
+
+s_initialize("HGET")
+s_static("HGET")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_string("h_test")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hgetall
+# -----------------------------------------------------------------------------
+
+s_initialize("HGETALL")
+s_static("HGETALL")
+s_delim(" ")
+s_string("h_test")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hincrby
+# -----------------------------------------------------------------------------
+
+s_initialize("HINCRBY")
+s_static("HINCRBY")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_int(1, format="ascii")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hincrbyfloat
+# -----------------------------------------------------------------------------
+
+s_initialize("HINCRBYFLOAT")
+s_static("HINCRBYFLOAT")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_int(1, format="ascii")
+s_delim(".")
+s_int(10, format="ascii")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hkeys
+# -----------------------------------------------------------------------------
+
+s_initialize("HKEYS")
+s_static("HKEYS")
+s_delim(" ")
+s_string("h_test")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hlen
+# -----------------------------------------------------------------------------
+
+s_initialize("HLEN")
+s_static("HLEN")
+s_delim(" ")
+s_string("h_test")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hmget
+# -----------------------------------------------------------------------------
+
+s_initialize("HMGET")
+s_static("HMGET")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+if s_block_start("HMGET_K_VALUES"):
+    s_delim(" ")
+    s_string("h_test")
+s_block_end("HMGET_K_VALUES")
+s_repeat("HMGET_K_VALUES", min_reps=0, max_reps=1000000, step=1000)
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hmset
+# -----------------------------------------------------------------------------
+
+s_initialize("HMSET")
+s_static("HMSET")
+s_delim(" ")
+s_string("h_test")
+if s_block_start("HMSET_KV_VALUES"):
+    s_delim(" ")
+    s_string("key")
+    s_delim(" ")
+    s_string("1000")
+s_block_end("HMSET_KV_VALUES")
+s_repeat("HMSET_KV_VALUES", min_reps=0, max_reps=1000000, step=1000)
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hsetnx
+# -----------------------------------------------------------------------------
+
+s_initialize("HSETNX")
+s_static("HSETNX")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_static("\"")
+s_string("h_test")
+s_static("\"")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hstrlen
+# -----------------------------------------------------------------------------
+
+s_initialize("HSTRLEN")
+s_static("HSTRLEN")
+s_delim(" ")
+s_string("h_test")
+s_delim(" ")
+s_string("h_test")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/hvals
+# -----------------------------------------------------------------------------
+
+s_initialize("HVALS")
+s_static("HVALS")
+s_delim(" ")
+s_string("h_test")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/incr
+# -----------------------------------------------------------------------------
+
+s_initialize("INCR")
+s_static("INCR")
+s_delim(" ")
+s_string("test")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/incrby
+# -----------------------------------------------------------------------------
+
+s_initialize("INCRBY")
+s_static("INCRBY")
+s_delim(" ")
+s_string("test")
+s_delim(" ")
+s_int(1000, format="ascii")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/incrbyfloat
+# -----------------------------------------------------------------------------
+
+s_initialize("INCRBYFLOAT")
+s_static("INCRBYFLOAT")
+s_delim(" ")
+s_string("test")
+s_delim(" ")
+s_int(1, format="ascii")
+s_delim(".")
+s_int(1, format="ascii")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/info
+# -----------------------------------------------------------------------------
+
+s_initialize("INFO")
+s_static("INFO")
+s_delim(" ")
+s_string("all")
+s_static("\r\n")
+
+# -----------------------------------------------------------------------------
+# http://redis.io/commands/keys
+# -----------------------------------------------------------------------------
+
+s_initialize("KEYS")
+s_static("KEYS")
+s_delim(" ")
+s_string("*a*")
+s_static("\r\n")
+
+
+
+
+
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 s_initialize("PEXPIRE")
 s_static("PEXPIRE")
@@ -585,66 +869,6 @@ s_delim(" ")
 s_string("p_test")
 s_delim(" ")
 s_string("test")
-s_static("\r\n")
-
-s_initialize("HMSET")
-s_static("HMSET")
-s_delim(" ")
-s_string("user")
-s_delim(":")
-s_string("1000")
-s_delim(" ")
-if s_block_start("HMSET_KV_VALUES"):
-    s_delim(" ")
-    s_string("key")
-    s_delim(" ")
-    s_string("1000")
-s_block_end("HMSET_KV_VALUES")
-s_repeat("HMSET_KV_VALUES", min_reps=0, max_reps=1000000, step=1000)
-s_static("\r\n")
-
-s_initialize("HGET")
-s_static("HGET")
-s_delim(" ")
-s_string("user")
-s_delim(":")
-s_string("1000")
-s_delim(" ")
-s_string("key")
-s_static("\r\n")
-
-s_initialize("HGETALL")
-s_static("HGETALL")
-s_delim(" ")
-s_string("user")
-s_delim(":")
-s_string("1000")
-s_static("\r\n")
-
-s_initialize("HMGET")
-s_static("HMGET")
-s_delim(" ")
-s_string("user")
-s_delim(":")
-s_string("1000")
-s_delim(" ")
-if s_block_start("HMGET_K_VALUES"):
-    s_delim(" ")
-    s_string("key")
-s_block_end("HMGET_K_VALUES")
-s_repeat("HMGET_K_VALUES", min_reps=0, max_reps=1000000, step=1000)
-s_static("\r\n")
-
-s_initialize("HINCRBY")
-s_static("HINCRBY")
-s_delim(" ")
-s_string("user")
-s_delim(":")
-s_string("1000")
-s_delim(" ")
-s_string("key")
-s_delim(" ")
-s_int(1, format="ascii")
 s_static("\r\n")
 
 s_initialize("SADD")
