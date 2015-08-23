@@ -1,0 +1,108 @@
+{
+    "name": "Redis 3.0.3",
+    "session": {
+        "sleep_time": 0,
+        "restart_sleep_time": 0,
+        "timeout": 1,
+        "skip": 0
+    },
+    "target": {
+        "transport": {
+            "media": "network",
+            "protocol": "tcp"
+        },
+        "endpoint": {
+            "address": "192.168.1.64",
+            "port": 6379
+        },
+        "agent": {
+            "address": "192.168.1.64",
+            "port": 27000,
+            "command": "/home/keyman/temp/redis-3.0.3/src/redis-server /home/keyman/temp/redis-3.0.3/redis.conf",
+            "conn_retry": 5,
+            "conn_retry_delay": 60
+        },
+        "conditions": {
+            "fail_connection": ["handle"],
+            "fail_receive": ["pass"],
+            "fail_send": ["handle"]
+        }
+    },
+    "request": {
+        "request_file": "network_REDIS",
+        "graph":
+        [
+
+            {"current": "AUTH"},
+            {"current": "AUTH",        "next": "SET"},
+            {"current": "AUTH",        "next": "DEL"},
+            {"current": "AUTH",        "next": "APPEND"},
+            {"current": "AUTH",        "next": "GET"},
+            {"current": "AUTH",        "next": "BITCOUNT"},
+            {"current": "AUTH",        "next": "BITOP"},
+            {"current": "AUTH",        "next": "BITPOS"},
+            {"current": "AUTH",        "next": "CLIENTKILL"},
+            {"current": "AUTH",        "next": "CLIENTSETNAME"},
+            {"current": "AUTH",        "next": "COMMANDGETKEYS"},
+            {"current": "AUTH",        "next": "COMMANDINFO"},
+            {"current": "AUTH",        "next": "CONFIGGET"},
+            {"current": "AUTH",        "next": "CONFIGSET"},
+            {"current": "AUTH",        "next": "DEBUGOBJECT"},
+            {"current": "AUTH",        "next": "OBJECT"},
+            {"current": "SET",         "next": "DECR"},
+            {"current": "SET",         "next": "DECR_BY"},
+            {"current": "SET",         "next": "DUMP"},
+            {"current": "SET",         "next": "ECHO"},
+            {"current": "AUTH",        "next": "EVAL"},
+            {"current": "AUTH",        "next": "EVALSHA"},
+            {"current": "AUTH",        "next": "EXEC"},
+            {"current": "SET",         "next": "EXISTS"},
+            {"current": "SET",         "next": "EXPIRE"},
+
+            {"current": "SET",         "next": "INCR"},
+            {"current": "SET",         "next": "INCR_BY"},
+            {"current": "SET",         "next": "GETSET"},
+            {"current": "SET",         "next": "TTL"},
+            {"current": "SET",         "next": "PTTL"},
+            {"current": "SET",         "next": "PEXPIRE"},
+            {"current": "AUTH",        "next": "SET_EXP"},
+            {"current": "SET_EXP",     "next": "TTL"},
+            {"current": "SET_EXP",     "next": "PTTL"},
+            {"current": "SET_EXP",     "next": "PEXPIRE"},
+            {"current": "AUTH",        "next": "LPUSH"},
+            {"current": "LPUSH",       "next": "LRANGE"},
+            {"current": "LPUSH",       "next": "RPOP"},
+            {"current": "LPUSH",       "next": "LPOP"},
+            {"current": "LPUSH",       "next": "LTRIM"},
+            {"current": "LPUSH",       "next": "BRPOP"},
+            {"current": "LPUSH",       "next": "RPOPLPUSH"},
+            {"current": "AUTH",        "next": "RPUSH"},
+            {"current": "RPUSH",       "next": "LRANGE"},
+            {"current": "RPUSH",       "next": "RPOP"},
+            {"current": "RPUSH",       "next": "LPOP"},
+            {"current": "RPUSH",       "next": "LTRIM"},
+            {"current": "RPUSH",       "next": "BRPOP"},
+            {"current": "RPUSH",       "next": "RPOPLPUSH"},
+            {"current": "AUTH",        "next": "HMSET"},
+            {"current": "HMSET",       "next": "HGET"},
+            {"current": "HMSET",       "next": "HGETALL"},
+            {"current": "HMSET",       "next": "HMGET"},
+            {"current": "HMSET",       "next": "HINCRBY"},
+            {"current": "AUTH",        "next": "SADD"},
+            {"current": "SADD",        "next": "SMEMBERS"},
+            {"current": "SADD",        "next": "SISMEMBER"},
+            {"current": "SADD",        "next": "SINTER"},
+            {"current": "SADD",        "next": "SPOP"},
+            {"current": "SADD",        "next": "SUNIONSTORE"},
+            {"current": "AUTH",        "next": "ZADD"},
+            {"current": "ZADD",        "next": "ZRANGE"},
+            {"current": "ZADD",        "next": "ZREVRANGE"},
+            {"current": "ZADD",        "next": "ZRANGEBYSCORE"},
+            {"current": "ZADD",        "next": "ZRANGEBYSCORE_R"},
+            {"current": "ZADD",        "next": "ZRANK"},
+            {"current": "ZADD",        "next": "ZREVRANK"},
+            {"current": "AUTH",        "next": "ZADD_LEX"}
+        ]
+    }
+}
+

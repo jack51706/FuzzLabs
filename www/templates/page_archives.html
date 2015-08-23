@@ -13,7 +13,8 @@
         </thead>
         <tbody id="tbody_jobs_list">
             <tr ng-repeat="job in archives | filter:query">
-                <td>{{job.id}}</td>
+                <td ng-show="job.job.name">{{job.job.name}}</td>
+                <td ng-show="!job.job.name">{{job.id}}</td>
                 <td>
                     <table>
                         <tr ng-repeat="(key, value) in job.job.target.transport">

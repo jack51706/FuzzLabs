@@ -16,9 +16,9 @@
             "extension": "txt"
         },
         "conditions": {
-            "fail_connection": ["log", "restart"],
-            "fail_receive": [],
-            "fail_send": ["log"]
+            "fail_connection": ["pass"],
+            "fail_receive": ["pass"],
+            "fail_send": ["pass"]
         }
     },
     "request": {

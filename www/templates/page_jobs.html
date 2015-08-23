@@ -18,16 +18,8 @@
         </thead>
         <tbody id="tbody_jobs_list">
             <tr ng-repeat="job in jobs | filter:query">
-                <td>
-                    <table>
-                        <tr>
-                            <td class="s_job_name">Worker</td><td>{{job.worker}}</td>
-                        </tr>
-                        <tr>
-                            <td class="s_job_name">Job ID</td><td>{{job.id}}</td>
-                        </tr>
-                    </table>
-                </td>
+                <td ng-show="job.data.name">{{job.data.name}}</td>
+                <td ng-show="!job.data.name">{{job.id}}</td>
                 <td>
                     <table>
                         <tr ng-repeat="(key, value) in job.data.target.transport">
