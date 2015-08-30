@@ -9,10 +9,47 @@ $( document ).ready(function() {
             2 = Centre mouse button
             3 = Right  mouse button
         */
+        clearAllSelection();
         if (evt.which === 1) {
             selection_start = parseInt($(evt.target).attr('offset'));
         }
     });
+
+    $("button.parser_reset").click(function () { 
+        process_file(false);
+    });
+
+    $("button.primitive_type").click(function () { 
+        var p_type = $(this).attr('id').split("_")[1];
+        var color = $(this).css('background-color');
+        setSelection(p_type, color, getSelection());
+    });
+
+    function setSelection(type, color, area) {
+        var hexview = document.getElementById('parser_center_wrapper');
+        cNodes = hexview.childNodes;
+        for (var cnc = area.start; cnc <= area.end; cnc++) {
+            $(cNodes[cnc]).css("background-color", color);
+            $(cNodes[cnc]).css("color", "#FFFFFF");
+        }
+    }
+
+    function getSelection() {
+        var start = -1;
+        var stop = -1;
+        var hexview = document.getElementById('parser_center_wrapper');
+        cNodes = hexview.childNodes;
+        for (var cnc = 0; cnc < cNodes.length; cnc++) {
+            if (start == -1 && $(cNodes[cnc]).hasClass("parser_hex_cell_select") == true) {
+                start = cnc;
+            }
+            if (start != -1 && $(cNodes[cnc]).hasClass("parser_hex_cell_select") == false) {
+                stop = cnc - 1;
+                break;
+            }
+        }
+        return({"start": start, "end": stop});
+    }
 
     function set_all_hex() {
         var hexview = document.getElementById('parser_center_wrapper');
@@ -82,14 +119,10 @@ $( document ).ready(function() {
             callback: function(key, options) {
                 if (key == "ascii") to_ascii($(this), parseInt($(this).attr('offset')));
                 if (key == "hex") to_hex($(this), parseInt($(this).attr('offset')));
-                if (key == "clear") clearSelection();
-                if (key == "clearall") clearAllSelection();
             },
             items: {
                 "hex": {name: "To Hex"},
-                "ascii": {name: "To Ascii"},
-                "clear": {name: "Clear Last Selection"},
-                "clearall": {name: "Clear All Selection"}
+                "ascii": {name: "To Ascii"}
             }
         });
     });
@@ -126,7 +159,11 @@ $( document ).ready(function() {
         }
     }
 
-    function clearSelection() {
+    function clearSelection(item) {
+        $(item).removeClass("parser_hex_cell_select");
+    }
+
+    function clearLastSelection() {
         var hexview = document.getElementById('parser_center_wrapper');
         cNodes = hexview.childNodes;
         for (var cnc = 0; cnc < cNodes.length; cnc++) {

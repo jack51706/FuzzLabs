@@ -14,14 +14,38 @@
 
 <div class="container" id="parser_wrapper">
     <div class="col-md-3" id="parser_left_wrapper">
-
+        <div class="parser_menu_wrapper_reset">
+            <button class="parser_reset" id="parser_reset">Reset</button>
+        </div>
+        <div class="parser_menu_wrapper">
+            <div class="parser_section_header">&#x25BC;&nbsp;Section</div>
+            <div class="parser_section_content">
+                <div>
+                    <button class="section_type" id="section_group">Group</button>
+                    <button class="section_type" id="section_repeater">Repeater</button>
+                </div>
+            </div>
+        </div>
+        <div class="parser_menu_wrapper">
+            <div class="parser_section_header">&#x25BC;&nbsp;Primitives</div>
+            <div class="parser_section_content">
+                <div>
+                    <button class="primitive_type" id="primitive_bitfield">Bitfield</button>
+                    <button class="primitive_type" id="primitive_delimiter">Delimiter</button>
+                    <button class="primitive_type" id="primitive_numeric">Numeric</button>
+                    <button class="primitive_type" id="primitive_size">Size</button>
+                    <button class="primitive_type" id="primitive_static">Static</button>
+                    <button class="primitive_type" id="primitive_string">String</button>
+                    <button class="primitive_type" id="primitive_checksum">Checksum</button>
+                </div>
+            </div>
+        </div>
         <div class="parser_menu_wrapper">
             <div class="parser_section_header">&#x25BC;&nbsp;Analysis Options</div>
             <div class="parser_section_content">
                 <div>Minimum string length: <input type="number" id="pa_str_min_len" value="4"/></div>
             </div>
         </div>
-
     </div>
     <div class="col-md-9" id="parser_center_wrapper">
     </div>
