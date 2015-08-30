@@ -136,6 +136,18 @@ fuzzlabsApp.config(['$stateProvider',
         }
     });
 
+    $stateProvider.state("Modal.pageParser", {
+        url: "/parser",
+        views:{
+            "modal": {
+                templateUrl: "templates/page_parser.html"
+            }
+        },
+        onEnter: function() {
+            change_page('parser');
+        }
+    });
+
 }]);
 
 // -----------------------------------------------------------------------------

@@ -150,3 +150,76 @@ td.s_job_name {
   min-width: 70px;
 }
 
+
+#parser_left_wrapper {
+  padding: 5px;
+}
+
+#parser_center_wrapper {
+  overflow-y: auto;
+}
+
+#parser_wrapper {
+  margin-top: 10px;
+}
+
+.parser_hex_cell {
+  border: 1px solid #EFEFEF;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  float: left;
+  cursor: pointer;
+}
+
+.parser_hex_cell_ascii {
+  background-color: #F7F7F7;
+}
+
+.parser_hex_cell_select,
+.parser_hex_cell_mark {
+  background-color: #c41230;
+  color: #FFFFFF;
+}
+
+.parser_hex_cell_select {
+  border: 1px solid #e63452;
+  background-color: #f85674;
+  color: #FFFFFF;
+}
+
+#parser_source_file {
+  border: 0px;
+}
+
+.parser_show_hex {
+  width: 90px;
+}
+
+#byte_info_raw,
+#byte_info_dec,
+#byte_info_hex {
+  font-size: 0.9em;
+  padding-right: 5px;
+  width: 70px;
+  float: right;
+  color: #c41230;
+}
+
+#offset_info {
+  font-size: 0.9em;
+  padding-right: 15px;
+  float: right;
+  color: #c41230;
+}
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
