@@ -4,7 +4,10 @@
     <div class="col-md-3">
         <input type="file" id="parser_source_file" name="parser_source_file" />
     </div>
-    <div class="col-md-9 parser_info">
+    <div class="col-md-3">
+        <div>Minimum string length: <input type="number" id="pa_str_min_len" value="4"/></div>
+    </div>
+    <div class="col-md-6 parser_info">
         <div id="offset_info"></div>
         <div id="byte_info_hex"></div>
         <div id="byte_info_dec"></div>
@@ -13,7 +16,7 @@
 </div>
 
 <div class="container" id="parser_wrapper">
-    <div class="col-md-3" id="parser_left_wrapper">
+    <div class="col-md-1" id="parser_left_wrapper">
         <div class="parser_menu_wrapper_reset">
             <button class="parser_reset" id="parser_reset">Reset</button>
         </div>
@@ -40,14 +43,8 @@
                 </div>
             </div>
         </div>
-        <div class="parser_menu_wrapper">
-            <div class="parser_section_header">&#x25BC;&nbsp;Analysis Options</div>
-            <div class="parser_section_content">
-                <div>Minimum string length: <input type="number" id="pa_str_min_len" value="4"/></div>
-            </div>
-        </div>
     </div>
-    <div class="col-md-9" id="parser_center_wrapper">
+    <div class="col-md-11" id="parser_center_wrapper">
     </div>
 </div>
 

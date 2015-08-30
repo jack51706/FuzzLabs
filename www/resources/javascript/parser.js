@@ -3,27 +3,23 @@ $( document ).ready(function() {
     var selection_start = -1;
     var selection_end = -1;
 
-    $("body").on('mousedown', 'div.parser_hex_cell', function(evt) {
-        /*
-            1 = Left   mouse button
-            2 = Centre mouse button
-            3 = Right  mouse button
-        */
-        clearAllSelection();
-        if (evt.which === 1) {
-            selection_start = parseInt($(evt.target).attr('offset'));
-        }
-    });
+    var dHeight = $(document).height();
+    $("div#parser_center_wrapper").height(dHeight - 350);
 
-    $("button.parser_reset").click(function () { 
-        process_file(false);
-    });
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
-    $("button.primitive_type").click(function () { 
-        var p_type = $(this).attr('id').split("_")[1];
-        var color = $(this).css('background-color');
-        setSelection(p_type, color, getSelection());
-    });
+    function getPrimitiveItem(type, color) {
+        var pItem = document.createElement('div');
+        $(pItem).css("background-color", color);
+        $(pItem).css("color", "#FFFFFF");
+        $(pItem).attr("type", type);
+    }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
     function setSelection(type, color, area) {
         var hexview = document.getElementById('parser_center_wrapper');
@@ -31,8 +27,15 @@ $( document ).ready(function() {
         for (var cnc = area.start; cnc <= area.end; cnc++) {
             $(cNodes[cnc]).css("background-color", color);
             $(cNodes[cnc]).css("color", "#FFFFFF");
+            $(cNodes[cnc]).attr("type", type);
+            // TODO: instead of marking, the selection should be merged 
+            //       according to _type_.
         }
     }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
     function getSelection() {
         var start = -1;
@@ -51,16 +54,23 @@ $( document ).ready(function() {
         return({"start": start, "end": stop});
     }
 
-    function set_all_hex() {
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function setAllHex() {
         var hexview = document.getElementById('parser_center_wrapper');
         cNodes = hexview.childNodes;
         for (var cnc = 0; cnc < cNodes.length; cnc++) {
-            var coff = $(cNodes[cnc]).attr("offset");
-            to_hex(cNodes[cnc], coff);
+            toHex(cNodes[cnc]);
         }
     }
 
-    function clear_string_markings() {
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function clearStringMarkings() {
         var hexview = document.getElementById('parser_center_wrapper');
         cNodes = hexview.childNodes;
         for (var cnc = 0; cnc < cNodes.length; cnc++) {
@@ -68,7 +78,11 @@ $( document ).ready(function() {
         }
     }
 
-    function analyse_offset_for_string(cnodes, item) {
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function analyzeOffsetForString(cnodes, item) {
         strlen = parseInt($("input#pa_str_min_len").val());
         cno = parseInt(item.getAttribute('offset'));
         var string = 0;
@@ -85,40 +99,38 @@ $( document ).ready(function() {
         cc = 0;
         var char = cnodes[cno].getAttribute('raw').charCodeAt(0);
         while (char >= 32 && char <= 126) {
-            to_ascii(cnodes[cno + cc], cno + cc);
+            toAscii(cnodes[cno + cc]);
             cc++;
             char = cnodes[cno + cc].getAttribute('raw').charCodeAt(0);
         }
         return cc;
     }
 
-    function find_strings() {
-        clear_string_markings();
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function findStrings() {
+        clearStringMarkings();
         var hexview = document.getElementById('parser_center_wrapper');
         cNodes = hexview.childNodes;
 
         for (var cnc = 0; cnc < cNodes.length; cnc++) {
-            cnc += analyse_offset_for_string(cNodes, cNodes[cnc]);
+            cnc += analyzeOffsetForString(cNodes, cNodes[cnc]);
         }
 
     }
 
-    $("input#pa_str_min_len").change(function() {
-        set_all_hex();
-        find_strings();
-    });
-
-    $("body").on('mouseup', 'div.parser_hex_cell', function(evt) {
-        selection_end = parseInt($(evt.target).attr('offset'));
-        selectBytes(selection_start, selection_end);
-    });
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
     $(function(){
         $('#the-node').contextMenu({
             selector: 'div.parser_hex_cell', 
             callback: function(key, options) {
-                if (key == "ascii") to_ascii($(this), parseInt($(this).attr('offset')));
-                if (key == "hex") to_hex($(this), parseInt($(this).attr('offset')));
+                if (key == "ascii") toAscii($(this));
+                if (key == "hex") toHex($(this));
             },
             items: {
                 "hex": {name: "To Hex"},
@@ -127,26 +139,39 @@ $( document ).ready(function() {
         });
     });
 
-    var dHeight = $(document).height();
-    $("div#parser_center_wrapper").height(dHeight - 250);
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
-    function to_ascii(item, offset) {
+    function toAscii(item) {
         $(item).removeClass('parser_hex_cell_ascii');
         var raw = $(item).attr('raw');
         $(item).text(raw);
         $(item).addClass('parser_hex_cell_ascii');
     }
 
-    function to_hex(item, offset) {
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function toHex(item) {
         $(item).removeClass('parser_hex_cell_ascii');
         var raw = $(item).attr('raw');
         $(item).text(fixHex(parseInt(raw.charCodeAt(0)).toString(16)).toUpperCase());
     }
 
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
     function fixHex(val) {
         if (val.length % 2) return ("0" + val);
         return val;
     }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
     function selectBytes(from, to) {
         var hexview = document.getElementById('parser_center_wrapper');
@@ -159,22 +184,9 @@ $( document ).ready(function() {
         }
     }
 
-    function clearSelection(item) {
-        $(item).removeClass("parser_hex_cell_select");
-    }
-
-    function clearLastSelection() {
-        var hexview = document.getElementById('parser_center_wrapper');
-        cNodes = hexview.childNodes;
-        for (var cnc = 0; cnc < cNodes.length; cnc++) {
-            cno = parseInt(cNodes[cnc].getAttribute('offset'));
-            if (cno >= selection_start && cno <= selection_end) {
-                $(cNodes[cnc]).removeClass("parser_hex_cell_select");
-            }
-        }
-        selection_start = -1;
-        selection_end = -1;
-    }
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
     function clearAllSelection() {
         selection_start = -1;
@@ -185,6 +197,10 @@ $( document ).ready(function() {
             $(cNodes[cnc]).removeClass("parser_hex_cell_select");
         }
     }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
     function hexViewByte(val, offset, all_hex) {
         var item = document.createElement('div');
@@ -201,7 +217,11 @@ $( document ).ready(function() {
         return item;
     }
 
-    function process_file(all_hex) {
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function processFile(all_hex) {
         var hexview = document.getElementById('parser_center_wrapper');
         var file_data = window.localStorage.getItem('parser_file_content');
         hexview.innerHTML = "";
@@ -212,8 +232,12 @@ $( document ).ready(function() {
             hexview.appendChild(hvItem);
         }
 
-        find_strings();
+        findStrings();
     }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
     $("body").on('mouseover', 'div.parser_hex_cell', function(evt) {
         $(evt.target).addClass("parser_hex_cell_mark");
@@ -233,9 +257,69 @@ $( document ).ready(function() {
                                   ")";
     });
 
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
     $("body").on('mouseout', 'div.parser_hex_cell', function(evt) {
         $(evt.target).removeClass("parser_hex_cell_mark");
     });
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    $("body").on('mousedown', 'div.parser_hex_cell', function(evt) {
+        /*
+            1 = Left   mouse button
+            2 = Centre mouse button
+            3 = Right  mouse button
+        */
+        clearAllSelection();
+        if (evt.which === 1) {
+            selection_start = parseInt($(evt.target).attr('offset'));
+        }
+    });
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    $("button.parser_reset").click(function () {
+        processFile(false);
+    });
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    $("button.primitive_type").click(function () {
+        var p_type = $(this).attr('id').split("_")[1];
+        var color = $(this).css('background-color');
+        setSelection(p_type, color, getSelection());
+    });
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    $("input#pa_str_min_len").change(function() {
+        setAllHex();
+        findStrings();
+    });
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    $("body").on('mouseup', 'div.parser_hex_cell', function(evt) {
+        selection_end = parseInt($(evt.target).attr('offset'));
+        selectBytes(selection_start, selection_end);
+    });
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
 
     $("#parser_source_file").change(function() {
         var file = this.files[0];
@@ -244,7 +328,7 @@ $( document ).ready(function() {
         reader.onload = function(evt) {
             window.localStorage.setItem('parser_file', file);
             window.localStorage.setItem('parser_file_content', evt.target.result);
-            process_file(false);
+            processFile(false);
         };
 
         reader.readAsBinaryString(file);

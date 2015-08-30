@@ -173,6 +173,15 @@ td.s_job_name {
   cursor: pointer;
 }
 
+.parser_primitive_cell {
+  border: 1px solid #EFEFEF;
+  text-align: center;
+  height: 30px;
+  padding: 3px;
+  float: left;
+  cursor: pointer;
+}
+
 .parser_hex_cell_ascii {
   background-color: #F7F7F7;
 }
@@ -266,7 +275,8 @@ button.primitive_type {
 }
 
 #primitive_numeric {
-  background-color: #4B99D1;
+  // background-color: #4B99D1;
+  background-color: #97B3BD;
   color: #FFFFFF;
 }
 
@@ -276,17 +286,17 @@ button.primitive_type {
 }
 
 #primitive_static {
-  background-color: #666666;
+  background-color: #444444;
   color: #FFFFFF;
 }
 
 #primitive_string {
-  background-color: #FCA000;
+  background-color: #E32D64;
   color: #FFFFFF;
 }
 
 #primitive_checksum {
-  background-color: #E32D64;
+  background-color: #FCA000;
   color: #FFFFFF;
 }
 
@@ -301,6 +311,6 @@ button.primitive_type {
 }
 
 button.parser_reset {
-  width: 170px;
+  width: 80px;
 }
 
