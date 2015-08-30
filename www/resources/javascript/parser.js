@@ -14,6 +14,63 @@ $( document ).ready(function() {
         }
     });
 
+    function set_all_hex() {
+        var hexview = document.getElementById('parser_center_wrapper');
+        cNodes = hexview.childNodes;
+        for (var cnc = 0; cnc < cNodes.length; cnc++) {
+            var coff = $(cNodes[cnc]).attr("offset");
+            to_hex(cNodes[cnc], coff);
+        }
+    }
+
+    function clear_string_markings() {
+        var hexview = document.getElementById('parser_center_wrapper');
+        cNodes = hexview.childNodes;
+        for (var cnc = 0; cnc < cNodes.length; cnc++) {
+            $(cNodes[cnc]).removeClass("parser_hex_cell_ascii");
+        }
+    }
+
+    function analyse_offset_for_string(cnodes, item) {
+        strlen = parseInt($("input#pa_str_min_len").val());
+        cno = parseInt(item.getAttribute('offset'));
+        var string = 0;
+
+        var cc = 0;
+        var char = cnodes[cno + cc].getAttribute('raw').charCodeAt(0);
+        while (char >= 32 && char <= 126) {
+            cc++;
+            char = cnodes[cno + cc].getAttribute('raw').charCodeAt(0);
+        }
+
+        if (cc < strlen) return 0;
+
+        cc = 0;
+        var char = cnodes[cno].getAttribute('raw').charCodeAt(0);
+        while (char >= 32 && char <= 126) {
+            to_ascii(cnodes[cno + cc], cno + cc);
+            cc++;
+            char = cnodes[cno + cc].getAttribute('raw').charCodeAt(0);
+        }
+        return cc;
+    }
+
+    function find_strings() {
+        clear_string_markings();
+        var hexview = document.getElementById('parser_center_wrapper');
+        cNodes = hexview.childNodes;
+
+        for (var cnc = 0; cnc < cNodes.length; cnc++) {
+            cnc += analyse_offset_for_string(cNodes, cNodes[cnc]);
+        }
+
+    }
+
+    $("input#pa_str_min_len").change(function() {
+        set_all_hex();
+        find_strings();
+    });
+
     $("body").on('mouseup', 'div.parser_hex_cell', function(evt) {
         selection_end = parseInt($(evt.target).attr('offset'));
         selectBytes(selection_start, selection_end);
@@ -100,16 +157,10 @@ $( document ).ready(function() {
         item.setAttribute('hex', fixHex(val));
         item.setAttribute('offset', parseInt(offset));
 
-        if (all_hex != true && val.charCodeAt(0) > 32 && val.charCodeAt(0) < 127) {
-            item.setAttribute('class', 'unselectable parser_hex_cell parser_hex_cell_ascii');
-            item.setAttribute('value', fixHex(val));
-            item.textContent = val;
-        } else {
-            item.setAttribute('class', 'unselectable parser_hex_cell');
-            val = val.charCodeAt(0).toString(16);
-            item.setAttribute('value', fixHex(val));
-            item.textContent = fixHex(val).toUpperCase();
-        }
+        item.setAttribute('class', 'unselectable parser_hex_cell');
+        val = val.charCodeAt(0).toString(16);
+        item.setAttribute('value', fixHex(val));
+        item.textContent = fixHex(val).toUpperCase();
         return item;
     }
 
@@ -123,6 +174,8 @@ $( document ).ready(function() {
             var hvItem = hexViewByte(file_data[bcnt], bcnt, all_hex);
             hexview.appendChild(hvItem);
         }
+
+        find_strings();
     }
 
     $("body").on('mouseover', 'div.parser_hex_cell', function(evt) {
@@ -145,10 +198,6 @@ $( document ).ready(function() {
 
     $("body").on('mouseout', 'div.parser_hex_cell', function(evt) {
         $(evt.target).removeClass("parser_hex_cell_mark");
-    });
-
-    $("#parser_show_hex").click(function() {
-        process_file(true);
     });
 
     $("#parser_source_file").change(function() {

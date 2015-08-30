@@ -4,10 +4,7 @@
     <div class="col-md-3">
         <input type="file" id="parser_source_file" name="parser_source_file" />
     </div>
-    <div class="col-md-4">
-        <button class="parser_show_hex" id="parser_show_hex">All Hex</button>
-    </div>
-    <div class="col-md-5 parser_info">
+    <div class="col-md-9 parser_info">
         <div id="offset_info"></div>
         <div id="byte_info_hex"></div>
         <div id="byte_info_dec"></div>
@@ -17,6 +14,14 @@
 
 <div class="container" id="parser_wrapper">
     <div class="col-md-3" id="parser_left_wrapper">
+
+        <div class="parser_menu_wrapper">
+            <div class="parser_section_header">&#x25BC;&nbsp;Analysis Options</div>
+            <div class="parser_section_content">
+                <div>Minimum string length: <input type="number" id="pa_str_min_len" value="4"/></div>
+            </div>
+        </div>
+
     </div>
     <div class="col-md-9" id="parser_center_wrapper">
     </div>
