@@ -6,45 +6,36 @@ $( document ).ready(function() {
     var dHeight = $(document).height();
     $("div#parser_center_wrapper").height(dHeight - 350);
 
-    // ------------------------------------------------------------------------
-    //
-    // ------------------------------------------------------------------------
-
-    function getFormattedParam(type, data) {
-        var fdata = "";
-
-        switch(type) {
-            case "string":
-            case "static":
-                for (var cc = 0; cc < data.length; cc++) {
-                    if (data[cc].charCodeAt(0) >= 32 && data[cc].charCodeAt(0) <= 126) {
-                        fdata += data[cc];
-                    } else {
-                        fdata += "\\x" + fixHex(data[cc].charCodeAt(0).toString(16)).toUpperCase();
-                    }
-                }
-                return fdata;
-                break;
-            default:
-                return "";
-        }
+    var padding_select = $("#p_string_padding_byte").get(0);
+    for (var rc = 0; rc < 256; rc++) {
+        var so = document.createElement('option');
+        so.value = rc;
+        so.textContent = "0x" + fixHex(rc.toString(16)).toUpperCase()
+        padding_select.appendChild(so);
     }
 
     // ------------------------------------------------------------------------
     //
     // ------------------------------------------------------------------------
 
-    function getPrimitiveItem(pItem, type, color, data, area) {
+    function getPrimitiveItem(pItem, type, color, data, area, len, name) {
+        $(pItem).removeClass('parser_hex_cell_ascii');
+        $(pItem).removeClass('parser_hex_cell_select');
+
         $(pItem).addClass('unselectable');
         $(pItem).addClass('parser_primitive_cell');
         $(pItem).css("background-color", color);
-        $(pItem).css("min-width", 30 * (data.length + 1));
+        $(pItem).css("min-width", 30 * (Math.ceil(name.length / 2) - 1));
+        $(pItem).css("max-width", 30 * (Math.ceil(name.length / 2) - 1));
         $(pItem).css("color", "#FFFFFF");
-        $(pItem).attr("type", type);
         $(pItem).attr("offset_start", area.start);
         $(pItem).attr("offset_end", area.end);
-        $(pItem).attr("data", data);
-        $(pItem).text(getFormattedParam(type, data));
+        $(pItem).attr("p_type", type);
+        $(pItem).attr("p_length", len);
+        $(pItem).attr("p_data", data);
+        $(pItem).attr("p_name", name);
+        name = name.toUpperCase().replace(" ", "_");
+        $(pItem).text(name);
         return pItem;
     }
 
@@ -52,7 +43,7 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
-    function setSelection(type, color, area) {
+    function selectionStatic(type, color, area, len, name) {
         var hexview = document.getElementById('parser_center_wrapper');
         cNodes = hexview.childNodes;
         var data = "";
@@ -62,11 +53,85 @@ $( document ).ready(function() {
         for (var cc = 0; cc <= iremove; cc++) {
             if (cc == iremove) {
                 data += $(cNodes[area.start]).attr('raw');
-                getPrimitiveItem($(cNodes[area.start]), type, color, data, area);
+                getPrimitiveItem($(cNodes[area.start]), type, color, data, area, len, name);
                 break;
             }
             data += $(cNodes[area.start]).attr('raw');
             $(cNodes[area.start]).remove();
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function selectionString(type, color, area, len, name, fuzzable,
+                             compression, encoder, size, padding) {
+
+        var hexview = document.getElementById('parser_center_wrapper');
+        cNodes = hexview.childNodes;
+        var data = "";
+
+        iremove = area.end - area.start;
+
+        for (var cc = 0; cc <= iremove; cc++) {
+            if (cc == iremove) {
+                data += $(cNodes[area.start]).attr('raw');
+                getPrimitiveItem($(cNodes[area.start]), type, color, data, area, len, name);
+                $(cNodes[area.start]).attr('p_fuzzable', fuzzable);
+                $(cNodes[area.start]).attr('p_compression', compression);
+                $(cNodes[area.start]).attr('p_encoder', encoder);
+                $(cNodes[area.start]).attr('p_size', size);
+                $(cNodes[area.start]).attr('p_padding', padding);
+                break;
+            }
+            data += $(cNodes[area.start]).attr('raw');
+            $(cNodes[area.start]).remove();
+        }
+
+    }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function setSelection(type, color, area) {
+        var length = area.end - area.start + 1;
+
+        switch(type) {
+            case "static":
+                $("#dialog_static").dialog({
+                    "title": "Static Primitive",
+                    "closeText": "Cancel",
+                    buttons: [ { id:"b_parse_static",
+                                 text: "Save",
+                                 click: function() {
+                                     var name = $("#parser_p_static_name").val();
+                                     selectionStatic(type, color, area, length, name);
+                                     $( this ).dialog( "close" ); }
+                               } ]
+                });
+                break;
+            case "string":
+                $("#dialog_string").dialog({
+                    "title": "String Primitive",
+                    "closeText": "Cancel",
+                    buttons: [ { id:"b_parse_string",
+                                 text: "Save",
+                                 click: function() {
+                                     var name = $("#parser_p_string_name").val();
+                                     var fuzzable = $("#p_string_fuzzable").val();
+                                     var compression = $("#p_string_compression").val();
+                                     var encoder = $("#p_string_encoder").val();
+                                     var size = $("#p_string_size").val();
+                                     var padding = $("#p_string_padding_byte").val();
+                                     selectionString(type, color, area, length, name,
+                                                     fuzzable, compression, encoder,
+                                                     size, padding);
+                                     $( this ).dialog( "close" ); }
+                               } ]
+                });
+                break;
         }
 
     }
@@ -100,7 +165,7 @@ $( document ).ready(function() {
         var hexview = document.getElementById('parser_center_wrapper');
         cNodes = hexview.childNodes;
         for (var cnc = 0; cnc < cNodes.length; cnc++) {
-            toHex(cNodes[cnc]);
+            if ($(cNodes[cnc]).hasClass('parser_primitive_cell') == false) toHex(cNodes[cnc]);
         }
     }
 
@@ -128,6 +193,7 @@ $( document ).ready(function() {
         var cc = 0;
         var char = cnodes[cno + cc].getAttribute('raw').charCodeAt(0);
         while (char >= 32 && char <= 126) {
+            if ($(cNodes[cno + cc]).hasClass('parser_primitive_cell') == true) break;
             cc++;
             char = cnodes[cno + cc].getAttribute('raw').charCodeAt(0);
         }
@@ -154,7 +220,9 @@ $( document ).ready(function() {
         cNodes = hexview.childNodes;
 
         for (var cnc = 0; cnc < cNodes.length; cnc++) {
-            cnc += analyzeOffsetForString(cNodes, cNodes[cnc]);
+            if ($(cNodes[cnc]).hasClass('parser_primitive_cell') == false) {
+                cnc += analyzeOffsetForString(cNodes, cNodes[cnc]);
+            }
         }
 
     }

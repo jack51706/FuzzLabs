@@ -1,5 +1,136 @@
 <script src="/resources/javascript/parser.js"></script>
 
+<div class="parser_dialog" id="dialog_static">
+    <div class="row" id="parser_form_ctnr">
+        <div class="col-md-12"><input class="form-control" type="text" id="parser_p_static_name" placeholder="Primitive Name" required /></div>
+    </div>
+</div>
+
+<div class="parser_dialog" id="dialog_string">
+    <div class="row" id="parser_form_ctnr">
+        <div class="col-md-12"><input class="form-control" type="text" id="parser_p_string_name" placeholder="Primitive Name" required /></div>
+        <div class="primitive_properties">
+            <table class="t_primitive_properties">
+                <tr><td>Fuzzable</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_string_fuzzable">
+                       <option value="True">True</option>
+                       <option value="False">False</option>
+                    </select>
+                </td></tr>
+                <tr><td>Compression</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_string_compression">
+                       <option value="">None</option>
+                       <option value="zlib">Zlib</option>
+                    </select>
+                </td></tr>
+                <tr><td>Encoder</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_string_encoder">
+                        <option value="ascii">ascii</option>
+                        <option value="big5">big5</option>
+                        <option value="big5hkscs">big5hkscs</option>
+                        <option value="cp037">cp037</option>
+                        <option value="cp424">cp424</option>
+                        <option value="cp437">cp437</option>
+                        <option value="cp500">cp500</option>
+                        <option value="cp720">cp720</option>
+                        <option value="cp737">cp737</option>
+                        <option value="cp775">cp775</option>
+                        <option value="cp850">cp850</option>
+                        <option value="cp852">cp852</option>
+                        <option value="cp855">cp855</option>
+                        <option value="cp856">cp856</option>
+                        <option value="cp857">cp857</option>
+                        <option value="cp858">cp858</option>
+                        <option value="cp860">cp860</option>
+                        <option value="cp861">cp861</option>
+                        <option value="cp862">cp862</option>
+                        <option value="cp863">cp863</option>
+                        <option value="cp864">cp864</option>
+                        <option value="cp865">cp865</option>
+                        <option value="cp866">cp866</option>
+                        <option value="cp869">cp869</option>
+                        <option value="cp874">cp874</option>
+                        <option value="cp875">cp875</option>
+                        <option value="cp932">cp932</option>
+                        <option value="cp949">cp949</option>
+                        <option value="cp950">cp950</option>
+                        <option value="cp1006">cp1006</option>
+                        <option value="cp1026">cp1026</option>
+                        <option value="cp1140">cp1140</option>
+                        <option value="cp1250">cp1250</option>
+                        <option value="cp1251">cp1251</option>
+                        <option value="cp1252">cp1252</option>
+                        <option value="cp1253">cp1253</option>
+                        <option value="cp1254">cp1254</option>
+                        <option value="cp1255">cp1255</option>
+                        <option value="cp1256">cp1256</option>
+                        <option value="cp1257">cp1257</option>
+                        <option value="cp1258">cp1258</option>
+                        <option value="euc_jp">euc_jp</option>
+                        <option value="euc_jis_2004">euc_jis_2004</option>
+                        <option value="euc_jisx0213">euc_jisx0213</option>
+                        <option value="euc_kr">euc_kr</option>
+                        <option value="gb2312">gb2312</option>
+                        <option value="gbk">gbk</option>
+                        <option value="gb18030">gb18030</option>
+                        <option value="hz">hz</option>
+                        <option value="iso2022_jp">iso2022_jp</option>
+                        <option value="iso2022_jp_1">iso2022_jp_1</option>
+                        <option value="iso2022_jp_2">iso2022_jp_2</option>
+                        <option value="iso2022_jp_2004">iso2022_jp_2004</option>
+                        <option value="iso2022_jp_3">iso2022_jp_3</option>
+                        <option value="iso2022_jp_ext">iso2022_jp_ext</option>
+                        <option value="iso2022_kr">iso2022_kr</option>
+                        <option value="latin_1">latin_1</option>
+                        <option value="iso8859_2">iso8859_2</option>
+                        <option value="iso8859_3">iso8859_3</option>
+                        <option value="iso8859_4">iso8859_4</option>
+                        <option value="iso8859_5">iso8859_5</option>
+                        <option value="iso8859_6">iso8859_6</option>
+                        <option value="iso8859_7">iso8859_7</option>
+                        <option value="iso8859_8">iso8859_8</option>
+                        <option value="iso8859_9">iso8859_9</option>
+                        <option value="iso8859_10">iso8859_10</option>
+                        <option value="iso8859_13">iso8859_13</option>
+                        <option value="iso8859_14">iso8859_14</option>
+                        <option value="iso8859_15">iso8859_15</option>
+                        <option value="iso8859_16">iso8859_16</option>
+                        <option value="johab">johab</option>
+                        <option value="koi8_r">koi8_r</option>
+                        <option value="koi8_u">koi8_u</option>
+                        <option value="mac_cyrillic">mac_cyrillic</option>
+                        <option value="mac_greek">mac_greek</option>
+                        <option value="mac_iceland">mac_iceland</option>
+                        <option value="mac_latin2">mac_latin2</option>
+                        <option value="mac_roman">mac_roman</option>
+                        <option value="mac_turkish">mac_turkish</option>
+                        <option value="ptcp154">ptcp154</option>
+                        <option value="shift_jis">shift_jis</option>
+                        <option value="shift_jis_2004">shift_jis_2004</option>
+                        <option value="shift_jisx0213">shift_jisx0213</option>
+                        <option value="utf_32">utf_32</option>
+                        <option value="utf_32_be">utf_32_be</option>
+                        <option value="utf_32_le">utf_32_le</option>
+                        <option value="utf_16">utf_16</option>
+                        <option value="utf_16_be">utf_16_be</option>
+                        <option value="utf_16_le">utf_16_le</option>
+                        <option value="utf_7">utf_7</option>
+                        <option value="utf_8">utf_8</option>
+                        <option value="utf_8_sig">utf_8_sig</option>
+                    </select>
+                </td></tr>
+                <tr><td>Size</td><td class="t_primitive_pr">
+                    <input class="p_attr_select" type="number" id="p_string_size" value="-1" />
+                </td><td></td></tr>
+                <tr><td>Padding</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_string_padding_byte">
+                    </select>
+                </td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <div class="col-md-3">
         <input type="file" id="parser_source_file" name="parser_source_file" />

@@ -175,6 +175,7 @@ td.s_job_name {
 }
 
 .parser_primitive_cell {
+  // clear: both;
   border: 1px solid #EFEFEF;
   text-align: left;
   height: 30px;
@@ -320,5 +321,42 @@ button.parser_reset {
 #parser_footer {
   margin-top: 10px;
   text-align: right;
+}
+
+div.parser_dialog {
+  display: none;
+}
+
+td.parser_d_tl {
+  min-width: 100px;
+}
+
+#parser_form_ctnr {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+div.primitive_properties {
+  margin-top: 45px;
+  padding: 20px;
+  font-size: 0.9em;
+}
+
+table.t_primitive_properties {
+  width: 100%;
+}
+
+table.t_primitive_properties tr,
+table.t_primitive_properties td {
+  height: 35px;
+  line-height: 35px;
+}
+
+td.t_primitive_pr {
+  text-align: right;
+}
+
+.p_attr_select {
+  width: 80px;
 }
 
