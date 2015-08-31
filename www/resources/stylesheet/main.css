@@ -274,6 +274,11 @@ li.type a, li.type a:hover {
   color: #FFFFFF;
 }
 
+#primitive_binary {
+  background-color: #B8AFC4;
+  color: #000000;
+}
+
 #primitive_delimiter {
   background-color: #AF4BBD;
   color: #FFFFFF;

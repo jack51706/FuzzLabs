@@ -25,7 +25,9 @@ $( document ).ready(function() {
         $(pItem).addClass('unselectable');
         $(pItem).addClass('parser_primitive_cell');
         $(pItem).css("background-color", color);
-        $(pItem).css("min-width", 30 * (Math.ceil(name.length / 2) - 1));
+        var minWidth = 30 * (Math.ceil(name.length / 2) - 1);
+        if (minWidth < 30 * 2) minWidth = 30 * 2;
+        $(pItem).css("min-width", minWidth);
         $(pItem).css("max-width", 30 * (Math.ceil(name.length / 2) - 1));
         $(pItem).css("color", "#FFFFFF");
         $(pItem).attr("offset_start", area.start);
@@ -88,7 +90,29 @@ $( document ).ready(function() {
             data += $(cNodes[area.start]).attr('raw');
             $(cNodes[area.start]).remove();
         }
+    }
 
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function selectionDelimiter(type, color, area, len, name, fuzzable) {
+        var hexview = document.getElementById('parser_center_wrapper');
+        cNodes = hexview.childNodes;
+        var data = "";
+
+        iremove = area.end - area.start;
+
+        for (var cc = 0; cc <= iremove; cc++) {
+            if (cc == iremove) {
+                data += $(cNodes[area.start]).attr('raw');
+                getPrimitiveItem($(cNodes[area.start]), type, color, data, area, len, name);
+                $(cNodes[area.start]).attr('p_fuzzable', fuzzable);
+                break;
+            }
+            data += $(cNodes[area.start]).attr('raw');
+            $(cNodes[area.start]).remove();
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -128,6 +152,34 @@ $( document ).ready(function() {
                                      selectionString(type, color, area, length, name,
                                                      fuzzable, compression, encoder,
                                                      size, padding);
+                                     $( this ).dialog( "close" ); }
+                               } ]
+                });
+                break;
+            case "binary":
+                $("#dialog_static").dialog({
+                    "title": "Binary Primitive",
+                    "closeText": "Cancel",
+                    buttons: [ { id:"b_parse_binary",
+                                 text: "Save",
+                                 click: function() {
+                                     var name = $("#parser_p_static_name").val();
+                                     selectionStatic(type, color, area, length, name);
+                                     $( this ).dialog( "close" ); }
+                               } ]
+                });
+                break;
+            case "delimiter":
+                $("#dialog_delimiter").dialog({
+                    "title": "Delimiter Primitive",
+                    "closeText": "Cancel",
+                    buttons: [ { id:"b_parse_delimiter",
+                                 text: "Save",
+                                 click: function() {
+                                     var name = $("#parser_p_delimiter_name").val();
+                                     var fuzzable = $("#p_delimiter_fuzzable").val();
+                                     selectionDelimiter(type, color, area, length, name,
+                                                     fuzzable);
                                      $( this ).dialog( "close" ); }
                                } ]
                 });
@@ -313,7 +365,7 @@ $( document ).ready(function() {
         item.setAttribute('class', 'unselectable parser_hex_cell');
         item.setAttribute('raw', val);
         item.setAttribute('dec', val.charCodeAt(0));
-        item.setAttribute('hex', fixHex(val));
+        item.setAttribute('hex', fixHex(val.charCodeAt(0).toString(16)));
         item.setAttribute('offset', parseInt(offset));
 
         item.setAttribute('class', 'unselectable parser_hex_cell');

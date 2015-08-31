@@ -131,6 +131,22 @@
     </div>
 </div>
 
+<div class="parser_dialog" id="dialog_delimiter">
+    <div class="row" id="parser_form_ctnr">
+        <div class="col-md-12"><input class="form-control" type="text" id="parser_p_delimiter_name" placeholder="Primitive Name" required /></div>
+        <div class="primitive_properties">
+            <table class="t_primitive_properties">
+                <tr><td>Fuzzable</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_delimiter_fuzzable">
+                       <option value="True">True</option>
+                       <option value="False">False</option>
+                    </select>
+                </td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <div class="col-md-3">
         <input type="file" id="parser_source_file" name="parser_source_file" />
@@ -156,6 +172,7 @@
             </button>
             <ul class="dropdown-menu">
                 <li class="type" id="primitive_bitfield"><a href="#">Bitfield</a></li>
+                <li class="type" id="primitive_binary"><a href="#">Binary</a></li>
                 <li class="type" id="primitive_delimiter"><a href="#">Delimiter</a></li>
                 <li class="type" id="primitive_numeric"><a href="#">Numeric</a></li>
                 <li class="type" id="primitive_size"><a href="#">Size</a></li>
