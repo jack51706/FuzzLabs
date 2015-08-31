@@ -131,6 +131,46 @@
     </div>
 </div>
 
+<div class="parser_dialog" id="dialog_numeric">
+    <div class="row" id="parser_form_ctnr">
+        <div class="col-md-12"><input class="form-control" type="text" id="parser_p_numeric_name" placeholder="Primitive Name" required /></div>
+        <div class="primitive_properties">
+            <table class="t_primitive_properties">
+                <tr><td>Fuzzable</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_numeric_fuzzable">
+                       <option value="True">True</option>
+                       <option value="False">False</option>
+                    </select>
+                </td></tr>
+                <tr><td>Endianness</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_numeric_endian">
+                       <option value=">">Big Endian</option>
+                       <option value="<">Little Endian</option>
+                    </select>
+                </td></tr>
+                <tr><td>Signed</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_numeric_signed">
+                       <option value="True">True</option>
+                       <option value="False">False</option>
+                    </select>
+                </td></tr>
+                <tr><td>Format</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_numeric_format">
+                       <option value="binary">Binary</option>
+                       <option value="ascii">Ascii</option>
+                    </select>
+                </td></tr>
+                <tr><td>Full Range</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="p_numeric_full_range">
+                       <option value="True">True</option>
+                       <option value="False">False</option>
+                    </select>
+                </td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
 <div class="parser_dialog" id="dialog_delimiter">
     <div class="row" id="parser_form_ctnr">
         <div class="col-md-12"><input class="form-control" type="text" id="parser_p_delimiter_name" placeholder="Primitive Name" required /></div>

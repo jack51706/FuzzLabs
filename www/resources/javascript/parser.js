@@ -18,7 +18,7 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
-    function getPrimitiveItem(pItem, type, color, data, area, len, name) {
+    function getPrimitiveItem(pItem, type, color, area, len, name) {
         $(pItem).removeClass('parser_hex_cell_ascii');
         $(pItem).removeClass('parser_hex_cell_select');
 
@@ -34,7 +34,6 @@ $( document ).ready(function() {
         $(pItem).attr("offset_end", area.end);
         $(pItem).attr("p_type", type);
         $(pItem).attr("p_length", len);
-        $(pItem).attr("p_data", data);
         $(pItem).attr("p_name", name);
         name = name.toUpperCase().replace(" ", "_");
         $(pItem).text(name);
@@ -55,7 +54,8 @@ $( document ).ready(function() {
         for (var cc = 0; cc <= iremove; cc++) {
             if (cc == iremove) {
                 data += $(cNodes[area.start]).attr('raw');
-                getPrimitiveItem($(cNodes[area.start]), type, color, data, area, len, name);
+                getPrimitiveItem($(cNodes[area.start]), type, color, area, len, name);
+                $(cNodes[area.start]).attr('p_data', data);
                 break;
             }
             data += $(cNodes[area.start]).attr('raw');
@@ -79,12 +79,13 @@ $( document ).ready(function() {
         for (var cc = 0; cc <= iremove; cc++) {
             if (cc == iremove) {
                 data += $(cNodes[area.start]).attr('raw');
-                getPrimitiveItem($(cNodes[area.start]), type, color, data, area, len, name);
+                getPrimitiveItem($(cNodes[area.start]), type, color, area, len, name);
                 $(cNodes[area.start]).attr('p_fuzzable', fuzzable);
                 $(cNodes[area.start]).attr('p_compression', compression);
                 $(cNodes[area.start]).attr('p_encoder', encoder);
                 $(cNodes[area.start]).attr('p_size', size);
                 $(cNodes[area.start]).attr('p_padding', padding);
+                $(cNodes[area.start]).attr('p_data', data);
                 break;
             }
             data += $(cNodes[area.start]).attr('raw');
@@ -106,8 +107,9 @@ $( document ).ready(function() {
         for (var cc = 0; cc <= iremove; cc++) {
             if (cc == iremove) {
                 data += $(cNodes[area.start]).attr('raw');
-                getPrimitiveItem($(cNodes[area.start]), type, color, data, area, len, name);
+                getPrimitiveItem($(cNodes[area.start]), type, color, area, len, name);
                 $(cNodes[area.start]).attr('p_fuzzable', fuzzable);
+                $(cNodes[area.start]).attr('p_data', data);
                 break;
             }
             data += $(cNodes[area.start]).attr('raw');
@@ -119,10 +121,79 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
+    function selectionNumeric(type, color, area, len, name, fuzzable,
+                              endian, signed, format, full_range) {
+        var hexview = document.getElementById('parser_center_wrapper');
+        cNodes = hexview.childNodes;
+        var data = "";
+
+        switch(len) {
+            case 1:
+                type = "byte";
+                break;
+            case 2:
+                type = "word";
+                break;
+            case 4:
+                type = "dword";
+                break;
+            case 8:
+                type = "qword";
+                break;
+            default:
+                alert("Not a byte, word, dword or qword.");
+                return;
+        }
+
+        iremove = area.end - area.start;
+
+        for (var cc = 0; cc <= iremove; cc++) {
+            if (cc == iremove) {
+                data += $(cNodes[area.start]).attr('raw');
+                getPrimitiveItem($(cNodes[area.start]), type, color, area, len, name);
+                $(cNodes[area.start]).attr('p_fuzzable', fuzzable);
+                $(cNodes[area.start]).attr('p_data', data);
+                $(cNodes[area.start]).attr('p_endian', endian);
+                $(cNodes[area.start]).attr('p_signed', signed);
+                $(cNodes[area.start]).attr('p_format', format);
+                $(cNodes[area.start]).attr('p_full_range', full_range);
+                break;
+            }
+            data += $(cNodes[area.start]).attr('raw');
+            $(cNodes[area.start]).remove();
+        }
+
+    }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
     function setSelection(type, color, area) {
         var length = area.end - area.start + 1;
 
         switch(type) {
+            case "numeric":
+                $("#dialog_numeric").dialog({
+                    "title": "Numeric Primitive",
+                    "closeText": "Cancel",
+                    buttons: [ { id:"b_parse_numeric",
+                                 text: "Save",
+                                 click: function() {
+                                     var name = $("#parser_p_numeric_name").val();
+                                     var fuzzable = $("#p_numeric_fuzzable").val();
+                                     var endian = $("#p_numeric_endian").val();
+                                     var signed = $("#p_numeric_signed").val();
+                                     var format = $("#p_numeric_format").val();
+                                     var full_range = $("#p_numeric_full_range").val();
+
+                                     selectionNumeric(type, color, area, length, name,
+                                                      fuzzable, endian, signed, format,
+                                                      full_range);
+                                     $( this ).dialog( "close" ); }
+                               } ]
+                });
+                break;
             case "static":
                 $("#dialog_static").dialog({
                     "title": "Static Primitive",
