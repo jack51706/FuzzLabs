@@ -4,10 +4,38 @@
     <div class="col-md-3">
         <input type="file" id="parser_source_file" name="parser_source_file" />
     </div>
-    <div class="col-md-3">
-        <div>Minimum string length: <input type="number" id="pa_str_min_len" value="4"/></div>
+    <div class="col-md-4">
+        <button type="button" class="btn btn-danger dropdown-toggle parser_reset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Reset
+        </button>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Section <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li class="type" id="section_group"><a href="#">Group</a></li>
+                <li class="type" id="section_repeater"><a href="#">Repeater</a></li>
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Primitives <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li class="type" id="primitive_bitfield"><a href="#">Bitfield</a></li>
+                <li class="type" id="primitive_delimiter"><a href="#">Delimiter</a></li>
+                <li class="type" id="primitive_numeric"><a href="#">Numeric</a></li>
+                <li class="type" id="primitive_size"><a href="#">Size</a></li>
+                <li class="type" id="primitive_static"><a href="#">Static</a></li>
+                <li class="type" id="primitive_string"><a href="#">String</a></li>
+                <li class="type" id="primitive_checksum"><a href="#">Checksum</a></li>
+            </ul>
+        </div>
+
     </div>
-    <div class="col-md-6 parser_info">
+    <div class="col-md-5 parser_info">
         <div id="offset_info"></div>
         <div id="byte_info_hex"></div>
         <div id="byte_info_dec"></div>
@@ -16,35 +44,11 @@
 </div>
 
 <div class="container" id="parser_wrapper">
-    <div class="col-md-1" id="parser_left_wrapper">
-        <div class="parser_menu_wrapper_reset">
-            <button class="parser_reset" id="parser_reset">Reset</button>
-        </div>
-        <div class="parser_menu_wrapper">
-            <div class="parser_section_header">&#x25BC;&nbsp;Section</div>
-            <div class="parser_section_content">
-                <div>
-                    <button class="section_type" id="section_group">Group</button>
-                    <button class="section_type" id="section_repeater">Repeater</button>
-                </div>
-            </div>
-        </div>
-        <div class="parser_menu_wrapper">
-            <div class="parser_section_header">&#x25BC;&nbsp;Primitives</div>
-            <div class="parser_section_content">
-                <div>
-                    <button class="primitive_type" id="primitive_bitfield">Bitfield</button>
-                    <button class="primitive_type" id="primitive_delimiter">Delimiter</button>
-                    <button class="primitive_type" id="primitive_numeric">Numeric</button>
-                    <button class="primitive_type" id="primitive_size">Size</button>
-                    <button class="primitive_type" id="primitive_static">Static</button>
-                    <button class="primitive_type" id="primitive_string">String</button>
-                    <button class="primitive_type" id="primitive_checksum">Checksum</button>
-                </div>
-            </div>
-        </div>
+    <div class="col-md-12" id="parser_center_wrapper">
     </div>
-    <div class="col-md-11" id="parser_center_wrapper">
-    </div>
+</div>
+
+<div class="container" id="parser_footer">
+    <div>Minimum string length: <input type="number" id="pa_str_min_len" value="4"/></div>
 </div>
 

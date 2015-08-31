@@ -171,15 +171,16 @@ td.s_job_name {
   padding: 3px;
   float: left;
   cursor: pointer;
+  font-family: Monospace, Consolas;
 }
 
 .parser_primitive_cell {
   border: 1px solid #EFEFEF;
-  text-align: center;
+  text-align: left;
   height: 30px;
   padding: 3px;
-  float: left;
   cursor: pointer;
+  font-family: Monospace, Consolas;
 }
 
 .parser_hex_cell_ascii {
@@ -194,7 +195,6 @@ td.s_job_name {
 
 .parser_hex_cell_select {
   border: 0px;
-  border-bottom: 3px solid #000000;
   background-color: #f85674;
   color: #FFFFFF;
 }
@@ -255,13 +255,17 @@ div.parser_section_content {
   width: 50px;
 }
 
-button.section_type,
-button.primitive_type {
-  width: 80px;
-  border: 0px;
-  border-radius: 5px;
-  padding: 3px;
+li.type,
+li.type a,
+li.type a:hover {
   margin: 2px;
+  border: 0px;
+  padding: 3px;
+  color: #FFFFFF;
+}
+
+li.type a, li.type a:hover {
+  background-color: transparent;
 }
 
 #primitive_bitfield {
@@ -275,7 +279,6 @@ button.primitive_type {
 }
 
 #primitive_numeric {
-  // background-color: #4B99D1;
   background-color: #97B3BD;
   color: #FFFFFF;
 }
@@ -312,5 +315,10 @@ button.primitive_type {
 
 button.parser_reset {
   width: 80px;
+}
+
+#parser_footer {
+  margin-top: 10px;
+  text-align: right;
 }
 

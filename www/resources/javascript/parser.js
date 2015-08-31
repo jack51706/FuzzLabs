@@ -10,11 +10,42 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
-    function getPrimitiveItem(type, color) {
-        var pItem = document.createElement('div');
+    function getFormattedParam(type, data) {
+        var fdata = "";
+
+        switch(type) {
+            case "string":
+            case "static":
+                for (var cc = 0; cc < data.length; cc++) {
+                    if (data[cc].charCodeAt(0) >= 32 && data[cc].charCodeAt(0) <= 126) {
+                        fdata += data[cc];
+                    } else {
+                        fdata += "\\x" + fixHex(data[cc].charCodeAt(0).toString(16)).toUpperCase();
+                    }
+                }
+                return fdata;
+                break;
+            default:
+                return "";
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
+    function getPrimitiveItem(pItem, type, color, data, area) {
+        $(pItem).addClass('unselectable');
+        $(pItem).addClass('parser_primitive_cell');
         $(pItem).css("background-color", color);
+        $(pItem).css("min-width", 30 * (data.length + 1));
         $(pItem).css("color", "#FFFFFF");
         $(pItem).attr("type", type);
+        $(pItem).attr("offset_start", area.start);
+        $(pItem).attr("offset_end", area.end);
+        $(pItem).attr("data", data);
+        $(pItem).text(getFormattedParam(type, data));
+        return pItem;
     }
 
     // ------------------------------------------------------------------------
@@ -24,13 +55,20 @@ $( document ).ready(function() {
     function setSelection(type, color, area) {
         var hexview = document.getElementById('parser_center_wrapper');
         cNodes = hexview.childNodes;
-        for (var cnc = area.start; cnc <= area.end; cnc++) {
-            $(cNodes[cnc]).css("background-color", color);
-            $(cNodes[cnc]).css("color", "#FFFFFF");
-            $(cNodes[cnc]).attr("type", type);
-            // TODO: instead of marking, the selection should be merged 
-            //       according to _type_.
+        var data = "";
+
+        iremove = area.end - area.start;
+
+        for (var cc = 0; cc <= iremove; cc++) {
+            if (cc == iremove) {
+                data += $(cNodes[area.start]).attr('raw');
+                getPrimitiveItem($(cNodes[area.start]), type, color, data, area);
+                break;
+            }
+            data += $(cNodes[area.start]).attr('raw');
+            $(cNodes[area.start]).remove();
         }
+
     }
 
     // ------------------------------------------------------------------------
@@ -293,7 +331,7 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
-    $("button.primitive_type").click(function () {
+    $("li.type").click(function () {
         var p_type = $(this).attr('id').split("_")[1];
         var color = $(this).css('background-color');
         setSelection(p_type, color, getSelection());
