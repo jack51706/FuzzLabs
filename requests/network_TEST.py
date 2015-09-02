@@ -6,6 +6,4 @@
 from sulley import *
 
 s_initialize("TEST")
-
 s_string("TEST")
-

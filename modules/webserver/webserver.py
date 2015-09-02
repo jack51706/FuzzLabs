@@ -115,7 +115,6 @@ class jobs_status_collector(threading.Thread):
                            signal=ev.Event.EVENT__RSP_JOBS_LIST,
                            sender=dispatcher.Any)
         while True:
-            time.sleep(4)
             try:
                 dispatcher.send(signal=ev.Event.EVENT__REQ_JOBS_LIST,
                                 sender="WEBSERVER")
@@ -123,6 +122,7 @@ class jobs_status_collector(threading.Thread):
                 syslog.syslog(syslog.LOG_ERR,
                               "failed to send job list request event (%s)" %
                               str(ex))
+            time.sleep(3)
 
 # =============================================================================
 #
@@ -160,7 +160,6 @@ class issues_status_collector(threading.Thread):
                            signal=ev.Event.EVENT__RSP_ISSUES_LIST,
                            sender=dispatcher.Any)
         while True:
-            time.sleep(5)
             try:
                 dispatcher.send(signal=ev.Event.EVENT__REQ_ISSUES_LIST,
                                 sender="WEBSERVER")
@@ -168,6 +167,7 @@ class issues_status_collector(threading.Thread):
                 syslog.syslog(syslog.LOG_ERR,
                               "failed to send issues list request event (%s)" %
                               str(ex))
+            time.sleep(5)
 
 # =============================================================================
 #
@@ -205,7 +205,6 @@ class archives_collector(threading.Thread):
                            signal=ev.Event.EVENT__RSP_ARCHIVES_LIST,
                            sender=dispatcher.Any)
         while True:
-            time.sleep(5)
             try:
                 dispatcher.send(signal=ev.Event.EVENT__REQ_ARCHIVES_LIST,
                                 sender="WEBSERVER")
@@ -213,6 +212,7 @@ class archives_collector(threading.Thread):
                 syslog.syslog(syslog.LOG_ERR,
                               "failed to send archives request event (%s)" %
                               str(ex))
+            time.sleep(5)
 
 # =============================================================================
 #

@@ -4,6 +4,7 @@ Handler for archived jobs.
 
 import os
 import os.path
+import time
 import json
 import shutil
 import syslog
@@ -289,7 +290,7 @@ class archivehandler(threading.Thread):
                            sender=dispatcher.Any)
 
         while self.running:
-            pass
+            time.sleep(5)
 
         syslog.syslog(syslog.LOG_INFO, "archive handler stopped")
 

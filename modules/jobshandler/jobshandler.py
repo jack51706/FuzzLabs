@@ -341,8 +341,8 @@ class jobshandler(threading.Thread):
                     cmd = worker["p_queue"].get_nowait()
                 except Queue.Empty:
                     pass
-
                 if cmd: self.handle(cmd)
+            time.sleep(1)
 
     # -------------------------------------------------------------------------
     # 
