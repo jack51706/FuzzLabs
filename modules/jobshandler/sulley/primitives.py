@@ -674,17 +674,23 @@ class bit_field (base_primitive):
         if type(value) in [int, long, list, tuple]:
             # TODO: synchsafe each item here overwriting value
             if type(value) in [int, long]:
-                value          = self.t_synchsafe(value)
+                if synchsafe: value = self.t_synchsafe(value)
             if type(value) in [list]:
                 cnt = 0
                 for v in value:
-                    value[cnt] = self.t_synchsafe(v)
+                    if synchsafe:
+                        value[cnt] = self.t_synchsafe(v)
+                    else:
+                        value[cnt] = v
                     cnt += 1
             if type(value) in [tuple]:
                 value = list(value)
                 cnt = 0
                 for v in value:
-                    value[cnt] = self.t_synchsafe(v)
+                    if synchsafe:
+                        value[cnt] = self.t_synchsafe(v)
+                    else:
+                        value[cnt] = v
                     cnt += 1
                 value = tuple(value)
             self.value         = self.original_value = value
