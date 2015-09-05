@@ -341,6 +341,13 @@ td.parser_d_tl {
   margin-bottom: 15px;
 }
 
+#parser_form_ctnr_cv {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 div.primitive_properties {
   margin-top: 45px;
   padding: 20px;

@@ -18,6 +18,32 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
+    function changeValue(item) {
+        $("#dialog_changevalue").dialog({
+            "title": "Change Value",
+            "closeText": "Cancel",
+            buttons: [ { id:"b_change_value",
+                         text: "Save",
+                         click: function() {
+                             var new_value = $("#p_new_hex_value").val();
+                             new_value = parseInt("0x" + new_value, 16);
+                             if (isNaN(new_value) || new_value > 255 || new_value < 0) return;
+
+                             $(item).attr('dec', new_value);
+                             $(item).attr('raw', String.fromCharCode(new_value));
+                             $(item).attr('hex', fixHex(new_value.toString(16)).toUpperCase());
+                             $(item).attr('value', fixHex(new_value.toString(16)).toUpperCase());
+                             $(item).html(fixHex(new_value.toString(16)).toUpperCase());
+
+                             $( this ).dialog( "close" ); }
+                       } ]
+        });
+    }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
     function getPrimitiveItem(pItem, type, color, area, len, name) {
         $(pItem).removeClass('parser_hex_cell_ascii');
         $(pItem).removeClass('parser_hex_cell_select');
@@ -173,6 +199,8 @@ $( document ).ready(function() {
         var length = area.end - area.start + 1;
 
         switch(type) {
+            case "group":
+                break;
             case "numeric":
                 $("#dialog_numeric").dialog({
                     "title": "Numeric Primitive",
@@ -354,16 +382,45 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
+    function breakPrimitive(item) {
+        if ($(item).hasClass('parser_primitive_cell') == false) {
+            alert("Error: Not a primitive.");
+            return;
+        }
+        var hexview = document.getElementById('parser_center_wrapper');
+        var file_data = window.localStorage.getItem('parser_file_content');
+
+        var p_data = $(item).attr('p_data');
+        var p_offset_start = $(item).attr('offset_start');
+
+        for (var cnc = 0; cnc < p_data.length; cnc++) {
+            var hvItem = hexViewByte(p_data[cnc], p_offset_start, true);
+            $(item).before(hvItem);
+            p_offset_start++;
+        }
+        $(item).remove();
+    }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
     $(function(){
         $('#the-node').contextMenu({
             selector: 'div.parser_hex_cell', 
             callback: function(key, options) {
                 if (key == "ascii") toAscii($(this));
                 if (key == "hex") toHex($(this));
+                if (key == "change") changeValue($(this));
+                if (key == "break_primitive") breakPrimitive($(this));
             },
             items: {
                 "hex": {name: "To Hex"},
-                "ascii": {name: "To Ascii"}
+                "ascii": {name: "To Ascii"},
+                "change": {name: "Change Value"},
+                "sep1": "--------",
+                "break_primitive": {name: "Break Primitive"},
+                "break_group": {name: "Break Group"},
             }
         });
     });
