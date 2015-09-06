@@ -20,12 +20,18 @@ $( document ).ready(function() {
 
     function createBlock(name, area, group, encoder, dep_on, dep_values, dep_compare) {
         var hexview = document.getElementById('parser_center_wrapper');
-        cNodes = hexview.childNodes;
+        var cNodes = hexview.childNodes;
 
         var block = document.createElement('div');
+        $(block).addClass('unselectable');
         $(block).addClass('parser_block_cell');
-        // TODO
-        for (var cc = area.start; cc <= area.end; cc++) {
+
+        $(cNodes[area.start]).before(block);
+
+        for (var cc = area.start + 1; cc < area.end + 2; cc++) {
+            var item = cNodes[area.start + 1];
+            $(item).removeClass('parser_hex_cell_select');
+            block.appendChild(item);
         }
     }
 
@@ -492,9 +498,11 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
-    function selectBytes(from, to) {
-        var hexview = document.getElementById('parser_center_wrapper');
-        cNodes = hexview.childNodes;
+    function selectBytes(i_parent, from, to) {
+        if (i_parent === undefined) {
+            i_parent = document.getElementById('parser_center_wrapper');
+        }
+        var cNodes = i_parent.childNodes;
         for (var cnc = 0; cnc < cNodes.length; cnc++) {
             cno = parseInt(cNodes[cnc].getAttribute('offset'));
             if (cno >= from && cno <= to) {
@@ -507,12 +515,18 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
-    function clearAllSelection() {
+    function clearAllSelection(i_parent) {
         selection_start = -1;
         selection_end = -1;
-        var hexview = document.getElementById('parser_center_wrapper');
-        cNodes = hexview.childNodes;
+
+        var hexView = document.getElementById('parser_center_wrapper');
+        if (i_parent !== false && i_parent !== undefined) hexView = i_parent;
+
+        var cNodes = hexView.childNodes;
         for (var cnc = 0; cnc < cNodes.length; cnc++) {
+            if ($(cNodes[cnc]).hasClass('parser_block_cell') == true) {
+                clearAllSelection($(cNodes[cnc]).get(0));
+            }
             $(cNodes[cnc]).removeClass("parser_hex_cell_select");
         }
     }
@@ -633,7 +647,7 @@ $( document ).ready(function() {
 
     $("body").on('mouseup', 'div.parser_hex_cell', function(evt) {
         selection_end = parseInt($(evt.target).attr('offset'));
-        selectBytes(selection_start, selection_end);
+        selectBytes(evt.target.parentNode, selection_start, selection_end);
     });
 
     // ------------------------------------------------------------------------
