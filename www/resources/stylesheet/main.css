@@ -184,6 +184,11 @@ td.s_job_name {
   font-family: Monospace, Consolas;
 }
 
+.parser_block_cell {
+  clear: both;
+  border: 2px solid #222222;
+}
+
 .parser_hex_cell_ascii {
   background-color: #F7F7F7;
 }
@@ -309,7 +314,7 @@ li.type a, li.type a:hover {
   color: #FFFFFF;
 }
 
-#section_group {
+#section_block {
   background-color: #222222;
   color: #FFFFFF;
 }

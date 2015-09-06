@@ -1,5 +1,43 @@
 <script src="/resources/javascript/parser.js"></script>
 
+<div class="parser_dialog" id="dialog_block">
+    <div class="row" id="parser_form_ctnr">
+        <div class="col-md-12"><input class="form-control" type="text" id="parser_p_block_name" placeholder="Block Name" required /></div>
+        <div class="primitive_properties">
+            <table class="t_primitive_properties">
+                <tr><td>Group</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="parser_p_block_group">
+                       <option value="">N/A</option>
+                    </select>
+                </td></tr>
+                <tr><td>Encoder</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="parser_p_block_encoder">
+                       <option value="">N/A</option>
+                    </select>
+                </td></tr>
+                <tr><td>Depends on</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="parser_p_block_dep_on">
+                       <option value="">None</option>
+                    </select>
+                </td></tr>
+                <tr><td>Depends on values</td><td class="t_primitive_pr">
+                    <input class="p_attr_select" type="text" id="parser_p_block_dep_values" value="00, 01" />
+                </td></tr>
+                <tr><td>Dependency compare</td><td class="t_primitive_pr">
+                    <select class="p_attr_select" id="parser_p_block_dep_compare">
+                       <option value="">==</option>
+                       <option value="">!=</option>
+                       <option value="">></option>
+                       <option value="">>=</option>
+                       <option value=""><</option>
+                       <option value=""><=</option>
+                    </select>
+                </td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
 <div class="parser_dialog" id="dialog_changevalue">
     <div class="row" id="parser_form_ctnr_cv">
         <table class="t_primitive_properties">
@@ -214,7 +252,7 @@
                 Section <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li class="type" id="section_group"><a href="#">Group</a></li>
+                <li class="type" id="section_block"><a href="#">Block</a></li>
                 <li class="type" id="section_repeater"><a href="#">Repeater</a></li>
             </ul>
         </div>

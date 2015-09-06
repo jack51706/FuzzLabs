@@ -18,6 +18,21 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
+    function createBlock(name, area, group, encoder, dep_on, dep_values, dep_compare) {
+        var hexview = document.getElementById('parser_center_wrapper');
+        cNodes = hexview.childNodes;
+
+        var block = document.createElement('div');
+        $(block).addClass('parser_block_cell');
+        // TODO
+        for (var cc = area.start; cc <= area.end; cc++) {
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    //
+    // ------------------------------------------------------------------------
+
     function changeValue(item) {
         $("#dialog_changevalue").dialog({
             "title": "Change Value",
@@ -199,7 +214,25 @@ $( document ).ready(function() {
         var length = area.end - area.start + 1;
 
         switch(type) {
-            case "group":
+            case "block":
+                $("#dialog_block").dialog({
+                    "title": "Block Properties",
+                    "closeText": "Cancel",
+                    buttons: [ { id:"b_parse_block",
+                                 text: "Save",
+                                 click: function() {
+                                     var name = $("#parser_p_block_name").val();
+                                     var group = $("#parser_p_block_group").val();
+                                     var encoder = $("#parser_p_block_encoder").val();
+                                     var dep_on = $("#parser_p_block_dep_on").val();
+                                     var dep_values = $("#parser_p_block_dep_values").val();
+                                     var dep_compare = $("#parser_p_block_dep_compare").val();
+                                     createBlock(name, area, group, encoder,
+                                                 dep_on, dep_values,
+                                                 dep_compare);
+                                     $( this ).dialog( "close" ); }
+                               } ]
+                });
                 break;
             case "numeric":
                 $("#dialog_numeric").dialog({
