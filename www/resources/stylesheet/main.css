@@ -298,7 +298,7 @@ li.type a, li.type a:hover {
   color: #FFFFFF;
 }
 
-#primitive_size {
+#section_size {
   background-color: #EBCC21;
   color: #FFFFFF;
 }
@@ -313,7 +313,7 @@ li.type a, li.type a:hover {
   color: #FFFFFF;
 }
 
-#primitive_checksum {
+#section_checksum {
   background-color: #FCA000;
   color: #FFFFFF;
 }

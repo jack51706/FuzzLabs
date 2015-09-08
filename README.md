@@ -1,4 +1,4 @@
-# FuzzLabs
+# FuzzLabs (dcnws.com)
 
 FuzzLabs is a modular fuzzing framework which uses Sulley as it's core fuzzing engine.
 For more information please refer to the Wiki.

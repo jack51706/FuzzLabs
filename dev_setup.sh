@@ -1,8 +1,12 @@
 #!/bin/bash
 
-apt-get install git python-daemon python-bluez python-ipaddr python-psutil python-pip pylint pychecker valgrind
+# Essentials
+apt-get install python-daemon python-bluez python-ipaddr python-psutil python-pip 
 pip install PyDispatcher
-# apt-get install npm
-# npm config set registry http://registry.npmjs.org/
-# npm install -g bower
+
+# For development
+apt-get install git pylint pychecker valgrind 
+
+# For future functionalities
+apt-get install redis-server python-redis
 
