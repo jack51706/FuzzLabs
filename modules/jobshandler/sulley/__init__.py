@@ -388,17 +388,38 @@ def s_random (value, min_length, max_length, num_mutations=25, fuzzable=True, st
 
 def s_static (value, name=None):
     '''
-    Push a static value onto the current block stack.
+    Parse a variable format binary string into a static value and push it onto the current block stack.
 
-    @type  value: Raw
-    @param value: Raw static data
+    @type  value: String
+    @param value: Variable format binary string
     @type  name:  String
     @param name:  (Optional, def=None) Specifying a name gives you direct access to a primitive
     '''
 
-    static = primitives.static(value, name)
-    blocks.CURRENT.push(static)
+    n_value = ""
 
+    if type(value) == str:
+        # parse the binary string into.
+        parsed = value
+        parsed = parsed.replace(" ",   "")
+        parsed = parsed.replace("\t",  "")
+        parsed = parsed.replace("\r",  "")
+        parsed = parsed.replace("\n",  "")
+        parsed = parsed.replace(",",   "")
+        parsed = parsed.replace("0x",  "")
+        parsed = parsed.replace("\\x", "")
+
+        while parsed:
+            pair     = parsed[:2]
+            parsed   = parsed[2:]
+            n_value += chr(int(pair, 16))
+
+    if type(value) == list:
+        for byte_v in value:
+            n_value += chr(byte_v)
+
+    static = primitives.static(n_value, name)
+    blocks.CURRENT.push(static)
 
 def s_string (value, size=-1, padding="\x00", encoding="ascii", compression=None, fuzzable=True, max_len=0, name=None):
     '''
