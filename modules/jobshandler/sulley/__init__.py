@@ -186,8 +186,6 @@ def s_repeat (block_name, min_reps=0, max_reps=None, step=1, variable=None, fuzz
     default renders to nothing. This block modifier is useful for fuzzing overflows in table entries. This block
     modifier MUST come after the block it is being applied to.
 
-    @see: Aliases: s_repeater()
-
     @type  block_name: String
     @param block_name: Name of block to apply sizer to
     @type  min_reps:   Integer
@@ -212,8 +210,6 @@ def s_size (block_name, offset=0, length=4, endian="<", format="binary", synchsa
     '''
     Create a sizer block bound to the block with the specified name. You *can not* create a sizer for any
     currently open blocks.
-
-    @see: Aliases: s_sizer()
 
     @type  block_name: String
     @param block_name: Name of block to apply sizer to
@@ -394,8 +390,6 @@ def s_static (value, name=None):
     '''
     Push a static value onto the current block stack.
 
-    @see: Aliases: s_dunno(), s_raw(), s_unknown()
-
     @type  value: Raw
     @param value: Raw static data
     @type  name:  String
@@ -464,8 +458,6 @@ def s_byte (value, endian="<", format="binary", synchsafe=False, signed=False, f
     '''
     Push a byte onto the current block stack.
 
-    @see: Aliases: s_char()
-
     @type  value:      Integer
     @param value:      Default integer value
     @type  endian:     Character
@@ -489,8 +481,6 @@ def s_byte (value, endian="<", format="binary", synchsafe=False, signed=False, f
 def s_word (value, endian="<", format="binary", synchsafe=False, signed=False, full_range=False, fuzzable=True, name=None):
     '''
     Push a word onto the current block stack.
-
-    @see: Aliases: s_short()
 
     @type  value:      Integer
     @param value:      Default integer value
@@ -518,7 +508,7 @@ def s_dword (value, endian="<", format="binary", synchsafe=False, signed=False, 
     '''
     Push a double word onto the current block stack.
 
-    @see: Aliases: s_long(), s_int()
+    @see: Aliases: s_int()
 
     @type  value:      Integer
     @param value:      Default integer value
@@ -574,14 +564,9 @@ def s_qword (value, endian="<", format="binary", synchsafe=False, signed=False, 
 ### ALIASES
 ########################################################################################################################
 
-s_dunno    = s_raw    = s_unknown   = s_static
-s_sizer    = s_size
 s_bit      = s_bits   = s_bit_field
-s_char     = s_byte
-s_short    = s_word
-s_long     = s_int    = s_dword
+s_int    = s_dword
 s_double   = s_qword
-s_repeater = s_repeat
 
 ### SPIKE Aliases
 
@@ -589,51 +574,6 @@ def custom_raise (argument, msg):
     def _(x):
         raise msg, argument(x)
     return _
-
-s_intelword          = lambda x: s_long(x, endian=LITTLE_ENDIAN)
-s_intelhalfword      = lambda x: s_short(x, endian=LITTLE_ENDIAN)
-s_bigword            = lambda x: s_long(x, endian=BIG_ENDIAN)
-s_string_lf          = custom_raise(ValueError, "NotImplementedError: s_string_lf is not currently implemented, arguments were")
-s_string_or_env      = custom_raise(ValueError, "NotImplementedError: s_string_or_env is not currently implemented, arguments were")
-s_string_repeat      = custom_raise(ValueError, "NotImplementedError: s_string_repeat is not currently implemented, arguments were")
-s_string_variable    = custom_raise(ValueError, "NotImplementedError: s_string_variable is not currently implemented, arguments were")
-s_string_variables   = custom_raise(ValueError, "NotImplementedError: s_string_variables is not currently implemented, arguments were")
-s_binary_repeat      = custom_raise(ValueError, "NotImplementedError: s_string_variables is not currently implemented, arguments were")
-s_unistring          = lambda x: s_string(x, encoding="utf_16_le")
-s_unistring_variable = custom_raise(ValueError, "NotImplementedError: s_unistring_variable is not currently implemented, arguments were")
-s_xdr_string         = custom_raise(ValueError, "LegoNotUtilizedError: XDR strings are available in the XDR lego, arguments were")
-
-def s_cstring (x):
-    s_string(x)
-    s_static("\x00")
-
-s_binary_block_size_intel_halfword_plus_variable = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_halfword_bigendian_variable  = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_word_bigendian_plussome      = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_word_bigendian_variable      = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_halfword_bigendian_mult      = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_intel_halfword_variable      = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_intel_halfword_mult          = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_intel_halfword_plus          = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_halfword_bigendian           = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_word_intel_mult_plus         = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_intel_word_variable          = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_word_bigendian_mult          = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_blocksize_unsigned_string_variable             = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_intel_word_plus              = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_intel_halfword               = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_word_bigendian               = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_blocksize_signed_string_variable               = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_byte_variable                = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_intel_word                   = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_byte_plus                    = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_byte_mult                    = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_blocksize_asciihex_variable                    = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_binary_block_size_byte                         = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_blocksize_asciihex                             = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-s_blocksize_string                               = custom_raise(ValueError, "SizerNotUtilizedError: Use the s_size primitive for including sizes, arguments were")
-
-
 
 ########################################################################################################################
 ### MISC
@@ -683,3 +623,4 @@ def s_hex_dump (data, addr=0):
             dump += "."
 
     return dump + "\n"
+
