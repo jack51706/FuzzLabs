@@ -27,7 +27,7 @@ if s_block_start("MPEG_PS_PH"):				# Program Stream Packet Header
     # Value:  0x000001BA
     # -------------------------------------------------------------------------
 
-    s_static("\x00\x00")				# First 2 bytes of the Start Code
+    s_binary("\x00\x00")				# First 2 bytes of the Start Code
 							# These are not used at all so
 							# they will be static.
     s_byte(0x01, full_range=True)			# The used part of the Start Code
@@ -74,7 +74,7 @@ if s_block_start("MPEG_PS_SH"):
     # Value:  0x000001BB
     # -------------------------------------------------------------------------
 
-    s_static("\x00\x00")                                # First 2 bytes of the Start Code
+    s_binary("\x00\x00")                                # First 2 bytes of the Start Code
                                                         # These are not used at all so
                                                         # they will be static.
     s_byte(0x01)                                        # The used part of the Start Code
@@ -184,7 +184,7 @@ if s_block_start("MPEG_PS_P_1"):
         # ---------------------------------------------------------------------
 
         if s_block_start("MPEG_PS_P_1_DATA_VSEQ_1"):
-            s_static("\x00\x00\x01")                    # Start Code
+            s_binary("\x00\x00\x01")                    # Start Code
             s_byte(0xB3, full_range=True)               # Stream ID
 
             # Horizontal and Vertical size, 3 bytes
@@ -220,7 +220,7 @@ if s_block_start("MPEG_PS_P_1"):
 
             if s_block_start("MPEG_PS_P_1_DATA_GOP"):
 
-                s_static("\x00\x00\x01")
+                s_binary("\x00\x00\x01")
                 s_byte(0xB8, full_range=True)
 
                 s_bitfield(0x00080000, length=4, fuzzable=True, fields=[
@@ -286,7 +286,7 @@ if s_block_start("MPEG_PS_P_1"):
         # ---------------------------------------------------------------------
 
         if s_block_start("MPEG_PS_P_1_DATA_VSEQ_2"):
-            s_static(PACKET_START_CODE)
+            s_binary(PACKET_START_CODE)
             s_byte(0xB3, full_range=True)               # Stream ID
 
             s_binary([
@@ -448,7 +448,7 @@ s_block_end("MPEG_PS_P_1")
 # -----------------------------------------------------------------------------
 
 if s_block_start("MPEG_PS_PAD"):
-    s_static(PACKET_START_CODE)
+    s_binary(PACKET_START_CODE)
     s_byte(0xBE, full_range=True)
     s_size("MPEG_PS_PAD_DATA", length=2, endian=">", fuzzable=True)
 

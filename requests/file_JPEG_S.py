@@ -31,7 +31,7 @@ s_initialize("JPEG")
 # -----------------------------------------------------------------------------
 
 if s_block_start("JPEG_IMG_HDR"):
-    s_static(JPEG_SOI)
+    s_binary(JPEG_SOI)
 s_block_end("JPEG_IMG_HDR")
 s_repeat("JPEG_IMG_HDR", min_reps=0, max_reps=100, step=10)
 
@@ -41,7 +41,7 @@ s_repeat("JPEG_IMG_HDR", min_reps=0, max_reps=100, step=10)
 # -----------------------------------------------------------------------------
 
 if s_block_start("O_JPEG_DATA_HDR"):
-    s_static(JPEG_APP0)
+    s_binary(JPEG_APP0)
     s_size("JPEG_DATA_HDR", endian=">", inclusive=True, length=2,
            fuzzable=True)
     if s_block_start("JPEG_DATA_HDR"):
@@ -64,7 +64,7 @@ s_repeat("O_JPEG_DATA_HDR", min_reps=0, max_reps=100, step=10)
 # -----------------------------------------------------------------------------
 
 if s_block_start("O_JPEG_DATA_COM"):
-    s_static(JPEG_COM)
+    s_binary(JPEG_COM)
     s_size("JPEG_DATA_COM", endian=">", inclusive=True, length=2,
            fuzzable=True)
     if s_block_start("JPEG_DATA_COM"):
@@ -78,10 +78,10 @@ s_repeat("O_JPEG_DATA_COM", min_reps=0, max_reps=100, step=10)
 # JPEG_DQT        ffdb            67              0x26            0x6b
 # -----------------------------------------------------------------------------
 
-s_static(JPEG_DQT)
+s_binary(JPEG_DQT)
 s_size("JPEG_DATA_DQT_1", endian=">", inclusive=True, length=2, fuzzable=True)
 if s_block_start("JPEG_DATA_DQT_1"):
-    s_static("\x00\x03\x02\x02\x03\x02\x02\x03" +\
+    s_binary("\x00\x03\x02\x02\x03\x02\x02\x03" +\
              "\x03\x03\x03\x04\x03\x03\x04\x05" +\
              "\x08\x05\x05\x04\x04\x05\x0A\x07" +\
              "\x07\x06\x08\x0C\x0A\x0C\x0C\x0B" +\
@@ -98,11 +98,11 @@ s_block_end("JPEG_DATA_DQT_1")
 # -----------------------------------------------------------------------------
 
 if s_block_start("O_JPEG_DATA_DQT_2"):
-    s_static(JPEG_DQT)
+    s_binary(JPEG_DQT)
     s_size("JPEG_DATA_DQT_2", endian=">", inclusive=True, length=2,
            fuzzable=True)
     if s_block_start("JPEG_DATA_DQT_2"):
-        s_static("\x01\x03\x04\x04\x05\x04\x05\x09" +\
+        s_binary("\x01\x03\x04\x04\x05\x04\x05\x09" +\
                  "\x05\x05\x09\x14\x0D\x0B\x0D\x14" +\
                  "\x14\x14\x14\x14\x14\x14\x14\x14" +\
                  "\x14\x14\x14\x14\x14\x14\x14\x14" +\
@@ -121,11 +121,11 @@ s_repeat("O_JPEG_DATA_DQT_2", min_reps=0, max_reps=100, step=10)
 # -----------------------------------------------------------------------------
 
 if s_block_start("O_JPEG_DATA_SOF2_1"):
-    s_static(JPEG_SOF2)
+    s_binary(JPEG_SOF2)
     s_size("JPEG_DATA_SOF2_1", endian=">", inclusive=True, length=2,
            fuzzable=True)
     if s_block_start("JPEG_DATA_SOF2_1"):
-        s_static("\x08\x00\x01\x00\x01\x03\x01\x11" +\
+        s_binary("\x08\x00\x01\x00\x01\x03\x01\x11" +\
                  "\x00\x02\x11\x01\x03\x11\x01")
     s_block_end("JPEG_DATA_SOF2_1")
 s_block_end("O_JPEG_DATA_SOF2_1")
@@ -136,10 +136,10 @@ s_repeat("O_JPEG_DATA_SOF2_1", min_reps=0, max_reps=100, step=10)
 # JPEG_DHT        ffc4            20              0xc3            0xd9
 # -----------------------------------------------------------------------------
 
-s_static(JPEG_DHT)
+s_binary(JPEG_DHT)
 s_size("JPEG_DATA_DHT_1", endian=">", inclusive=True, length=2, fuzzable=True)
 if s_block_start("JPEG_DATA_DHT_1"):
-    s_static("\x00\x01\x00\x00\x00\x00\x00\x00" +\
+    s_binary("\x00\x01\x00\x00\x00\x00\x00\x00" +\
              "\x00\x00\x00\x00\x00\x00\x00\x00" +\
              "\x00\x08")
 s_block_end("JPEG_DATA_DHT_1")
@@ -150,11 +150,11 @@ s_block_end("JPEG_DATA_DHT_1")
 # -----------------------------------------------------------------------------
 
 if s_block_start("O_JPEG_DATA_DHT_2"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("JPEG_DATA_DHT_2", endian=">", inclusive=True, length=2,
            fuzzable=True)
     if s_block_start("JPEG_DATA_DHT_2"):
-        s_static("\x01\x01\x00\x00\x00\x00\x00\x00" +\
+        s_binary("\x01\x01\x00\x00\x00\x00\x00\x00" +\
                  "\x00\x00\x00\x00\x00\x00\x00\x00" +\
                  "\x00\x00")
     s_block_end("JPEG_DATA_DHT_2")
@@ -167,11 +167,11 @@ s_repeat("O_JPEG_DATA_SOF2_1", min_reps=0, max_reps=100, step=10)
 # -----------------------------------------------------------------------------
 
 if s_block_start("O_JPEG_DATA_SOS_1"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("JPEG_DATA_SOS_1", endian=">", inclusive=False, length=2,
            fuzzable=True)
     if s_block_start("JPEG_DATA_SOS_1"):
-        s_static("\x03\x01\x00\x02\x10\x03\x10\x00" +\
+        s_binary("\x03\x01\x00\x02\x10\x03\x10\x00" +\
                  "\x00\x01\x2A\x9F")
     s_block_end("JPEG_DATA_SOS_1")
 s_block_end("O_JPEG_DATA_SOS_1")

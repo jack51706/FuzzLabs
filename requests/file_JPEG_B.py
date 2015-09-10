@@ -30,7 +30,7 @@ s_initialize("JPEG")
 # JPEG_SOI  	ffd8      	0x0    	0x0     	0x2       
 # ------------------------------------------------------------------------------
 
-s_static(JPEG_SOI)
+s_binary(JPEG_SOI)
 
 # ------------------------------------------------------------------------------
 # Section   	Bin name  	Size   	Start offset	End offset
@@ -38,7 +38,7 @@ s_static(JPEG_SOI)
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_APP0_0"):
-    s_static(JPEG_APP0)
+    s_binary(JPEG_APP0)
     s_size("I_APP0_0", endian=">", inclusive=True, length=2, fuzzable=True)
     if s_block_start("I_APP0_0"):
         s_string("JFIF")
@@ -60,7 +60,7 @@ s_repeat("O_APP0_0", min_reps=0, max_reps=100, step=10)
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_APP1_0"):
-    s_static(JPEG_APP1)
+    s_binary(JPEG_APP1)
     s_size("I_APP1_0", endian=">", inclusive=True, length=2, fuzzable=True)
     if s_block_start("I_APP1_0"):
         # IMAGE DATA
@@ -77,7 +77,7 @@ if s_block_start("O_APP1_0"):
 
         s_word(0x4949, fuzzable=True)		# Endianness
         s_word(0x2A, endian="<", fuzzable=True)
-        s_int(0x8, endian="<", fuzzable=True)
+        s_dword(0x8, endian="<", fuzzable=True)
 
         # ----------------------------------------------------------------------
         # IFD 1
@@ -87,57 +87,57 @@ if s_block_start("O_APP1_0"):
 
         s_word(0x010F, endian="<", fuzzable=True)               # Tag
         s_word(0x02, endian="<", fuzzable=True)                 # Field type - ASCII
-        s_int(0x05, endian="<", fuzzable=True)                  # Number of values
-        s_int(0x86, endian="<", fuzzable=True)                  # Value offset
+        s_dword(0x05, endian="<", fuzzable=True)                  # Number of values
+        s_dword(0x86, endian="<", fuzzable=True)                  # Value offset
                                                                 # This entry points to FIELD_STR_1
 
         s_word(0x0110, endian="<", fuzzable=False)              # Tag
         s_word(0x02, endian="<", fuzzable=False)                # Field type - ASCII
-        s_int(0x06, endian="<", fuzzable=False)                 # Number of values
-        s_int(0x8C, endian="<", fuzzable=False)                 # Value offset
+        s_dword(0x06, endian="<", fuzzable=False)                 # Number of values
+        s_dword(0x8C, endian="<", fuzzable=False)                 # Value offset
                                                                 # This entry points to FIELD_STR_2
 
         s_word(0x0112, endian="<", fuzzable=False)              # Tag
         s_word(0x03, endian="<", fuzzable=False)                # Field type - SHORT
-        s_int(0x01, endian="<", fuzzable=False)                 # Number of values
-        s_int(0x01, endian="<", fuzzable=True)                  # Value offset
+        s_dword(0x01, endian="<", fuzzable=False)                 # Number of values
+        s_dword(0x01, endian="<", fuzzable=True)                  # Value offset
 
         s_word(0x011A, endian="<", fuzzable=False)
         s_word(0x05, endian="<", fuzzable=False)                # Field type - RATIONAL
-        s_int(0x01, endian="<", fuzzable=False)
-        s_int(0x92, endian="<", fuzzable=True)                  # This entry points to FIELD_RATIONAL_1
+        s_dword(0x01, endian="<", fuzzable=False)
+        s_dword(0x92, endian="<", fuzzable=True)                  # This entry points to FIELD_RATIONAL_1
 
         s_word(0x011B, endian="<", fuzzable=False)
         s_word(0x05, endian="<", fuzzable=False)                # Field type - RATIONAL
-        s_int(0x01, endian="<", fuzzable=False)
-        s_int(0x9A, endian="<", fuzzable=False)                 # This entry points to FIELD_RATIONAL_2
+        s_dword(0x01, endian="<", fuzzable=False)
+        s_dword(0x9A, endian="<", fuzzable=False)                 # This entry points to FIELD_RATIONAL_2
 
         s_word(0x0128, endian="<", fuzzable=False)
         s_word(0x03, endian="<", fuzzable=False)                # Field type - SHORT
-        s_int(0x01, endian="<", fuzzable=False)
-        s_int(0x02, endian="<", fuzzable=False)
+        s_dword(0x01, endian="<", fuzzable=False)
+        s_dword(0x02, endian="<", fuzzable=False)
 
         s_word(0x0131, endian="<", fuzzable=False)
         s_word(0x02, endian="<", fuzzable=False)                # Field type - ASCII
-        s_int(0x0B, endian="<", fuzzable=False)
-        s_int(0xA2, endian="<", fuzzable=True)                  # This entry points to FIELD_STR_3
+        s_dword(0x0B, endian="<", fuzzable=False)
+        s_dword(0xA2, endian="<", fuzzable=True)                  # This entry points to FIELD_STR_3
 
         s_word(0x0132, endian="<", fuzzable=False)
         s_word(0x02, endian="<", fuzzable=False)                # Field type - ASCII
-        s_int(0x14, endian="<", fuzzable=False)
-        s_int(0xAE, endian="<", fuzzable=False)                 # This entry points to FIELD_STR_4
+        s_dword(0x14, endian="<", fuzzable=False)
+        s_dword(0xAE, endian="<", fuzzable=False)                 # This entry points to FIELD_STR_4
 
         s_word(0x0213, endian="<", fuzzable=False)
         s_word(0x03, endian="<", fuzzable=False)                # Field type - SHORT
-        s_int(0x01, endian="<", fuzzable=False)
-        s_int(0x01, endian="<", fuzzable=False)
+        s_dword(0x01, endian="<", fuzzable=False)
+        s_dword(0x01, endian="<", fuzzable=False)
 
         s_word(0x8769, endian="<", fuzzable=False)
         s_word(0x04, endian="<", fuzzable=False)                # Field type - LONG
-        s_int(0x01, endian="<", fuzzable=False)
-        s_int(0xC2, endian="<", fuzzable=True)                  # This entry points to FIELD_LONG_1
+        s_dword(0x01, endian="<", fuzzable=False)
+        s_dword(0xC2, endian="<", fuzzable=True)                  # This entry points to FIELD_LONG_1
 
-        s_int(0x2D30, endian="<", fuzzable=True)                # offset of next IFD
+        s_dword(0x2D30, endian="<", fuzzable=True)                # offset of next IFD
 
         # ----------------------------------------------------------------------
         # IFE DATA - file offset: 0xA4
@@ -149,11 +149,11 @@ if s_block_start("O_APP1_0"):
         s_string("C6903", name="FIELD_STR_2")
         s_byte(0x00)
 
-        s_int(0x48, endian="<", fuzzable=True)                  # FIELD_RATIONAL_1
-        s_int(0x01, endian="<", fuzzable=True)
+        s_dword(0x48, endian="<", fuzzable=True)                  # FIELD_RATIONAL_1
+        s_dword(0x01, endian="<", fuzzable=True)
 
-        s_int(0x48, endian="<", fuzzable=True)                  # FIELD_RATIONAL_2
-        s_int(0x01, endian="<", fuzzable=True)
+        s_dword(0x48, endian="<", fuzzable=True)                  # FIELD_RATIONAL_2
+        s_dword(0x01, endian="<", fuzzable=True)
 
         s_string("GIMP 2.8.8", name="FIELD_STR_3")
         s_word(0x00)
@@ -167,7 +167,7 @@ if s_block_start("O_APP1_0"):
         # UNKNOWN / UNPARSED DATA - file offset: 0xE4
         # ----------------------------------------------------------------------
 
-        s_static("\x05\x00\x01\x00" + \
+        s_binary("\x05\x00\x01\x00" + \
                  "\x00\x00\x18\x02\x00\x00\x9d\x82" + \
                  "\x05\x00\x01\x00\x00\x00\x20\x02" + \
                  "\x00\x00\x27\x88\x03\x00\x01\x00" + \
@@ -225,7 +225,7 @@ if s_block_start("O_APP1_0"):
 
         # file offset: 0x26E
 
-        s_static("\x2c\x01" + \
+        s_binary("\x2c\x01" + \
                  "\x00\x00\x64\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x03\x00\x00\x00\xea\x01" + \
                  "\x00\x00\x64\x00\x00\x00\x53\x4f" + \
@@ -252,7 +252,7 @@ if s_block_start("O_APP1_0"):
         s_string("2015:06:28 10:27:35")
         s_byte(0x00)
 
-        s_static("\x70\x08" + \
+        s_binary("\x70\x08" + \
                  "\x00\x0f\x30\x30\x32\x32\x30\x42" + \
                  "\x53\x30\x12\x00\x03\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
@@ -1612,66 +1612,66 @@ if s_block_start("O_APP1_0"):
 
         s_word(0x0103, endian="<", fuzzable=True)               # Tag
         s_word(0x03, endian="<", fuzzable=True)                 # Field type - SHORT
-        s_int(0x01, endian="<", fuzzable=True)                  # Number of values
-        s_int(0x06, endian="<", fuzzable=True)                  # Value offset / value
+        s_dword(0x01, endian="<", fuzzable=True)                  # Number of values
+        s_dword(0x06, endian="<", fuzzable=True)                  # Value offset / value
 
         s_word(0x0112, endian="<", fuzzable=True)               # Tag
         s_word(0x03, endian="<", fuzzable=True)                 # Field type - SHORT
-        s_int(0x01, endian="<", fuzzable=True)                  # Number of values
-        s_int(0x03, endian="<", fuzzable=True)                  # Value offset / value
+        s_dword(0x01, endian="<", fuzzable=True)                  # Number of values
+        s_dword(0x03, endian="<", fuzzable=True)                  # Value offset / value
 
         s_word(0x011a, endian="<", fuzzable=True)               # Tag
         s_word(0x05, endian="<", fuzzable=True)                 # Field type - RATIONAL
-        s_int(0x01, endian="<", fuzzable=True)                  # Number of values
-        s_int(0x2d8a, endian="<", fuzzable=True)                # Value offset / value
+        s_dword(0x01, endian="<", fuzzable=True)                  # Number of values
+        s_dword(0x2d8a, endian="<", fuzzable=True)                # Value offset / value
                                                                 # This entry points to FIELD_RATIONAL_3
 
         s_word(0x011b, endian="<", fuzzable=True)               # Tag
         s_word(0x05, endian="<", fuzzable=True)                 # Field type - RATIONAL
-        s_int(0x01, endian="<", fuzzable=True)                  # Number of values
-        s_int(0x2d92, endian="<", fuzzable=True)                # Value offset / value
+        s_dword(0x01, endian="<", fuzzable=True)                  # Number of values
+        s_dword(0x2d92, endian="<", fuzzable=True)                # Value offset / value
                                                                 # This entry points to FIELD_RATIONAL_4
 
         s_word(0x0128, endian="<", fuzzable=True)               # Tag
         s_word(0x03, endian="<", fuzzable=True)                 # Field type - SHORT
-        s_int(0x01, endian="<", fuzzable=True)                  # Number of values
-        s_int(0x02, endian="<", fuzzable=True)                  # Value offset / value
+        s_dword(0x01, endian="<", fuzzable=True)                  # Number of values
+        s_dword(0x02, endian="<", fuzzable=True)                  # Value offset / value
 
         s_word(0x0201, endian="<", fuzzable=True)               # Tag
         s_word(0x04, endian="<", fuzzable=True)                 # Field type - LONG
-        s_int(0x01, endian="<", fuzzable=True)                  # Number of values
-        s_int(0x2d9a, endian="<", fuzzable=True)                # Value offset / value
+        s_dword(0x01, endian="<", fuzzable=True)                  # Number of values
+        s_dword(0x2d9a, endian="<", fuzzable=True)                # Value offset / value
                                                                 # This entry points to SOI_II
 
         s_word(0x0202, endian="<", fuzzable=True)               # Tag
         s_word(0x04, endian="<", fuzzable=True)                 # Field type - LONG
-        s_int(0x01, endian="<", fuzzable=True)                  # Number of values
-        s_int(0x0277, endian="<", fuzzable=True)                # Value offset / value
+        s_dword(0x01, endian="<", fuzzable=True)                  # Number of values
+        s_dword(0x0277, endian="<", fuzzable=True)                # Value offset / value
 
-        s_int(0x00, endian="<", fuzzable=True)                  # END OF IFD MARKER
+        s_dword(0x00, endian="<", fuzzable=True)                  # END OF IFD MARKER
 
         # ----------------------------------------------------------------------
         # IFE Data - offset: 0x2DA8
         # ----------------------------------------------------------------------
 
-        s_int(0x48, endian="<")					# FIELD_RATIONAL_3
-        s_int(0x01, endian="<")
+        s_dword(0x48, endian="<")					# FIELD_RATIONAL_3
+        s_dword(0x01, endian="<")
 
-        s_int(0x48, endian="<")					# FIELD_RATIONAL_4
-        s_int(0x01, endian="<")
+        s_dword(0x48, endian="<")					# FIELD_RATIONAL_4
+        s_dword(0x01, endian="<")
 
         # ----------------------------------------------------------------------
         # SOI - SOI_II
         # ----------------------------------------------------------------------
 
-        s_static(JPEG_SOI)
+        s_binary(JPEG_SOI)
 
         # ----------------------------------------------------------------------
         # APP0 - file offset: 0x2DBA
         # ----------------------------------------------------------------------
 
         if s_block_start("O_APP0_1"):
-            s_static(JPEG_APP0)
+            s_binary(JPEG_APP0)
             s_size("I_APP0_1", endian=">", inclusive=True, length=2, fuzzable=True)
             if s_block_start("I_APP0_1"):
                 s_string("JFIF")
@@ -1692,10 +1692,10 @@ if s_block_start("O_APP1_0"):
         # ----------------------------------------------------------------------
 
         if s_block_start("O_DQT_2"):
-            s_static(JPEG_DQT)
+            s_binary(JPEG_DQT)
             s_size("I_DQT_2", endian=">", inclusive=True, length=2, fuzzable=False)
             if s_block_start("I_DQT_2"):
-                 s_static("\x00\x08\x06\x06\x07\x06\x05\x08" + \
+                 s_binary("\x00\x08\x06\x06\x07\x06\x05\x08" + \
                           "\x07\x07\x07\x09\x09\x08\x0a\x0c" + \
                           "\x14\x0d\x0c\x0b\x0b\x0c\x19\x12" + \
                           "\x13\x0f\x14\x1d\x1a\x1f\x1e\x1d" + \
@@ -1711,7 +1711,7 @@ if s_block_start("O_APP1_0"):
         # DQT
         # ----------------------------------------------------------------------
 
-        s_static("\xff\xdb\x00\x43\x01\x09\x09" + \
+        s_binary("\xff\xdb\x00\x43\x01\x09\x09" + \
                  "\x09\x0c\x0b\x0c\x18\x0d\x0d\x18" + \
                  "\x32\x21\x1c\x21\x32\x32\x32\x32" + \
                  "\x32\x32\x32\x32\x32\x32\x32\x32" + \
@@ -1726,10 +1726,10 @@ if s_block_start("O_APP1_0"):
         # ----------------------------------------------------------------------
 
         if s_block_start("O_SOF0_1"):
-            s_static(JPEG_SOF0)
+            s_binary(JPEG_SOF0)
             s_size("I_SOF0_1", endian=">", inclusive=True, length=2, fuzzable=True)
             if s_block_start("I_SOF0_1"):
-                s_static("\x08\x00\x01\x00\x01\x03\x01\x22" + \
+                s_binary("\x08\x00\x01\x00\x01\x03\x01\x22" + \
                          "\x00\x02\x11\x01\x03\x11\x01")
             s_block_end("I_SOF0_1")
         s_block_end("O_SOF0_1")
@@ -1739,10 +1739,10 @@ if s_block_start("O_APP1_0"):
         # ----------------------------------------------------------------------
 
         if s_block_start("O_DHT_10"):
-            s_static(JPEG_DHT)
+            s_binary(JPEG_DHT)
             s_size("I_DHT_10", endian=">", inclusive=True, length=2, fuzzable=True)
             if s_block_start("I_DHT_10"):
-                s_static("\x00\x00\x01\x05\x01\x01\x01\x01" + \
+                s_binary("\x00\x00\x01\x05\x01\x01\x01\x01" + \
                          "\x01\x01\x00\x00\x00\x00\x00\x00" + \
                          "\x00\x00\x01\x02\x03\x04\x05\x06" + \
                          "\x07\x08\x09\x0a\x0b")
@@ -1754,7 +1754,7 @@ if s_block_start("O_APP1_0"):
         # DHTs - leave as static, no need to fuzz
         # ----------------------------------------------------------------------
 
-        s_static("\xff\xc4\x00\xb5\x10\x00" + \
+        s_binary("\xff\xc4\x00\xb5\x10\x00" + \
                  "\x02\x01\x03\x03\x02\x04\x03\x05" + \
                  "\x05\x04\x04\x00\x00\x01\x7d\x01" + \
                  "\x02\x03\x00\x04\x11\x05\x12\x21" + \
@@ -1816,13 +1816,13 @@ if s_block_start("O_APP1_0"):
         # ----------------------------------------------------------------------
 
         if s_block_start("O_SOS_10"):
-            s_static(JPEG_SOS)
+            s_binary(JPEG_SOS)
             s_word(0x0c, endian=">")
             if s_block_start("I_SOS_10"):
-                s_int(0x03010002, endian=">")
-                s_int(0x11031100, endian=">")
-                s_int(0x3f00f9fe, endian=">")
-                s_int(0x8a28a00f, endian=">")
+                s_dword(0x03010002, endian=">")
+                s_dword(0x11031100, endian=">")
+                s_dword(0x3f00f9fe, endian=">")
+                s_dword(0x8a28a00f, endian=">")
             s_block_end("I_SOS_10")
         s_block_end("O_SOS_10")
 
@@ -1830,7 +1830,7 @@ if s_block_start("O_APP1_0"):
         # EOI
         # ----------------------------------------------------------------------
 
-        s_static(JPEG_EOI)
+        s_binary(JPEG_EOI)
 
     s_block_end("I_APP1_0")
 s_block_end("O_APP1_0")
@@ -1842,7 +1842,7 @@ s_repeat("O_APP1_0", min_reps=0, max_reps=100, step=10)
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_APP1_1"):
-    s_static(JPEG_APP1)
+    s_binary(JPEG_APP1)
     s_size("I_APP1_1", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_APP1_1"):
         s_string("http://ns.adobe.com/xap/1.0/")
@@ -1850,17 +1850,17 @@ if s_block_start("O_APP1_1"):
 
         # XML DATA
 
-        s_static("<?")
+        s_binary("<?")
         s_string("xpacket")
         s_delim(" ")
         s_string("begin")
         s_delim("=")
-        s_static("'")
+        s_binary("'")
         s_string("\xEF\xBB\xBF")
-        s_static("' id='")
+        s_binary("' id='")
         s_string("W5M0MpCehiHzreSzNTczkc9d")
-        s_static("'?>")
-        s_static("\x0A")
+        s_binary("'?>")
+        s_binary("\x0A")
 
         s_string("<")
         s_string("x")
@@ -1870,69 +1870,69 @@ if s_block_start("O_APP1_1"):
         s_string("xmlns")
         s_delim(":")
         s_string("x")
-        s_static("='")
+        s_binary("='")
         s_string("adobe")
         s_delim(":")
         s_string("ns")
         s_delim(":")
         s_string("meta")
-        s_static("/'>")
-        s_static("\x0A")
+        s_binary("/'>")
+        s_binary("\x0A")
 
-        s_static("<")
+        s_binary("<")
         s_string("rdf")
         s_delim(":")
         s_string("RDF")
-        s_static(" xmlns:")
+        s_binary(" xmlns:")
         s_string("rdf")
-        s_static("='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>")
-        s_static("\x0A\x0A")
+        s_binary("='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>")
+        s_binary("\x0A\x0A")
 
-        s_static(" <rdf:Description xmlns:exif='http://ns.adobe.com/exif/1.0/'>\x0A")
+        s_binary(" <rdf:Description xmlns:exif='http://ns.adobe.com/exif/1.0/'>\x0A")
 
-        s_static("  <")
+        s_binary("  <")
         s_string("exif")
         s_delim(":")
         s_string("Make")
-        s_static(">")
+        s_binary(">")
         s_string("Sony")
-        s_static("</")
+        s_binary("</")
         s_string("exif")
         s_delim(":")
         s_string("Make")
-        s_static(">\x0A")
+        s_binary(">\x0A")
 
-        s_static("  <exif:Model>C6903</exif:Model>\x0A")
-        s_static("  <exif:Orientation>Bottom-right</exif:Orientation>\x0A")
+        s_binary("  <exif:Model>C6903</exif:Model>\x0A")
+        s_binary("  <exif:Orientation>Bottom-right</exif:Orientation>\x0A")
 
-        s_static("  <exif:XResolution>")
+        s_binary("  <exif:XResolution>")
         s_string("72")
-        s_static("</exif:XResolution>\x0A")
-        s_static("  <exif:YResolution>")
+        s_binary("</exif:XResolution>\x0A")
+        s_binary("  <exif:YResolution>")
         s_string("72")
-        s_static("</exif:")
+        s_binary("</exif:")
         s_string("YResolution")
-        s_static(">\x0A")
+        s_binary(">\x0A")
 
-        s_static("  <exif:ResolutionUnit>Inch</exif:ResolutionUnit>\x0A")
-        s_static("  <exif:Software>14.5.A.0.270_6_f100000f</exif:Software>\x0A")
+        s_binary("  <exif:ResolutionUnit>Inch</exif:ResolutionUnit>\x0A")
+        s_binary("  <exif:Software>14.5.A.0.270_6_f100000f</exif:Software>\x0A")
 
-        s_static("  <exif:DateTime>")
+        s_binary("  <exif:DateTime>")
         s_string("2015:06:28")
         s_delim(" ")
         s_string("10:27:35")
-        s_static("</exif:DateTime>\x0A")
+        s_binary("</exif:DateTime>\x0A")
 
-        s_static("  <exif:YCbCrPositioning>Centered</exif:YCbCrPositioning>\x0A")
-        s_static("  <exif:Compression>JPEG compression</exif:Compression>\x0A")
-        s_static("  <exif:Orientation>Bottom-right</exif:Orientation>\x0A")
+        s_binary("  <exif:YCbCrPositioning>Centered</exif:YCbCrPositioning>\x0A")
+        s_binary("  <exif:Compression>JPEG compression</exif:Compression>\x0A")
+        s_binary("  <exif:Orientation>Bottom-right</exif:Orientation>\x0A")
 
         s_string("  <exif:XResolution>72</exif:XResolution>")
-        s_static("\x0A")
+        s_binary("\x0A")
         s_string("  <exif:YResolution>72</exif:YResolution>")
-        s_static("\x0A")
+        s_binary("\x0A")
 
-        s_static("  <exif:ResolutionUnit>Inch</exif:ResolutionUnit>\x0A" +\
+        s_binary("  <exif:ResolutionUnit>Inch</exif:ResolutionUnit>\x0A" +\
                  "  <exif:ExposureTime>1/8 sec.</exif:ExposureTime>\x0A" +\
                  "  <exif:FNumber>f/2.0</exif:FNumber>\x0A" +\
                  "  <exif:ISOSpeedRatings>\x0A" +\
@@ -1941,17 +1941,17 @@ if s_block_start("O_APP1_1"):
                  "   </rdf:Seq>\x0A" +\
                  "  </exif:ISOSpeedRatings>\x0A")
 
-        s_static("  <exif:ExifVersion>")
+        s_binary("  <exif:ExifVersion>")
         s_string("Exif Version 2.2")
-        s_static("</exif:ExifVersion>\x0A")
+        s_binary("</exif:ExifVersion>\x0A")
 
-        s_static("  <exif:DateTimeOriginal>")
+        s_binary("  <exif:DateTimeOriginal>")
         s_string("2015:06:28")
         s_delim(" ")
         s_string("10:27:35")
-        s_static("</exif:DateTimeOriginal>\x0A")
+        s_binary("</exif:DateTimeOriginal>\x0A")
 
-        s_static("  <exif:DateTimeDigitized>2015:06:28 10:27:35</exif:DateTimeDigitized>\x0A" +\
+        s_binary("  <exif:DateTimeDigitized>2015:06:28 10:27:35</exif:DateTimeDigitized>\x0A" +\
                  "  <exif:ComponentsConfiguration>\x0A" +\
                  "   <rdf:Seq>\x0A" +\
                  "    <rdf:li>Y Cb Cr -</rdf:li>\x0A" +\
@@ -1962,53 +1962,53 @@ if s_block_start("O_APP1_1"):
                  "  <exif:MeteringMode>Pattern</exif:MeteringMode>\x0A" +\
                  "  <exif:LightSource>Unknown</exif:LightSource>\x0A")
 
-        s_static("  <exif:Flash rdf:")
+        s_binary("  <exif:Flash rdf:")
         s_string("parseType")
         s_delim("='")
         s_string("Resource")
-        s_static("'>\x0A")
-        s_static("  </exif:Flash>\x0A")
+        s_binary("'>\x0A")
+        s_binary("  </exif:Flash>\x0A")
 
-        s_static("  <exif:FocalLength>4.9 mm</exif:FocalLength>\x0A" +\
+        s_binary("  <exif:FocalLength>4.9 mm</exif:FocalLength>\x0A" +\
                  "  <exif:MakerNote>10890 bytes undefined data</exif:MakerNote>\x0A" +\
                  "  <exif:SubsecTime>598889</exif:SubsecTime>\x0A" +\
                  "  <exif:SubSecTimeOriginal>598889</exif:SubSecTimeOriginal>\x0A" +\
                  "  <exif:SubSecTimeDigitized>598889</exif:SubSecTimeDigitized>\x0A" +\
                  "  <exif:FlashPixVersion>FlashPix Version 1.0</exif:FlashPixVersion>\x0A")
 
-        s_static("  <exif:ColorSpace>")
+        s_binary("  <exif:ColorSpace>")
         s_string("sRGB")
-        s_static("</exif:ColorSpace>\x0A")
+        s_binary("</exif:ColorSpace>\x0A")
 
-        s_static("  <exif:PixelXDimension>")
+        s_binary("  <exif:PixelXDimension>")
         s_string("3840")
-        s_static("</exif:PixelXDimension>")
-        s_static("\x0A")
-        s_static("  <exif:PixelYDimension>")
+        s_binary("</exif:PixelXDimension>")
+        s_binary("\x0A")
+        s_binary("  <exif:PixelYDimension>")
         s_string("2160")
-        s_static("</exif:PixelYDimension>")
-        s_static("\x0A")
+        s_binary("</exif:PixelYDimension>")
+        s_binary("\x0A")
 
-        s_static("  <exif:CustomRendered>Normal process</exif:CustomRendered>\x0A" +\
+        s_binary("  <exif:CustomRendered>Normal process</exif:CustomRendered>\x0A" +\
                  "  <exif:ExposureMode>Auto exposure</exif:ExposureMode>\x0A" +\
                  "  <exif:WhiteBalance>Auto white balance</exif:WhiteBalance>\x0A")
 
-        s_static("  <exif:DigitalZoomRatio>1.00</exif:DigitalZoomRatio>\x0A" +\
+        s_binary("  <exif:DigitalZoomRatio>1.00</exif:DigitalZoomRatio>\x0A" +\
                  "  <exif:SceneCaptureType>Standard</exif:SceneCaptureType>\x0A" +\
                  "  <exif:SubjectDistanceRange>Unknown</exif:SubjectDistanceRange>\x0A" +\
                  "  <exif:InteroperabilityIndex>R98</exif:InteroperabilityIndex>\x0A" +\
                  "  <exif:InteroperabilityVersion>0100</exif:InteroperabilityVersion>\x0A")
 
-        s_static(" </rdf:")
+        s_binary(" </rdf:")
         s_string("Description")
-        s_static(">\x0A\x0A" +\
+        s_binary(">\x0A\x0A" +\
                  "</rdf:RDF>\x0A" +\
                  "</x:xmpmeta>\x0A")
-        s_static("<?xpacket ")
+        s_binary("<?xpacket ")
         s_string("end")
-        s_static("='")
+        s_binary("='")
         s_string("r")
-        s_static("'?>\x0A")
+        s_binary("'?>\x0A")
 
     s_block_end("I_APP1_1")
 s_block_end("O_APP1_1")
@@ -2019,10 +2019,10 @@ s_block_end("O_APP1_1")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DQT_0"):
-    s_static(JPEG_DQT)
+    s_binary(JPEG_DQT)
     s_size("I_DQT_0", endian=">", inclusive=True, length=2, fuzzable=True)
     if s_block_start("I_DQT_0"):
-        s_static("\x00\x01\x01\x01\x01\x01\x01\x01" + \
+        s_binary("\x00\x01\x01\x01\x01\x01\x01\x01" + \
                  "\x01\x01\x01\x01\x01\x01\x01\x01" + \
                  "\x02\x02\x01\x01\x01\x01\x03\x02" + \
                  "\x02\x02\x02\x03\x03\x04\x04\x03" + \
@@ -2041,10 +2041,10 @@ s_repeat("O_DQT_0", min_reps=0, max_reps=100, step=10)
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DQT_1"):
-    s_static(JPEG_DQT)
+    s_binary(JPEG_DQT)
     s_size("I_DQT_1", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DQT_1"):
-        s_static("\x01\x01\x01\x01\x01\x01\x01\x03" + \
+        s_binary("\x01\x01\x01\x01\x01\x01\x01\x03" + \
                  "\x02\x02\x03\x06\x04\x03\x04\x06" + \
                  "\x06\x06\x06\x06\x06\x06\x06\x06" + \
                  "\x06\x06\x06\x06\x06\x06\x06\x06" + \
@@ -2062,12 +2062,12 @@ s_block_end("O_DQT_1")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOF2_0"):
-    s_static(JPEG_SOF2)
+    s_binary(JPEG_SOF2)
     s_size("I_SOF2_0", endian=">", inclusive=True, length=2, fuzzable=True)
     if s_block_start("I_SOF2_0"):
-        s_int(0x08000100, endian=">")
-        s_int(0x01030111, endian=">")
-        s_int(0x00021101, endian=">")
+        s_dword(0x08000100, endian=">")
+        s_dword(0x01030111, endian=">")
+        s_dword(0x00021101, endian=">")
         s_word(0x0311, endian=">")
         s_byte(0x01)
     s_block_end("I_SOF2_0")
@@ -2080,13 +2080,13 @@ s_repeat("O_SOF2_0", min_reps=0, max_reps=100, step=10)
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_0"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_0", endian=">", inclusive=True, length=2, fuzzable=True)
     if s_block_start("I_DHT_0"):
-        s_int(0x00010000, endian=">")
-        s_int(0x00, endian=">")
-        s_int(0x00, endian=">")
-        s_int(0x00, endian=">")
+        s_dword(0x00010000, endian=">")
+        s_dword(0x00, endian=">")
+        s_dword(0x00, endian=">")
+        s_dword(0x00, endian=">")
         s_word(0x000a, endian=">")
     s_block_end("I_DHT_0")
 s_block_end("O_DHT_0")
@@ -2098,10 +2098,10 @@ s_repeat("O_DHT_0", min_reps=0, max_reps=100, step=10)
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_1"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_1", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DHT_1"):
-        s_static("\x01\x01\x00\x00\x00\x00\x00\x00" + \
+        s_binary("\x01\x01\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00")
     s_block_end("I_DHT_1")
@@ -2113,12 +2113,12 @@ s_block_end("O_DHT_1")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_0"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_0", endian=">", inclusive=False, length=2, fuzzable=True)
     if s_block_start("I_SOS_0"):
-        s_int("\x03\x01\x00\x02", endian=">")
-        s_int("\x10\x03\x10\x00", endian=">")
-        s_int("\x00\x01\x3f\xe7", endian=">")
+        s_dword("\x03\x01\x00\x02", endian=">")
+        s_dword("\x10\x03\x10\x00", endian=">")
+        s_dword("\x00\x01\x3f\xe7", endian=">")
     s_block_end("I_SOS_0")
 s_block_end("O_SOS_0")
 s_repeat("O_SOS_0", min_reps=0, max_reps=100, step=10)
@@ -2129,10 +2129,10 @@ s_repeat("O_SOS_0", min_reps=0, max_reps=100, step=10)
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_2"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_2", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DHT_2"):
-        s_static("\x10\x01\x00\x00\x00\x00\x00\x00" + \
+        s_binary("\x10\x01\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00")
     s_block_end("I_DHT_2")
@@ -2144,10 +2144,10 @@ s_block_end("O_DHT_2")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_1"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_1", endian=">", inclusive=False, math=lambda x: x+1, length=2, fuzzable=False)
     if s_block_start("I_SOS_1"):
-        s_int(0x01010001, endian=">")
+        s_dword(0x01010001, endian=">")
         s_word(0x0502, endian=">")
         s_byte(0x7f)
     s_block_end("I_SOS_1")
@@ -2159,10 +2159,10 @@ s_block_end("O_SOS_1")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_3"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_3", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DHT_3"):
-        s_static("\x11\x01\x00\x00\x00\x00\x00\x00" + \
+        s_binary("\x11\x01\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00")
     s_block_end("I_DHT_3")
@@ -2174,10 +2174,10 @@ s_block_end("O_DHT_3")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_2"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_2", endian=">", inclusive=False, math=lambda x: x+1, length=2, fuzzable=False)
     if s_block_start("I_SOS_2"):
-        s_static("\x01\x03\x01\x01\x3f\x01\x7f")
+        s_binary("\x01\x03\x01\x01\x3f\x01\x7f")
     s_block_end("I_SOS_2")
 s_block_end("O_SOS_2")
 
@@ -2187,10 +2187,10 @@ s_block_end("O_SOS_2")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_4"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_4", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DHT_4"):
-        s_static("\x11\x01\x00\x00\x00\x00\x00\x00" + \
+        s_binary("\x11\x01\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00")
     s_block_end("I_DHT_4")
@@ -2202,10 +2202,10 @@ s_block_end("O_DHT_4")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_3"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_3", endian=">", inclusive=False, math=lambda x: x+1, length=2, fuzzable=False)
     if s_block_start("I_SOS_3"):
-        s_static("\x01\x02\x01\x01\x3f\x01\x7f")
+        s_binary("\x01\x02\x01\x01\x3f\x01\x7f")
     s_block_end("I_SOS_3")
 s_block_end("O_SOS_3")
 
@@ -2215,10 +2215,10 @@ s_block_end("O_SOS_3")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_5"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_5", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DHT_5"):
-        s_static("\x10\x01\x00\x00\x00\x00\x00\x00" + \
+        s_binary("\x10\x01\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00")
     s_block_end("I_DHT_5")
@@ -2230,10 +2230,10 @@ s_block_end("O_DHT_5")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_4"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_4", endian=">", inclusive=False, math=lambda x: x+1, length=2, fuzzable=False)
     if s_block_start("I_SOS_4"):
-        s_static("\x01\x01\x00\x06\x3f\x02\x7f")
+        s_binary("\x01\x01\x00\x06\x3f\x02\x7f")
     s_block_end("I_SOS_4")
 s_block_end("O_SOS_4")
 
@@ -2243,10 +2243,10 @@ s_block_end("O_SOS_4")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_6"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_6", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DHT_6"):
-        s_static("\x10\x01\x00\x00\x00\x00\x00\x00" + \
+        s_binary("\x10\x01\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00")
     s_block_end("I_DHT_6")
@@ -2258,10 +2258,10 @@ s_block_end("O_DHT_6")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_5"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_5", endian=">", inclusive=False, math=lambda x: x+1, length=2, fuzzable=False)
     if s_block_start("I_SOS_5"):
-        s_static("\x01\x01\x00\x01\x3f\x21\x7f")
+        s_binary("\x01\x01\x00\x01\x3f\x21\x7f")
     s_block_end("I_SOS_5")
 s_block_end("O_SOS_5")
 
@@ -2271,10 +2271,10 @@ s_block_end("O_SOS_5")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_6"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_6", endian=">", inclusive=False, math=lambda x: x+1, length=2, fuzzable=False)
     if s_block_start("I_SOS_6"):
-        s_static("\x03\x01\x00\x02\x00\x03\x00\x00" + \
+        s_binary("\x03\x01\x00\x02\x00\x03\x00\x00" + \
                  "\x00\x10\x1f")
     s_block_end("I_SOS_6")
 s_block_end("O_SOS_6")
@@ -2285,10 +2285,10 @@ s_block_end("O_SOS_6")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_7"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_7", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DHT_7"):
-        s_static("\x11\x01\x00\x00\x00\x00\x00\x00" + \
+        s_binary("\x11\x01\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00")
     s_block_end("I_DHT_7")
@@ -2300,10 +2300,10 @@ s_block_end("O_DHT_7")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_7"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_7", endian=">", inclusive=False, math=lambda x: x+1, length=2, fuzzable=False)
     if s_block_start("I_SOS_7"):
-        s_static("\x01\x03\x01\x01\x3f\x10\x7f")
+        s_binary("\x01\x03\x01\x01\x3f\x10\x7f")
     s_block_end("I_SOS_7")
 s_block_end("O_SOS_7")
 
@@ -2313,10 +2313,10 @@ s_block_end("O_SOS_7")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_8"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_8", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DHT_8"):
-        s_static("\x11\x01\x00\x00\x00\x00\x00\x00" + \
+        s_binary("\x11\x01\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00")
     s_block_end("I_DHT_8")
@@ -2328,10 +2328,10 @@ s_block_end("O_DHT_8")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_8"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_8", endian=">", inclusive=False, math=lambda x: x+1, length=2, fuzzable=False)
     if s_block_start("I_SOS_8"):
-        s_static("\x01\x02\x01\x01\x3f\x10\x7f")
+        s_binary("\x01\x02\x01\x01\x3f\x10\x7f")
     s_block_end("I_SOS_8")
 s_block_end("O_SOS_8")
 
@@ -2341,10 +2341,10 @@ s_block_end("O_SOS_8")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_DHT_9"):
-    s_static(JPEG_DHT)
+    s_binary(JPEG_DHT)
     s_size("I_DHT_9", endian=">", inclusive=True, length=2, fuzzable=False)
     if s_block_start("I_DHT_9"):
-        s_static("\x10\x01\x00\x00\x00\x00\x00\x00" + \
+        s_binary("\x10\x01\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00\x00\x00\x00\x00\x00\x00" + \
                  "\x00\x00")
     s_block_end("I_DHT_9")
@@ -2356,10 +2356,10 @@ s_block_end("O_DHT_9")
 # ------------------------------------------------------------------------------
 
 if s_block_start("O_SOS_9"):
-    s_static(JPEG_SOS)
+    s_binary(JPEG_SOS)
     s_size("I_SOS_9", endian=">", inclusive=False, math=lambda x: x+1, length=2, fuzzable=False)
     if s_block_start("I_SOS_9"):
-        s_static("\x01\x01\x00\x01\x3f\x10\x7f")
+        s_binary("\x01\x01\x00\x01\x3f\x10\x7f")
     s_block_end("I_SOS_9")
 s_block_end("O_SOS_9")
 

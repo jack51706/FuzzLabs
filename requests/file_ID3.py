@@ -171,7 +171,7 @@ s_block_start("ID3_TAG")
 # -----------------------------------------------------------------------------
 
 if s_block_start("ID3_HEADER"):
-    s_static("ID3")                 # ID3 headers start with this signature
+    s_binary("ID3")                 # ID3 headers start with this signature
     s_byte(0x03, full_range=True, name="major_ver")				# Major version
     s_byte(0x00, full_range=True, name="minor_ver")				# Minor version
 
@@ -297,7 +297,7 @@ s_block_start("CRC_WRAPPER")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TALB"):
-    s_static("TALB")    # TALB frame ID
+    s_binary("TALB")    # TALB frame ID
     s_size("TALB_DAT", length=4, endian=">", fuzzable=True)
     s_group("talb_flags", values=frame_flag_values)
 
@@ -333,7 +333,7 @@ s_block_end("TALB")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TPE1"):
-    s_static("TPE1")    # TPE1 frame ID
+    s_binary("TPE1")    # TPE1 frame ID
     s_size("TPE1_DAT", length=4, endian=">", fuzzable=True)
     s_group("tpe1_flags", values=frame_flag_values)
 
@@ -369,7 +369,7 @@ s_block_end("TPE1")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TPE2"):
-    s_static("TPE2")    # TPE2 frame ID
+    s_binary("TPE2")    # TPE2 frame ID
     s_size("TPE2_DAT", length=4, endian=">", fuzzable=True)
     s_group("tpe2_flags", values=frame_flag_values)
 
@@ -407,14 +407,14 @@ s_block_end("TPE2")
 # -----------------------------------------------------------------------------
 
 if s_block_start("COMM"):
-    s_static("COMM")    # COMM frame ID
+    s_binary("COMM")    # COMM frame ID
     s_size("COMM_DAT", length=4, endian=">", fuzzable=True)
     s_group("comm_flags", values=frame_flag_values)
 
     if s_block_start("COMM_DAT"):
         if s_block_start("COMM_UNCOMPRESSED", dep="comm_flags", dep_value="\x00\x00"):
             s_group("comm_text_encoding", values=text_encoding_flags)   # What character encoding to use
-            s_static("eng")                                             # Language (English)
+            s_binary("eng")                                             # Language (English)
 
             if s_block_start("COMMENT_LATIN", dep="comm_text_encoding", dep_value="\x00"):
                 s_string("Quite a fuzzy comment", encoding="latin_1")            # Content description
@@ -431,7 +431,7 @@ if s_block_start("COMM"):
 
         if s_block_start("COMM_COMPRESSED", dep="comm_flags", dep_value="\x00\x80", encoder=compress):
             s_group("comm_text_encoding_c", values=text_encoding_flags)     # What character encoding to use
-            s_static("eng")                                                 # Language (English)
+            s_binary("eng")                                                 # Language (English)
 
             if s_block_start("COMMENT_LATIN_C", dep="comm_text_encoding_c", dep_value="\x00"):
                 s_string("Quite a fuzzy comment", encoding="latin_1")            # Content description
@@ -453,7 +453,7 @@ s_block_end("COMM")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TCOM"):
-    s_static("TCOM")    # TCOM frame ID
+    s_binary("TCOM")    # TCOM frame ID
     s_size("TCOM_DAT", length=4, endian=">", fuzzable=True)
     s_group("tcom_flags", values=frame_flag_values)
 
@@ -489,7 +489,7 @@ s_block_end("TCOM")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TPE3"):
-    s_static("TPE3")    # TPE3 frame ID
+    s_binary("TPE3")    # TPE3 frame ID
     s_size("TPE3_DAT", length=4, endian=">", fuzzable=True)
     s_group("tpe3_flags", values=frame_flag_values)
 
@@ -525,7 +525,7 @@ s_block_end("TPE3")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TPOS"):
-    s_static("TPOS")    # TPOS frame ID
+    s_binary("TPOS")    # TPOS frame ID
     s_size("TPOS_DAT", length=4, endian=">", fuzzable=True)
     s_group("tpos_flags", values=frame_flag_values)
 
@@ -561,7 +561,7 @@ s_block_end("TPOS")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TCON"):
-    s_static("TCON")    # TCON frame ID
+    s_binary("TCON")    # TCON frame ID
     s_size("TCON_DAT", length=4, endian=">", fuzzable=True)
     s_group("tcon_flags", values=frame_flag_values)
 
@@ -598,7 +598,7 @@ s_block_end("TCON")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TPUB"):
-    s_static("TPUB")    # TALB frame ID
+    s_binary("TPUB")    # TALB frame ID
     s_size("TPUB_DAT", length=4, endian=">", fuzzable=True)
     s_group("tpub_flags", values=frame_flag_values)
 
@@ -634,7 +634,7 @@ s_block_end("TPUB")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TIT2"):
-    s_static("TIT2")    # TIT2 frame ID
+    s_binary("TIT2")    # TIT2 frame ID
     s_size("TIT2_DAT", length=4, endian=">", fuzzable=True)
     s_group("tit2_flags", values=frame_flag_values)
 
@@ -670,7 +670,7 @@ s_block_end("TIT2")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TRCK"):
-    s_static("TRCK")    # TRCK frame ID
+    s_binary("TRCK")    # TRCK frame ID
     s_size("TRCK_DAT", length=4, endian=">", fuzzable=True)
     s_group("trck_flags", values=frame_flag_values)
 
@@ -706,7 +706,7 @@ s_block_end("TRCK")
 # -----------------------------------------------------------------------------
 
 if s_block_start("TYER"):
-    s_static("TYER")    # TYER frame ID
+    s_binary("TYER")    # TYER frame ID
     s_size("TYER_DAT", length=4, endian=">", fuzzable=True)
     s_group("tyer_flags", values=frame_flag_values)
 
@@ -745,7 +745,7 @@ s_block_end("TYER")
 # -----------------------------------------------------------------------------
 
 if s_block_start("APIC"):
-    s_static("APIC")    # APIC frmae ID
+    s_binary("APIC")    # APIC frmae ID
     s_size("APIC_DAT", length=4, endian=">", fuzzable=True)
     s_group("apic_flags", values=frame_flag_values)
 
@@ -821,7 +821,7 @@ s_block_end("CRC_WRAPPER")
 # -----------------------------------------------------------------------------
 
 if s_block_start("PADDING"):
-    s_static("\x00" * 80)   # Add 80 bytes of padding
+    s_binary("\x00" * 80)   # Add 80 bytes of padding
 s_block_end("PADDING")
 
 s_block_end("ID3_FRAMES")

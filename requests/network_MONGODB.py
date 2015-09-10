@@ -24,8 +24,8 @@ s_initialize("MONGODB")
 s_size("MsgComplete", endian="<", format="binary", inclusive=True, fuzzable=False, name="REQ_SIZE")
 if s_block_start("MsgComplete"):
     if s_block_start("MsgHeader"):
-        s_int(1, endian="<", signed=False, fuzzable=True, name="requestID")
-        s_int(1, endian="<", signed=False, fuzzable=True, name="responseTo")
+        s_dword(1, endian="<", signed=False, fuzzable=True, name="requestID")
+        s_dword(1, endian="<", signed=False, fuzzable=True, name="responseTo")
         s_group("opcodes", values=[OP_REPLY, OP_MSG, OP_UPDATE, OP_INSERT, OP_RESERVED, OP_QUERY, OP_GET_MORE, OP_DELETE, OP_KILL_CURSOR])
     s_block_end("MsgHeader")
 
@@ -47,18 +47,18 @@ if s_block_start("MsgComplete"):
     }
     """
     if s_block_start("UPDATE", dep="opcodes", dep_value=OP_UPDATE):
-        s_int(0, endian="<", signed=False, fuzzable=True, name="op_update_reserved_int")
+        s_dword(0, endian="<", signed=False, fuzzable=True, name="op_update_reserved_int")
         s_string("dbname")
-        s_static(".")
+        s_binary(".")
         s_string("collectionname")
-        s_int(0, endian="<", signed=False, fuzzable=True, name="op_update_flags")
+        s_dword(0, endian="<", signed=False, fuzzable=True, name="op_update_flags")
         if s_block_start("SELECTOR_BSON"):
-            s_int(22, endian="<", signed=False, fuzzable=True)
+            s_dword(22, endian="<", signed=False, fuzzable=True)
             s_string("\x00\x00\x00\x02hello\x00\x06\x00\x00\x00world\x00")
             s_string("\x00")
         s_block_end("SELECTOR_BSON")
         if s_block_start("UPDATE_BSON"):
-            s_int(22, endian="<", signed=False, fuzzable=True)
+            s_dword(22, endian="<", signed=False, fuzzable=True)
             s_string("\x00\x00\x00\x02hello\x00\x06\x00\x00\x00world\x00")
             s_string("\x00")
         s_block_end("UPDATE_BSON")
@@ -72,12 +72,12 @@ if s_block_start("MsgComplete"):
     }
     """
     if s_block_start("INSERT", dep="opcodes", dep_value=OP_INSERT):
-        s_int(0, endian="<", signed=False, fuzzable=True, name="op_insert_flags")
+        s_dword(0, endian="<", signed=False, fuzzable=True, name="op_insert_flags")
         s_string("dbname")
-        s_static(".")
+        s_binary(".")
         s_string("collectionname")
         if s_block_start("INSERT_DOCUMENT"):
-            s_int(22, endian="<", signed=False, fuzzable=True)
+            s_dword(22, endian="<", signed=False, fuzzable=True)
             s_string("\x00\x00\x00\x02hello\x00\x06\x00\x00\x00world\x00")
             s_string("\x00")
         s_block_end("INSERT_DOCUMENT")
@@ -100,20 +100,20 @@ if s_block_start("MsgComplete"):
     }
     """
     if s_block_start("QUERY", dep="opcodes", dep_value=OP_QUERY):
-        s_int(0, endian="<", signed=False, fuzzable=True, name="op_query_flags")
+        s_dword(0, endian="<", signed=False, fuzzable=True, name="op_query_flags")
         s_string("dbname")
-        s_static(".")
+        s_binary(".")
         s_string("collectionname")
-        s_int(0, endian="<", signed=False, fuzzable=True)
-        s_int(1, endian="<", signed=False, fuzzable=True)
+        s_dword(0, endian="<", signed=False, fuzzable=True)
+        s_dword(1, endian="<", signed=False, fuzzable=True)
         # These are not really OK here, but at least they are BSON
         if s_block_start("QUERY_DOCUMENT"):
-            s_int(22, endian="<", signed=False, fuzzable=True)
+            s_dword(22, endian="<", signed=False, fuzzable=True)
             s_string("\x00\x00\x00\x02hello\x00\x06\x00\x00\x00world\x00")
             s_string("\x00")
         s_block_end("QUERY_DOCUMENT")
         if s_block_start("QUERY_SELECTOR"):
-            s_int(22, endian="<", signed=False, fuzzable=True)
+            s_dword(22, endian="<", signed=False, fuzzable=True)
             s_string("\x00\x00\x00\x02hello\x00\x06\x00\x00\x00world\x00")
             s_string("\x00")
         s_block_end("QUERY_SELECTOR")
@@ -128,12 +128,12 @@ if s_block_start("MsgComplete"):
     }
     """
     if s_block_start("GET_MORE", dep="opcodes", dep_value=OP_GET_MORE):
-        s_int(0, endian="<", signed=False, fuzzable=True)
+        s_dword(0, endian="<", signed=False, fuzzable=True)
         s_string("dbname")
-        s_static(".")
+        s_binary(".")
         s_string("collectionname")
-        s_int(1, endian="<", signed=False, fuzzable=True)
-        s_double(1, endian="<", signed=False, fuzzable=True)
+        s_dword(1, endian="<", signed=False, fuzzable=True)
+        s_qword(1, endian="<", signed=False, fuzzable=True)
     s_block_end("GET_MORE")
 
     """
@@ -145,13 +145,13 @@ if s_block_start("MsgComplete"):
     }
     """
     if s_block_start("DELETE", dep="opcodes", dep_value=OP_DELETE):
-        s_int(0, endian="<", signed=False, fuzzable=True)
+        s_dword(0, endian="<", signed=False, fuzzable=True)
         s_string("dbname")
-        s_static(".")
+        s_binary(".")
         s_string("collectionname")
-        s_int(0, endian="<", signed=False, fuzzable=True)
+        s_dword(0, endian="<", signed=False, fuzzable=True)
         if s_block_start("DELETE_SELECTOR"):
-            s_int(22, endian="<", signed=False, fuzzable=True)
+            s_dword(22, endian="<", signed=False, fuzzable=True)
             s_string("\x00\x00\x00\x02hello\x00\x06\x00\x00\x00world\x00")
             s_string("\x00")
         s_block_end("DELETE_SELECTOR")
@@ -165,10 +165,10 @@ if s_block_start("MsgComplete"):
     }
     """
     if s_block_start("KILL_CURSOR", dep="opcodes", dep_value=OP_KILL_CURSOR):
-        s_int(0, endian="<", signed=False, fuzzable=True)
-        s_int(1, endian="<", signed=False, fuzzable=True)
+        s_dword(0, endian="<", signed=False, fuzzable=True)
+        s_dword(1, endian="<", signed=False, fuzzable=True)
         if s_block_start("CURSORIDS"):
-            s_double(1, endian="<", signed=False, fuzzable=True)
+            s_qword(1, endian="<", signed=False, fuzzable=True)
         s_block_end("CURSORIDS")
         s_repeat("CURSORIDS", min_reps=0, max_reps=10000, step=10)
     s_block_end("KILL_CURSOR")

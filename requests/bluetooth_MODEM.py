@@ -7,7 +7,7 @@
 from sulley import *
 
 s_initialize("MODEM")
-s_static("AT")
+s_binary("AT")
 # will not touch S3, S4, S5 commands
 s_group("commands", values=["A/",	# Repeat last command
                             #
@@ -223,20 +223,20 @@ if s_block_start("CMD_FRMT_+GOI", dep="commands", dep_value="+GOI"):
 s_block_end("CMD_FRMT_+GOI")
 
 if s_block_start("CMD_FRMT_+ICF", dep="commands", dep_value="+ICF"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
     if s_block_start("RB-1"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-1")
     s_repeat("RB-1", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+ICF")
 
 if s_block_start("CMD_FRMT_+IFC", dep="commands", dep_value="+IFC"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
     if s_block_start("RB-2"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-2")
     s_repeat("RB-2", min_reps=0, max_reps=10000, step=100)
@@ -247,7 +247,7 @@ if s_block_start("CMD_FRMT_+ILRR", dep="commands", dep_value="+ILRR"):
 s_block_end("CMD_FRMT_+ILRR")
 
 if s_block_start("CMD_FRMT_+IPR", dep="commands", dep_value="+IPR"):
-    s_static("=")
+    s_binary("=")
     s_string("115200")
 s_block_end("CMD_FRMT_+IPR")
 
@@ -329,33 +329,33 @@ if s_block_start("CMD_FRMT_+CHUP", dep="commands", dep_value="+CHUP"):
 s_block_end("CMD_FRMT_+CHUP")
 
 if s_block_start("CMD_FRMT_+CBST", dep="commands", dep_value="+CBST"):
-    s_static("=")
+    s_binary("=")
     s_string("56000")
-    s_static(",")
+    s_binary(",")
     s_string("0")
     if s_block_start("RB-3"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-3")
     s_repeat("RB-3", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CBST")
 
 if s_block_start("CMD_FRMT_+CRLP", dep="commands", dep_value="+CRLP"):
-    s_static("=")
+    s_binary("=")
     s_string("56000")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
     if s_block_start("RB-4"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-4")
     s_repeat("RB-4", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CRLP")
 
 if s_block_start("CMD_FRMT_+CR", dep="commands", dep_value="+CR"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CR")
 
@@ -364,19 +364,19 @@ if s_block_start("CMD_FRMT_+CEER", dep="commands", dep_value="+CEER"):
 s_block_end("CMD_FRMT_+CEER")
 
 if s_block_start("CMD_FRMT_+CRC", dep="commands", dep_value="+CRC"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CRC")
 
 if s_block_start("CMD_FRMT_+CHSN", dep="commands", dep_value="+CHSN"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
     if s_block_start("RB-5"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-5")
     s_repeat("RB-5", min_reps=0, max_reps=10000, step=100)
@@ -387,13 +387,13 @@ if s_block_start("CMD_FRMT_+CV120", dep="commands", dep_value="+CV120"):
 s_block_end("CMD_FRMT_+CV120")
 
 if s_block_start("CMD_FRMT_D", dep="commands", dep_value="D"):
-    s_static(" ")
+    s_binary(" ")
     s_string("9")
-    s_static(" ")
+    s_binary(" ")
     s_string("W")
-    s_static(" ")
+    s_binary(" ")
     s_string("1")
-    s_static(" ")
+    s_binary(" ")
     s_string("45434560")
 s_block_end("CMD_FRMT_D")
 
@@ -414,19 +414,19 @@ if s_block_start("CMD_FRMT_O", dep="commands", dep_value="O"):
 s_block_end("CMD_FRMT_O")
 
 if s_block_start("CMD_FRMT_+DR", dep="commands", dep_value="+DR"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+DR")
 
 if s_block_start("CMD_FRMT_+DS", dep="commands", dep_value="+DS"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("512")
     if s_block_start("RB-6"):
-        s_static(",")
+        s_binary(",")
         s_string("6")
     s_block_end("RB-6")
     s_repeat("RB-6", min_reps=0, max_reps=10000, step=100)
@@ -437,110 +437,110 @@ if s_block_start("CMD_FRMT_+CNUM", dep="commands", dep_value="+CNUM"):
 s_block_end("CMD_FRMT_+CNUM")
 
 if s_block_start("CMD_FRMT_+CREG", dep="commands", dep_value="+CREG"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CREG")
 
 if s_block_start("CMD_FRMT_+CLCK", dep="commands", dep_value="+CLCK"):
-    s_static("=")
+    s_binary("=")
     s_string("AB")
     s_group("clck_values", values=["AB", "AC", "AG", "AI", "AO", "IR", "OI", 
                                    "OX", "SC", "FD", "PN", "PU", "PP", "PC", "PF",
                                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"])
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",\"")
+    s_binary(",\"")
     s_string("password")
-    s_static("\",")
+    s_binary("\",")
     s_string("1")
 s_block_end("CMD_FRMT_+CLCK")
 
 if s_block_start("CMD_FRMT_+CPWD", dep="commands", dep_value="+CPWD"):
-    s_static("=")
+    s_binary("=")
     s_string("AB")
     s_group("cpwd_values", values=["AB", "AC", "AG", "AI", "AO", "IR", "OI", 
                                    "OX", "SC", "FD", "PN", "PU", "PP", "PC", "PF",
                                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"])
-    s_static(",\"")
+    s_binary(",\"")
     s_string("oldpassword")
-    s_static("\",\"")
+    s_binary("\",\"")
     s_string("newpassword")
-    s_static("\"")
+    s_binary("\"")
 s_block_end("CMD_FRMT_+CPWD")
 
 if s_block_start("CMD_FRMT_+COLP", dep="commands", dep_value="+COLP"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+COLP")
 
 if s_block_start("CMD_FRMT_+CCUG", dep="commands", dep_value="+CCUG"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
 s_block_end("CMD_FRMT_+CCUG")
 
 if s_block_start("CMD_FRMT_+CUSD", dep="commands", dep_value="+CUSD"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",\"")
+    s_binary(",\"")
     s_string("0")
-    s_static("\",")
+    s_binary("\",")
     s_string("0")
 s_block_end("CMD_FRMT_+CUSD")
 
 if s_block_start("CMD_FRMT_+CSSN", dep="commands", dep_value="+CSSN"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
     if s_block_start("RB-7"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-7")
     s_repeat("RB-7", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CSSN")
 
 if s_block_start("CMD_FRMT_+CPOL", dep="commands", dep_value="+CPOL"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
     if s_block_start("RB-8"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-8")
     s_repeat("RB-8", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CPOL")
 
 if s_block_start("CMD_FRMT_+CHLD", dep="commands", dep_value="+CHLD"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CHLD")
 
 if s_block_start("CMD_FRMT_+COPS", dep="commands", dep_value="+COPS"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("2")
     if s_block_start("RB-9"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-9")
     s_repeat("RB-9", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+COPS")
 
 if s_block_start("CMD_FRMT_+CAOC", dep="commands", dep_value="+CAOC"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CAOC")
 
 if s_block_start("CMD_FRMT_+CLIP", dep="commands", dep_value="+CLIP"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CLIP")
 
@@ -549,19 +549,19 @@ if s_block_start("CMD_FRMT_+CLCC", dep="commands", dep_value="+CLCC"):
 s_block_end("CMD_FRMT_+CLCC")
 
 if s_block_start("CMD_FRMT_+CPLS", dep="commands", dep_value="+CPLS"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CPLS")
 
 if s_block_start("CMD_FRMT_+CTFR", dep="commands", dep_value="+CTFR"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
     if s_block_start("RB-10"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-10")
     s_repeat("RB-10", min_reps=0, max_reps=10000, step=100)
@@ -576,20 +576,20 @@ if s_block_start("CMD_FRMT_+CPAS", dep="commands", dep_value="+CPAS"):
 s_block_end("CMD_FRMT_+CPAS")
 
 if s_block_start("CMD_FRMT_+CFUN", dep="commands", dep_value="+CFUN"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
     if s_block_start("RB-11"):
-        s_static(",")
+        s_binary(",")
         s_string("0")
     s_block_end("RB-11")
     s_repeat("RB-11", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CFUN")
 
 if s_block_start("CMD_FRMT_+CPIN", dep="commands", dep_value="+CPIN"):
-    s_static("=")
+    s_binary("=")
     s_string("5656")
     if s_block_start("RB-12"):
-        s_static(",")
+        s_binary(",")
         s_string("6565")
     s_block_end("RB-12")
     s_repeat("RB-12", min_reps=0, max_reps=10000, step=100)
@@ -600,87 +600,87 @@ if s_block_start("CMD_FRMT_+CSQ", dep="commands", dep_value="+CSQ"):
 s_block_end("CMD_FRMT_+CSQ")
 
 if s_block_start("CMD_FRMT_+CPBS", dep="commands", dep_value="+CPBS"):
-    s_static("=")
+    s_binary("=")
     s_group("cpbs_storage", values=["SM", "LD", "DC", "FD", 
                                     "MC", "ME", "RC", "EN", "ON",
                                     "AAAAAAAAAAAAAAAAAAAAAAAAAA"])
-    s_static(",\"")
+    s_binary(",\"")
     s_string("password")
-    s_static("\"")
+    s_binary("\"")
 s_block_end("CMD_FRMT_+CPBS")
 
 if s_block_start("CMD_FRMT_+CPBR", dep="commands", dep_value="+CPBR"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
 s_block_end("CMD_FRMT_+CPBR")
 
 if s_block_start("CMD_FRMT_+CPBF", dep="commands", dep_value="+CPBF"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CPBF")
 
 if s_block_start("CMD_FRMT_+CPBW", dep="commands", dep_value="+CPBW"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",\"")
+    s_binary(",\"")
     s_string("text")
-    s_static("\"")
+    s_binary("\"")
 s_block_end("CMD_FRMT_+CPBW")
 
 if s_block_start("CMD_FRMT_+CTZR", dep="commands", dep_value="+CTZR"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CTZR")
 
 if s_block_start("CMD_FRMT_+CSIM", dep="commands", dep_value="+CSIM"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("command")
 s_block_end("CMD_FRMT_+CSIM")
 
 if s_block_start("CMD_FRMT_+CRSM", dep="commands", dep_value="+CRSM"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
 s_block_end("CMD_FRMT_+CRSM")
 
 if s_block_start("CMD_FRMT_+CACM", dep="commands", dep_value="+CACM"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CACM")
 
 if s_block_start("CMD_FRMT_+CAMM", dep="commands", dep_value="+CAMM"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",\"")
+    s_binary(",\"")
     s_string("password")
-    s_static("\"")
+    s_binary("\"")
 s_block_end("CMD_FRMT_+CAMM")
 
 if s_block_start("CMD_FRMT_+CPUC", dep="commands", dep_value="+CPUC"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",\"")
+    s_binary(",\"")
     s_string("password")
-    s_static("\"")
+    s_binary("\"")
 s_block_end("CMD_FRMT_+CPUC")
 
 if s_block_start("CMD_FRMT_+CLAC", dep="commands", dep_value="+CLAC"):
@@ -689,277 +689,277 @@ if s_block_start("CMD_FRMT_+CLAC", dep="commands", dep_value="+CLAC"):
 s_block_end("CMD_FRMT_+CLAC")
 
 if s_block_start("CMD_FRMT_+CTZU", dep="commands", dep_value="+CTZU"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CTZU")
 
 if s_block_start("CMD_FRMT_+CMEE", dep="commands", dep_value="+CMEE"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CMEE")
 
 if s_block_start("CMD_FRMT_+CGDCONT", dep="commands", dep_value="+CGDCONT"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_group("cgdcont_pdp", values=["IP", "PDP-IP", "PPP", "PDP-PPP",
                                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"])
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
 s_block_end("CMD_FRMT_+CGDCONT")
 
 if s_block_start("CMD_FRMT_+CGDSCONT", dep="commands", dep_value="+CGDSCONT"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("0")
 s_block_end("CMD_FRMT_+CGDSCONT")
 
 if s_block_start("CMD_FRMT_+CGTFT", dep="commands", dep_value="+CGTFT"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("0")
-    s_static(",\"")
+    s_binary(",\"")
     s_string("8.8")
-    s_static(".")
+    s_binary(".")
     s_string("8.8")
-    s_static(".")
+    s_binary(".")
     s_string("255.255.255.255")
-    s_static("\",")
+    s_binary("\",")
     s_string("1")
-    s_static(",\"")
+    s_binary(",\"")
     s_string("0.0")
-    s_static(".")
+    s_binary(".")
     s_string("65535.65535")
-    s_static("\",\"")
+    s_binary("\",\"")
     s_string("0.0")
-    s_static(".")
+    s_binary(".")
     s_string("65535")
-    s_static(".")
+    s_binary(".")
     s_string("65535")
-    s_static("\",")
+    s_binary("\",")
     s_string("0")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CGTFT")
 
 if s_block_start("CMD_FRMT_+CGQREQ", dep="commands", dep_value="+CGQREQ"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CGQREQ")
 
 if s_block_start("CMD_FRMT_+CGQMIN", dep="commands", dep_value="+CGQMIN"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CGQMIN")
 
 if s_block_start("CMD_FRMT_+CGEQREQ", dep="commands", dep_value="+CGEQREQ"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
     if s_block_start("RB-13"):
-        s_static(",")
+        s_binary(",")
         s_string("1")
     s_block_end("RB-13")
     s_repeat("RB-13", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CGEQREQ")
 
 if s_block_start("CMD_FRMT_+CGEQMIN", dep="commands", dep_value="+CGEQMIN"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
     if s_block_start("RB-14"):
-        s_static(",")
+        s_binary(",")
         s_string("1")
     s_block_end("RB-14")
     s_repeat("RB-14", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CGEQMIN")
 
 if s_block_start("CMD_FRMT_+CGATT", dep="commands", dep_value="+CGATT"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
 s_block_end("CMD_FRMT_+CGATT")
 
 if s_block_start("CMD_FRMT_+CGACT", dep="commands", dep_value="+CGACT"):
-    s_static("=")
+    s_binary("=")
     s_string("0")
     if s_block_start("RB-15"):
-        s_static(",")
+        s_binary(",")
         s_string("1")
     s_block_end("RB-15")
     s_repeat("RB-15", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CGACT")
 
 if s_block_start("CMD_FRMT_+CGCMOD", dep="commands", dep_value="+CGCMOD"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
     if s_block_start("RB-16"):
-        s_static(",")
+        s_binary(",")
         s_string("1")
     s_block_end("RB-16")
     s_repeat("RB-16", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CGCMOD")
 
 if s_block_start("CMD_FRMT_+CGDATA", dep="commands", dep_value="+CGDATA"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
     if s_block_start("RB-17"):
-        s_static(",")
+        s_binary(",")
         s_string("1")
     s_block_end("RB-17")
     s_repeat("RB-17", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CGDATA")
 
 if s_block_start("CMD_FRMT_+CGPADDR", dep="commands", dep_value="+CGPADDR"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
     if s_block_start("RB-18"):
-        s_static(",")
+        s_binary(",")
         s_string("1")
     s_block_end("RB-18")
     s_repeat("RB-18", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CGPADDR")
 
 if s_block_start("CMD_FRMT_+CGCLASS", dep="commands", dep_value="+CGCLASS"):
-    s_static("=")
+    s_binary("=")
     s_string("A")
 s_block_end("CMD_FRMT_+CGCLASS")
 
 if s_block_start("CMD_FRMT_+CGEREP", dep="commands", dep_value="+CGEREP"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
     if s_block_start("RB-19"):
-        s_static(",")
+        s_binary(",")
         s_string("1")
     s_block_end("RB-19")
     s_repeat("RB-19", min_reps=0, max_reps=10000, step=100)
 s_block_end("CMD_FRMT_+CGEREP")
 
 if s_block_start("CMD_FRMT_+CGSMS", dep="commands", dep_value="+CGSMS"):
-    s_static("=")
+    s_binary("=")
     s_string("2")
 s_block_end("CMD_FRMT_+CGSMS")
 
 if s_block_start("CMD_FRMT_+CSMS", dep="commands", dep_value="+CSMS"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
 s_block_end("CMD_FRMT_+CSMS")
 
 if s_block_start("CMD_FRMT_+CPMS", dep="commands", dep_value="+CPMS"):
-    s_static("=")
+    s_binary("=")
     s_string("SM")
-    s_static(",")
+    s_binary(",")
     s_string("ME")
-    s_static(",")
+    s_binary(",")
     s_string("SR")
 s_block_end("CMD_FRMT_+CPMS")
 
 if s_block_start("CMD_FRMT_+CMGF", dep="commands", dep_value="+CMGF"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
 s_block_end("CMD_FRMT_+CMGF")
 
 if s_block_start("CMD_FRMT_+CSCA", dep="commands", dep_value="+CSCA"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CSCA")
 
 if s_block_start("CMD_FRMT_+CSMP", dep="commands", dep_value="+CSMP"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CSMP")
 
 if s_block_start("CMD_FRMT_+CSDH", dep="commands", dep_value="+CSDH"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
 s_block_end("CMD_FRMT_+CSDH")
 
 if s_block_start("CMD_FRMT_+CSCB", dep="commands", dep_value="+CSCB"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CSCB")
 
 if s_block_start("CMD_FRMT_+CNMI", dep="commands", dep_value="+CNMI"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CNMI")
 
 if s_block_start("CMD_FRMT_+CMGL", dep="commands", dep_value="+CMGL"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
 s_block_end("CMD_FRMT_+CMGL")
 
 if s_block_start("CMD_FRMT_+CMGR", dep="commands", dep_value="+CMGR"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
 s_block_end("CMD_FRMT_+CMGR")
 
@@ -968,34 +968,34 @@ if s_block_start("CMD_FRMT_+CNMA", dep="commands", dep_value="+CNMA"):
 s_block_end("CMD_FRMT_+CNMA")
 
 if s_block_start("CMD_FRMT_+CMGS", dep="commands", dep_value="+CMGS"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CMGS")
 
 if s_block_start("CMD_FRMT_+CMGW", dep="commands", dep_value="+CMGW"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CMGW")
 
 if s_block_start("CMD_FRMT_+CMGD", dep="commands", dep_value="+CMGD"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CMGD")
 
 if s_block_start("CMD_FRMT_+CMSS", dep="commands", dep_value="+CMSS"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
-    s_static(",")
+    s_binary(",")
     s_string("1")
 s_block_end("CMD_FRMT_+CMSS")
 
@@ -1004,8 +1004,9 @@ if s_block_start("CMD_FRMT_+CMGC", dep="commands", dep_value="+CMGC"):
 s_block_end("CMD_FRMT_+CMGC")
 
 if s_block_start("CMD_FRMT_+CMMS", dep="commands", dep_value="+CMMS"):
-    s_static("=")
+    s_binary("=")
     s_string("1")
 s_block_end("CMD_FRMT_+CMMS")
 
-s_static("\r\n")
+s_binary("\r\n")
+

@@ -545,12 +545,3 @@ def s_qword (value, endian="<", format="binary", synchsafe=False, signed=False, 
     qword = primitives.qword(value, endian, format, synchsafe, signed, full_range, fuzzable, name)
     blocks.CURRENT.push(qword)
 
-
-########################################################################################################################
-### ALIASES
-########################################################################################################################
-
-s_int    = s_dword
-s_double = s_qword
-s_static = s_binary
-

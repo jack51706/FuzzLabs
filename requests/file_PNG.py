@@ -60,7 +60,7 @@ s_initialize("PNG")
 # File offset: 0x0
 # -----------------------------------------------------------------------------
 
-s_static(PNG_SIGNATURE)
+s_binary(PNG_SIGNATURE)
 
 # -----------------------------------------------------------------------------
 # IHDR Block
@@ -70,10 +70,10 @@ s_static(PNG_SIGNATURE)
 if s_block_start("IHDR_BLOCK"):
     s_size("IHDR_BLOCK_DATA", length=4, endian=">", inclusive=False, fuzzable=True)
     if s_block_start("IHDR_BLOCK_I"):
-        s_static(PNG_IHDR)					# IHDR chunk identifier
+        s_binary(PNG_IHDR)					# IHDR chunk identifier
         if s_block_start("IHDR_BLOCK_DATA"):
-            s_int(0x03, endian=">")				# Image width
-            s_int(0x03, endian=">")				# Image height
+            s_dword(0x03, endian=">")				# Image width
+            s_dword(0x03, endian=">")				# Image height
             s_byte(0x04)					# Bit depth (can be 1, 2, 4, 8, 16)
             s_byte(0x03)					# Color type (can be 0, 2, 3, 4, 6)
             s_byte(0x00)					# Compression method 
@@ -93,9 +93,9 @@ s_repeat("IHDR_BLOCK", min_reps=0, max_reps=1000, step=100)
 if s_block_start("GAMA_BLOCK"):
     s_size("GAMA_BLOCK_DATA", length=4, endian=">", inclusive=False, fuzzable=True)
     if s_block_start("GAMA_BLOCK_I"):
-        s_static(PNG_GAMA)					# gAMA chunk identifier
+        s_binary(PNG_GAMA)					# gAMA chunk identifier
         if s_block_start("GAMA_BLOCK_DATA"):
-            s_int(0xB18F, endian=">")				# gamma value
+            s_dword(0xB18F, endian=">")				# gamma value
         s_block_end("GAMA_BLOCK_DATA")
     s_block_end("GAMA_BLOCK_I")
     s_checksum("GAMA_BLOCK_I", algorithm="crc32", length=4, endian=">")
@@ -110,7 +110,7 @@ s_repeat("GAMA_BLOCK", min_reps=0, max_reps=1000, step=100)
 if s_block_start("PLTE_BLOCK"):
     s_size("PLTE_BLOCK_DATA", length=4, endian=">", inclusive=False, fuzzable=True)
     if s_block_start("PLTE_BLOCK_I"):
-        s_static(PNG_PLTE)                                      # PLTE chunk identifier
+        s_binary(PNG_PLTE)                                      # PLTE chunk identifier
         if s_block_start("PLTE_BLOCK_DATA"):
             s_binary("0x63 0x6F 0x6C")
             s_binary("0x00 0x00 0x00")
@@ -133,7 +133,7 @@ s_repeat("PLTE_BLOCK", min_reps=0, max_reps=1000, step=100)
 if s_block_start("TRNS_BLOCK"):
     s_size("TRNS_BLOCK_DATA", length=4, endian=">", inclusive=False, fuzzable=True)
     if s_block_start("TRNS_BLOCK_I"):
-        s_static(PNG_TRNS)                                      # tRNS chunk identifier
+        s_binary(PNG_TRNS)                                      # tRNS chunk identifier
         if s_block_start("TRNS_BLOCK_DATA"):
             s_byte(0x00)
         s_block_end("TRNS_BLOCK_DATA")
@@ -151,7 +151,7 @@ s_repeat("TRNS_BLOCK", min_reps=0, max_reps=1000, step=100)
 if s_block_start("BKGD_BLOCK"):
     s_size("BKGD_BLOCK_DATA", length=4, endian=">", inclusive=False, fuzzable=True)
     if s_block_start("BKGD_BLOCK_I"):
-        s_static(PNG_BKGD)                                      # bKGD chunk identifier
+        s_binary(PNG_BKGD)                                      # bKGD chunk identifier
         if s_block_start("BKGD_BLOCK_DATA"):
             s_byte(0x00)
         s_block_end("BKGD_BLOCK_DATA")
@@ -169,10 +169,10 @@ s_repeat("BKGD_BLOCK", min_reps=0, max_reps=1000, step=100)
 if s_block_start("PHYS_BLOCK"):
     s_size("PHYS_BLOCK_DATA", length=4, endian=">", inclusive=False, fuzzable=True)
     if s_block_start("PHYS_BLOCK_I"):
-        s_static(PNG_PHYS)                                      # pHYs chunk identifier
+        s_binary(PNG_PHYS)                                      # pHYs chunk identifier
         if s_block_start("PHYS_BLOCK_DATA"):
-            s_int(0x0B13, endian=">")				# Pixels/unit - X 
-            s_int(0x0B13, endian=">")				# Pixels/unit - Y
+            s_dword(0x0B13, endian=">")				# Pixels/unit - X 
+            s_dword(0x0B13, endian=">")				# Pixels/unit - Y
             s_byte(0x01, endian=">")				# Unit specifier
         s_block_end("PHYS_BLOCK_DATA")
     s_block_end("PHYS_BLOCK_I")
@@ -188,7 +188,7 @@ s_repeat("PHYS_BLOCK", min_reps=0, max_reps=1000, step=100)
 if s_block_start("TIME_BLOCK"):
     s_size("TIME_BLOCK_DATA", length=4, endian=">", inclusive=False, fuzzable=True)
     if s_block_start("TIME_BLOCK_I"):
-        s_static(PNG_TIME)                                      # tIME chunk identifier
+        s_binary(PNG_TIME)                                      # tIME chunk identifier
         if s_block_start("TIME_BLOCK_DATA"):
 
             s_word(0x07DF, endian=">")				# Year
@@ -260,7 +260,7 @@ if s_block_start("TEXT_BLOCK_1"):
                 # !!! tEXt
                 s_string("Comment")                                 # Keyword
                 s_byte(0x00)
-                s_static("FuzzLabs PNG")                            # Text
+                s_binary("FuzzLabs PNG")                            # Text
             s_block_end("TEXT_BLOCK_1_DATA_T")
 
             if s_block_start("TEXT_BLOCK_1_DATA_Z", dep="TEXT_TYPE_1", dep_value=PNG_ZTXT):
@@ -287,7 +287,7 @@ if s_block_start("TEXT_BLOCK_2"):
         if s_block_start("TEXT_BLOCK_2_DATA"):
             if s_block_start("TEXT_BLOCK_2_DATA_I", dep="TEXT_TYPE_2", dep_value=PNG_ITXT):
                 # !!! iTXt
-                s_static("Title")                                   # Keyword
+                s_binary("Title")                                   # Keyword
                 s_byte(0x00)
 
                 # Compression flag has to be full_range to make sure 0x00 and
@@ -307,14 +307,14 @@ if s_block_start("TEXT_BLOCK_2"):
 
             if s_block_start("TEXT_BLOCK_2_DATA_T", dep="TEXT_TYPE_2", dep_value=PNG_TEXT):
                 # !!! tEXt
-                s_static("Title")                                   # Keyword
+                s_binary("Title")                                   # Keyword
                 s_byte(0x00)
-                s_static("FuzzLabs PNG Image")                      # Text
+                s_binary("FuzzLabs PNG Image")                      # Text
             s_block_end("TEXT_BLOCK_2_DATA_T")
 
             if s_block_start("TEXT_BLOCK_2_DATA_Z", dep="TEXT_TYPE_2", dep_value=PNG_ZTXT):
                 # !!! zTXt
-                s_static("Title")                                   # Keyword
+                s_binary("Title")                                   # Keyword
                 s_byte(0x00)
                 s_byte(0x00)                                        # Compression method
                 s_string("Fuzzlabs PNG Image", compression="zlib")  # Text
@@ -336,7 +336,7 @@ if s_block_start("TEXT_BLOCK_3"):
         if s_block_start("TEXT_BLOCK_3_DATA"):
             if s_block_start("TEXT_BLOCK_3_DATA_I", dep="TEXT_TYPE_3", dep_value=PNG_ITXT):
                 # !!! iTXt
-                s_static("Author")                                  # Keyword
+                s_binary("Author")                                  # Keyword
                 s_byte(0x00)
 
                 # Compression flag has to be full_range to make sure 0x00 and
@@ -356,14 +356,14 @@ if s_block_start("TEXT_BLOCK_3"):
 
             if s_block_start("TEXT_BLOCK_3_DATA_T", dep="TEXT_TYPE_3", dep_value=PNG_TEXT):
                 # !!! tEXt
-                s_static("Author")
+                s_binary("Author")
                 s_byte(0x00)
-                s_static("NCC Group")
+                s_binary("NCC Group")
             s_block_end("TEXT_BLOCK_3_DATA_T")
 
             if s_block_start("TEXT_BLOCK_3_DATA_Z", dep="TEXT_TYPE_3", dep_value=PNG_ZTXT):
                 # !!! zTXt
-                s_static("Author")
+                s_binary("Author")
                 s_byte(0x00)
                 s_byte(0x00)
                 s_string("NCC Group", compression="zlib")
@@ -385,7 +385,7 @@ if s_block_start("TEXT_BLOCK_4"):
         if s_block_start("TEXT_BLOCK_4_DATA"):
             if s_block_start("TEXT_BLOCK_4_DATA_I", dep="TEXT_TYPE_4", dep_value=PNG_ITXT):
                 # !!! iTXt
-                s_static("Description")
+                s_binary("Description")
                 s_byte(0x00)
 
                 # Compression flag has to be full_range to make sure 0x00 and
@@ -405,14 +405,14 @@ if s_block_start("TEXT_BLOCK_4"):
 
             if s_block_start("TEXT_BLOCK_4_DATA_T", dep="TEXT_TYPE_4", dep_value=PNG_TEXT):
                 # !!! tEXt
-                s_static("Description")
+                s_binary("Description")
                 s_byte(0x00)
-                s_static("NCC Group Description")
+                s_binary("NCC Group Description")
             s_block_end("TEXT_BLOCK_4_DATA_T")
 
             if s_block_start("TEXT_BLOCK_4_DATA_Z", dep="TEXT_TYPE_4", dep_value=PNG_ZTXT):
                 # !!! zTXt
-                s_static("Description")
+                s_binary("Description")
                 s_byte(0x00)
                 s_byte(0x00)
                 s_string("NCC Group Description", compression="zlib")
@@ -434,7 +434,7 @@ if s_block_start("TEXT_BLOCK_5"):
         if s_block_start("TEXT_BLOCK_5_DATA"):
             if s_block_start("TEXT_BLOCK_5_DATA_I", dep="TEXT_TYPE_5", dep_value=PNG_ITXT):
                 # !!! iTXt
-                s_static("Copyright")
+                s_binary("Copyright")
                 s_byte(0x00)
 
                 # Compression flag has to be full_range to make sure 0x00 and
@@ -454,14 +454,14 @@ if s_block_start("TEXT_BLOCK_5"):
 
             if s_block_start("TEXT_BLOCK_5_DATA_T", dep="TEXT_TYPE_5", dep_value=PNG_TEXT):
                 # !!! tEXt
-                s_static("Copyright")
+                s_binary("Copyright")
                 s_byte(0x00)
-                s_static("NCC Group Copyright`")
+                s_binary("NCC Group Copyright`")
             s_block_end("TEXT_BLOCK_5_DATA_T")
 
             if s_block_start("TEXT_BLOCK_5_DATA_Z", dep="TEXT_TYPE_5", dep_value=PNG_ZTXT):
                 # !!! zTXt
-                s_static("Copyright")
+                s_binary("Copyright")
                 s_byte(0x00)
                 s_byte(0x00)
                 s_string("NCC Group Copyright", compression="zlib")
@@ -483,7 +483,7 @@ if s_block_start("TEXT_BLOCK_6"):
         if s_block_start("TEXT_BLOCK_6_DATA"):
             if s_block_start("TEXT_BLOCK_6_DATA_I", dep="TEXT_TYPE_6", dep_value=PNG_ITXT):
                 # !!! iTXt
-                s_static("Creation Time")
+                s_binary("Creation Time")
                 s_byte(0x00)
 
                 # Compression flag has to be full_range to make sure 0x00 and
@@ -503,14 +503,14 @@ if s_block_start("TEXT_BLOCK_6"):
 
             if s_block_start("TEXT_BLOCK_6_DATA_T", dep="TEXT_TYPE_6", dep_value=PNG_TEXT):
                 # !!! tEXt
-                s_static("Creation Time")
+                s_binary("Creation Time")
                 s_byte(0x00)
-                s_static("23 July 2015")
+                s_binary("23 July 2015")
             s_block_end("TEXT_BLOCK_6_DATA_T")
 
             if s_block_start("TEXT_BLOCK_6_DATA_Z", dep="TEXT_TYPE_6", dep_value=PNG_ZTXT):
                 # !!! zTXt
-                s_static("Creation Time")
+                s_binary("Creation Time")
                 s_byte(0x00)
                 s_byte(0x00)
                 s_string("23 July 2015", compression="zlib")
@@ -532,7 +532,7 @@ if s_block_start("TEXT_BLOCK_7"):
         if s_block_start("TEXT_BLOCK_7_DATA"):
             if s_block_start("TEXT_BLOCK_7_DATA_I", dep="TEXT_TYPE_7", dep_value=PNG_ITXT):
                 # !!! iTXt
-                s_static("Software")
+                s_binary("Software")
                 s_byte(0x00)
 
                 # Compression flag has to be full_range to make sure 0x00 and
@@ -552,14 +552,14 @@ if s_block_start("TEXT_BLOCK_7"):
 
             if s_block_start("TEXT_BLOCK_7_DATA_T", dep="TEXT_TYPE_7", dep_value=PNG_TEXT):
                 # !!! tEXt
-                s_static("Software")
+                s_binary("Software")
                 s_byte(0x00)
-                s_static("GIMP")
+                s_binary("GIMP")
             s_block_end("TEXT_BLOCK_7_DATA_T")
 
             if s_block_start("TEXT_BLOCK_7_DATA_Z", dep="TEXT_TYPE_7", dep_value=PNG_ZTXT):
                 # !!! zTXt
-                s_static("Software")
+                s_binary("Software")
                 s_byte(0x00)
                 s_byte(0x00)
                 s_string("GIMP", compression="zlib")
@@ -581,7 +581,7 @@ if s_block_start("TEXT_BLOCK_8"):
         if s_block_start("TEXT_BLOCK_8_DATA"):
             if s_block_start("TEXT_BLOCK_8_DATA_I", dep="TEXT_TYPE_8", dep_value=PNG_ITXT):
                 # !!! iTXt
-                s_static("Disclaimer")
+                s_binary("Disclaimer")
                 s_byte(0x00)
 
                 # Compression flag has to be full_range to make sure 0x00 and
@@ -601,14 +601,14 @@ if s_block_start("TEXT_BLOCK_8"):
 
             if s_block_start("TEXT_BLOCK_8_DATA_T", dep="TEXT_TYPE_8", dep_value=PNG_TEXT):
                 # !!! tEXt
-                s_static("Disclaimer")
+                s_binary("Disclaimer")
                 s_byte(0x00)
-                s_static("None")
+                s_binary("None")
             s_block_end("TEXT_BLOCK_8_DATA_T")
 
             if s_block_start("TEXT_BLOCK_8_DATA_Z", dep="TEXT_TYPE_8", dep_value=PNG_ZTXT):
                 # !!! zTXt
-                s_static("Disclaimer")
+                s_binary("Disclaimer")
                 s_byte(0x00)
                 s_byte(0x00)
                 s_string("None", compression="zlib")
@@ -630,7 +630,7 @@ if s_block_start("TEXT_BLOCK_9"):
         if s_block_start("TEXT_BLOCK_9_DATA"):
             if s_block_start("TEXT_BLOCK_9_DATA_I", dep="TEXT_TYPE_9", dep_value=PNG_ITXT):
                 # !!! iTXt
-                s_static("Warning")
+                s_binary("Warning")
                 s_byte(0x00)
 
                 # Compression flag has to be full_range to make sure 0x00 and
@@ -650,14 +650,14 @@ if s_block_start("TEXT_BLOCK_9"):
 
             if s_block_start("TEXT_BLOCK_9_DATA_T", dep="TEXT_TYPE_9", dep_value=PNG_TEXT):
                 # !!! tEXt
-                s_static("Warning")
+                s_binary("Warning")
                 s_byte(0x00)
-                s_static("None")
+                s_binary("None")
             s_block_end("TEXT_BLOCK_9_DATA_T")
 
             if s_block_start("TEXT_BLOCK_9_DATA_Z", dep="TEXT_TYPE_9", dep_value=PNG_ZTXT):
                 # !!! zTXt
-                s_static("Warning")
+                s_binary("Warning")
                 s_byte(0x00)
                 s_byte(0x00)
                 s_string("None", compression="zlib")
@@ -679,7 +679,7 @@ if s_block_start("TEXT_BLOCK_10"):
         if s_block_start("TEXT_BLOCK_10_DATA"):
             if s_block_start("TEXT_BLOCK_10_DATA_I", dep="TEXT_TYPE_10", dep_value=PNG_ITXT):
                 # !!! iTXt
-                s_static("Source")
+                s_binary("Source")
                 s_byte(0x00)
 
                 # Compression flag has to be full_range to make sure 0x00 and
@@ -699,14 +699,14 @@ if s_block_start("TEXT_BLOCK_10"):
 
             if s_block_start("TEXT_BLOCK_10_DATA_T", dep="TEXT_TYPE_10", dep_value=PNG_TEXT):
                 # !!! tEXt
-                s_static("Source")
+                s_binary("Source")
                 s_byte(0x00)
-                s_static("Raspberry PI")
+                s_binary("Raspberry PI")
             s_block_end("TEXT_BLOCK_10_DATA_T")
 
             if s_block_start("TEXT_BLOCK_10_DATA_Z", dep="TEXT_TYPE_10", dep_value=PNG_ZTXT):
                 # !!! zTXt
-                s_static("Source")
+                s_binary("Source")
                 s_byte(0x00)
                 s_byte(0x00)
                 s_string("Raspberry PI", compression="zlib")
@@ -733,7 +733,7 @@ s_block_end("TEXT_BLOCK_10")
 if s_block_start("IDAT_BLOCK"):
     s_size("IDAT_BLOCK_DATA", length=4, endian=">", inclusive=False, fuzzable=True)
     if s_block_start("IDAT_BLOCK_I"):
-        s_static(PNG_IDAT)                                      # IDAT chunk identifier
+        s_binary(PNG_IDAT)                                      # IDAT chunk identifier
         if s_block_start("IDAT_BLOCK_DATA"):
 
             s_string("\x08\xD7\x63\x50\x08\x60\x60\x64" +\
@@ -751,7 +751,7 @@ s_repeat("IDAT_BLOCK", min_reps=0, max_reps=1000, step=100)
 # -----------------------------------------------------------------------------
 
 if s_block_start("IEND_BLOCK"):
-    s_int(0x00, endian=">")
+    s_dword(0x00, endian=">")
     if s_block_start("IEND_BLOCK_I"):
         s_string(PNG_IEND)                                      # IEND chunk identifier
     s_block_end("IEND_BLOCK_I")
