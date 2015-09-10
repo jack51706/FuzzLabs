@@ -381,3 +381,27 @@ td.t_primitive_pr {
   width: 100px;
 }
 
+button.help {
+  margin-top: 4px;
+  font-weight: bold;
+  color: #000000;
+}
+
+div.help_frame_left {
+  min-height: 200px;
+  float: left;
+  padding: 5px;
+}
+
+div.help_frame_right {
+  min-height: 200px;
+  float: left;
+  padding: 5px;
+}
+
+div.help_page {
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-bottom: 100px;
+}
+
