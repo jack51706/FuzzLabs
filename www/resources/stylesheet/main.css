@@ -382,21 +382,12 @@ td.t_primitive_pr {
 }
 
 button.help {
-  margin-top: 4px;
+  margin-top: 6px;
   font-weight: bold;
   color: #000000;
-}
-
-div.help_frame_left {
-  min-height: 200px;
-  float: left;
-  padding: 5px;
-}
-
-div.help_frame_right {
-  min-height: 200px;
-  float: left;
-  padding: 5px;
+  border-radius: 12px;
+  border: 1px solid #DDDDDD;
+  background-color: #EEEEEE;
 }
 
 div.help_page {
