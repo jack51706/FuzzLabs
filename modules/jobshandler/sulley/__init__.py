@@ -550,64 +550,7 @@ def s_qword (value, endian="<", format="binary", synchsafe=False, signed=False, 
 ### ALIASES
 ########################################################################################################################
 
-s_bit    = s_bits    = s_bit_field
 s_int    = s_dword
 s_double = s_qword
 s_static = s_binary
-
-### SPIKE Aliases
-
-def custom_raise (argument, msg):
-    def _(x):
-        raise msg, argument(x)
-    return _
-
-########################################################################################################################
-### MISC
-########################################################################################################################
-
-def s_hex_dump (data, addr=0):
-    '''
-    Return the hex dump of the supplied data starting at the offset address specified.
-
-    @type  data: Raw
-    @param data: Data to show hex dump of
-    @type  addr: Integer
-    @param addr: (Optional, def=0) Offset to start displaying hex dump addresses from
-
-    @rtype:  String
-    @return: Hex dump of raw data
-    '''
-
-    dump = slice = ""
-
-    for byte in data:
-        if addr % 16 == 0:
-            dump += " "
-
-            for char in slice:
-                if ord(char) >= 32 and ord(char) <= 126:
-                    dump += char
-                else:
-                    dump += "."
-
-            dump += "\n%04x: " % addr
-            slice = ""
-
-        dump  += "%02x " % ord(byte)
-        slice += byte
-        addr  += 1
-
-    remainder = addr % 16
-
-    if remainder != 0:
-        dump += "   " * (16 - remainder) + " "
-
-    for char in slice:
-        if ord(char) >= 32 and ord(char) <= 126:
-            dump += char
-        else:
-            dump += "."
-
-    return dump + "\n"
 
