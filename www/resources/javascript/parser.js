@@ -91,7 +91,7 @@ $( document ).ready(function() {
     //
     // ------------------------------------------------------------------------
 
-    function selectionStatic(type, color, area, len, name) {
+    function selectionBinary(type, color, area, len, name) {
         var hexview = document.getElementById('parser_center_wrapper');
         cNodes = hexview.childNodes;
         var data = "";
@@ -261,19 +261,6 @@ $( document ).ready(function() {
                                } ]
                 });
                 break;
-            case "static":
-                $("#dialog_static").dialog({
-                    "title": "Static Primitive",
-                    "closeText": "Cancel",
-                    buttons: [ { id:"b_parse_static",
-                                 text: "Save",
-                                 click: function() {
-                                     var name = $("#parser_p_static_name").val();
-                                     selectionStatic(type, color, area, length, name);
-                                     $( this ).dialog( "close" ); }
-                               } ]
-                });
-                break;
             case "string":
                 $("#dialog_string").dialog({
                     "title": "String Primitive",
@@ -302,7 +289,7 @@ $( document ).ready(function() {
                                  text: "Save",
                                  click: function() {
                                      var name = $("#parser_p_static_name").val();
-                                     selectionStatic(type, color, area, length, name);
+                                     selectionBinary(type, color, area, length, name);
                                      $( this ).dialog( "close" ); }
                                } ]
                 });

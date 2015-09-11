@@ -284,8 +284,8 @@ li.type a, li.type a:hover {
 }
 
 #primitive_binary {
-  background-color: #B8AFC4;
-  color: #000000;
+  background-color: #444444;
+  color: #FFFFFF;
 }
 
 #primitive_delimiter {
@@ -300,11 +300,6 @@ li.type a, li.type a:hover {
 
 #section_size {
   background-color: #EBCC21;
-  color: #FFFFFF;
-}
-
-#primitive_static {
-  background-color: #444444;
   color: #FFFFFF;
 }
 
