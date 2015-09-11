@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="FuzzLabs - Fuzzing Framework">
+    <meta name="author" content="DCNWS">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>FuzzLabs</title>
+
+    <script src="/resources/javascript/jquery.min.js"></script>
+    <script src="/resources/javascript/ui-bootstrap-tpls.min.js"></script>
+    <script src="/resources/javascript/jquery.contextMenu.js"></script>
+    <script src="/resources/javascript/jquery.ui.position.js"></script>
+    <script src="/resources/javascript/jquery-ui.min.js"></script>
+    <script src="/resources/javascript/bootstrap.min.js"></script>
+    <link href="/resources/stylesheet/jquery-ui.css" rel="stylesheet">
+    <link href="/resources/stylesheet/bootstrap.min.css" rel="stylesheet">
+    <link href="/resources/stylesheet/jquery.contextMenu.css" rel="stylesheet">
+    <link href="/resources/stylesheet/main.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        ol {
+            counter-reset: item
+        }
+        li {
+            display: block
+        }
+        li:before {
+            content: counters(item, ".")" ";
+            counter-increment: item
+        }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img class="img-responsive-b" src="/resources/images/FuzzLabsLogo.png"></a>
+          <a class="navbar-brand" href="/">FuzzLabs</a>
+        </div>
+      </div>
+    </nav>
+    <div class="navbar-bottom">
+    </div>
+
+    <div class="container help_page">
+
+        TABLE OF CONTENT<br><br>
+
+        <ol type="1">
+            <li><a href="#welcome">Welcome</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <ol type="1">
+                <li><a href="#basic_setup">Basic Setup</a></li>
+                <li><a href="#web_server_setup">Web Server Setup</a></li>
+                <li><a href="#engine_setup_web">Engine Setup on GUI</a></li>
+            </ol>
+        </ol>
+
+
+        <h3><a name="welcome">Welcome to FuzzLabs</a></h3>
+
+        FuzzLabs in a modular fuzzing framework, written in Python. It uses a modified version of the amazing Sulley 
+        fuzzing framework (Sulley on Github) as the core fuzzing engine.<br><br>
+
+        Some of the key features:<br><br>
+
+        <ul class="help_menu">
+            <li>Modular architecture</li>
+            <li>Support for multiple fuzzing jobs at the same time</li>
+            <li>Capability of fuzzing applications over different transport media’s (Network, File, Bluetooth)</li>
+            <li>Possibility to add your own transport media handlers easily (e.g. USB)</li>
+            <li>Web interface supporting multiple engine connections for management</li>
+        </ul>
+
+        <h3><a name="installation">Installation</a></h3>
+        <h4><a name="basic_setup">Basic Setup</a></h4>
+
+        To start using FuzzLabs, first you have to clone the repository. Once that is done, execute the dev_setup.sh 
+        script in &lt;FUZZLABS_HOME&gt;. This script will install packages FuzzLabs depends on and, additional tools 
+        for development and debugging.<br><br>
+
+        An additional step that might have to be done is to create the directories "queue" and "archived" under 
+        &lt;FUZZLABS_HOME&gt;/jobs/ if they are not there. The queue directory is where the jobs get picked up from. 
+        The archived directory contains jobs that has been finished or stopped for whatever reason.<br><br>
+
+        The FuzzLabs engine can be started by issuing the following command:<br><br>
+
+        <pre>&lt;FUZZLABS_HOME&gt;/fuzzlabs.py start</pre>
+
+        The engine can be shut down with the following command:<br><br>
+
+        <pre>&lt;FUZZLABS_HOME&gt;/fuzzlabs.py stop</pre>
+
+        <br>
+
+        <h4><a name="web_server_setup">Web Server Setup</a></h4>
+
+        FuzzLabs has a web interface where you can manage your jobs and the engines as well. For this interface to be 
+        accessible you will obviously need a web server, which is basically the only thing not getting installed by 
+        the setup script. This is because you can use basically any web server you like to host the Web GUI. As the 
+        GUI is only HTML5 and JavaScript you don't need support for any dynamic languages (such as PHP). If you just 
+        do a <b>sudo apt-get install nginx</b> you got the web server covered. <br><br>
+
+        The web server does not have to be on the same machine as the engine, but split-deployments will be discussed 
+        later. In this install guide we will be doing a deployment where all the components are on a single server.<br><br>
+
+        The next step is to modify your web server's configuration to use <FUZZLABS_HOME>/www as the document root. For 
+        example, in case of Nginx the following simple configuration will suffice:<br><br>
+
+        <pre>
+server {
+    listen   80;
+    root /srv/FuzzLabs/www;
+    index index.html;
+    server_name localhost;
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+</pre>
+
+        Once the configuration is set up, restart the web server. Then, open the GUI. With the configuration above, the 
+        URL would be simply: <b>http://127.0.0.1/</b><br><br>
+        At this point you should see the GUI displaying a form to add your first engine.<br><br>
+
+        <h4><a name="engine_setup_web">Engine Setup on the GUI</a></h4>
+
+        The last step of the setup process is to configure your first engine using the web interface. This you can do on 
+        the initial form which is displayed when you visit the GUI and there is no engine registered.<br><br>
+
+        You have to provide the following details:<br><br>
+
+        <ul>
+            <li>Engine name: This can be anything you'd like and only used to help you identify and distinguish your engines.</li>
+            <li>Address: The IP address or host name of the engine.</li>
+            <li>Port: The port number the engine is listening on. By default this is 26000.</li>
+            <li>Password: If the engine is protected by a password, you have to specify the password here. By default, no password is used.</li>
+        </ul>
+
+        There are some restrictions for some of the fields. You can read about each of these by moving your mouse over 
+        the help button next to each input field.
+        Once you have added your first engine, you are ready to use the web interface.<br><br>
+        Please note that all engine related data are stored in the web browser's local storage. If you clear out the 
+        local storage, all these settings are lost.
+
+    </div>
+
+
+    <footer class="footer">
+      <div class="footer-bottom"></div>
+      <div class="container">
+        <p class="text-muted">&copy; DCNWS</p>
+      </div>
+    </footer>
+
+  </body>
+</html>
+

@@ -136,18 +136,6 @@ fuzzlabsApp.config(['$stateProvider',
         }
     });
 
-    $stateProvider.state("Modal.pageDocumentation", {
-        url: "/documentation",
-        views:{
-            "modal": {
-                templateUrl: "templates/documentation/page_main.html"
-            }
-        },
-        onEnter: function() {
-            change_page('documentation');
-        }
-    });
-
     $stateProvider.state("Modal.pageParser", {
         url: "/parser",
         views:{
