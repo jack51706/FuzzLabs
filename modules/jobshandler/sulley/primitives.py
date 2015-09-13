@@ -600,9 +600,7 @@ class string (base_primitive):
                 break
 
             # ignore library items greather then user-supplied length.
-            # TODO: might want to make this smarter.
-            if len(self.value) > self.size:
-                continue
+            if len(self.value) > self.size: self.value = self.value[0:self.size]
 
             # pad undersized library items.
             if len(self.value) < self.size:
