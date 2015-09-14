@@ -888,7 +888,6 @@ class session (pgraph.graph):
         try:
             self.previous_sent = self.current_sent
             self.current_sent = {
-                "id": "",
                 "job_id": self.session_id,
                 "time": time.time(),
                 "target": self.target.details,
@@ -897,7 +896,6 @@ class session (pgraph.graph):
                 "process_status": {},
                 "request": node_data
             }
-            self.current_sent['id'] = md5.new(json.dumps(self.current_sent)).hexdigest()
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR, self.session_id + ": failed to store session status (%s)" % str(ex))
 
@@ -919,32 +917,13 @@ class session (pgraph.graph):
         if process_status == None:
             process_status = {}
 
-        data = self.load_crash_data()
-        if (data == None or len(data) == 0):
-            data = []
-
         crash_data["process_status"] = process_status
-        data.append(crash_data)
 
         try:
-            self.database.saveCrashDetails(json.dumps(data))
+            self.database.saveCrashDetails(json.dumps(crash_data))
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR, self.session_id +
                               ": failed to save crash data (%s)" % str(ex))
-
-    # -----------------------------------------------------------------------------------
-    #
-    # -----------------------------------------------------------------------------------
-
-    def load_crash_data(self):
-        data = None
-        try:
-            fh   = open(self.directory + "/" + self.session_id + ".crash", "rb")
-            data = json.loads(fh.read())
-            fh.close()
-        except Exception, e:
-            return None
-        return data
 
     # -----------------------------------------------------------------------------------
     #
