@@ -14,13 +14,6 @@ import multiprocessing
 from threading import Thread
 from sulley import *
 
-__author__     = "Zsolt Imre"
-__license__    = "GPLv2"
-__version__    = "2.0.0"
-__maintainer__ = "Zsolt Imre"
-__email__      = "imrexzsolt@gmail.com"
-__status__     = "Development"
-
 # =============================================================================
 #
 # =============================================================================
@@ -329,6 +322,7 @@ class jobworker():
 
         try:
             self.core = sessions.session(self.config, 
+                                 self.root,
                                  self.job_path,
                                  self.job_id, 
                                  self.job_data["session"], 

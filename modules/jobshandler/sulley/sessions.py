@@ -21,6 +21,7 @@ import sex
 import primitives
 
 from agent import agent
+from classes import DatabaseHandler as db
 
 # =======================================================================================
 #
@@ -83,7 +84,7 @@ class session (pgraph.graph):
     #
     # -----------------------------------------------------------------------------------
 
-    def __init__(self, config, job_dir, session_id, settings=None, transport=None, 
+    def __init__(self, config, root_dir, job_dir, session_id, settings=None, transport=None, 
                  conditions=None):
 
         pgraph.graph.__init__(self)
@@ -110,7 +111,10 @@ class session (pgraph.graph):
                               ": no target crash detection conditions set")
             return
 
+        self.root_dir            = root_dir
         self.config              = config
+        self.database            = db.DatabaseHandler(self.config, self.root_dir,
+                                                      self.session_id)
         self.target              = None
         self.media               = transport['media'].lower()
         self.transport_media     = None
@@ -919,12 +923,11 @@ class session (pgraph.graph):
         if (data == None or len(data) == 0):
             data = []
 
+        crash_data["process_status"] = process_status
+        data.append(crash_data)
+
         try:
-            crash_data["process_status"] = process_status
-            data.append(crash_data)
-            fh = open(self.directory + "/" + self.session_id + ".crash", "wb+")
-            fh.write(json.dumps(data))
-            fh.close()
+            self.database.saveCrashDetails(json.dumps(data))
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR, self.session_id +
                               ": failed to save crash data (%s)" % str(ex))
@@ -1016,11 +1019,6 @@ class session (pgraph.graph):
 
         self.crashing_primitives[self.fuzz_node.mutant] = \
             self.crashing_primitives.get(self.fuzz_node.mutant,0) +1
-
-        # Crash data is dumped into the crash file. After, the request data is
-        # cleared out before storing into the crash log. This way long requests
-        # will not eat up the memory and the engine still contains a reference
-        # to the crash data in the crash log file.
 
         # If we could not make a connection to the target then it was the
         # previous request (or one of the prev. requests) that resulted in
