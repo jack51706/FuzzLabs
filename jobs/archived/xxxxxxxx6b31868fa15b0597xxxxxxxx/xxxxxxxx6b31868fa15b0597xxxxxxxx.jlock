@@ -1,4 +1,5 @@
 {
+    "name": "Callback / pre_post send test",
     "session": {
         "sleep_time": 0,
         "restart_sleep_time": 0,
@@ -22,6 +23,8 @@
     },
     "request": {
         "request_file": "file_TEST",
+        "pre_send": "file_presend",
+        "post_send": "file_postsend",
         "graph":
         [
             {"current": "TEST", "callback": "file_callback"}

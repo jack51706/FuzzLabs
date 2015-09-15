@@ -303,6 +303,21 @@ class jobworker():
             return None
 
     # -------------------------------------------------------------------------
+    #
+    # -------------------------------------------------------------------------
+
+    def load_callbacks(self, f_name = None):
+        if not f_name: return None
+        try:
+            f_name = getattr(descriptor, f_name)
+        except Exception, ex:
+            syslog.syslog(syslog.LOG_ERR,
+                          "w[%s] failed to load pre_send function for job %s (%s)" %
+                          (self.id, self.job_id, str(ex)))
+            f_name = None
+        return f_name
+
+    # -------------------------------------------------------------------------
     # 
     # -------------------------------------------------------------------------
 
@@ -344,24 +359,21 @@ class jobworker():
                           (self.id, self.job_id, str(ex)))
             return False
 
+        pre_send = self.load_callbacks(self.job_data["request"].get('pre_send'))
+        post_send = self.load_callbacks(self.job_data["request"].get('post_send'))
+
+        self.core.set_pre_send(pre_send)
+        self.core.set_post_send(post_send)
+
         try:
             for path in self.job_data["request"]["graph"]:
                 n_c = path.get('current')
                 if n_c != None: n_c = s_get(n_c)
                 n_n = path.get('next')
                 if n_n != None: n_n = s_get(n_n)
-                c_b = path.get('callback')
+                callback = self.load_callbacks(path.get('callback'))
+                self.core.connect(n_c, n_n, callback)
 
-                if c_b:
-                    try:
-                        c_b = getattr(descriptor, c_b)
-                    except Exception, ex:
-                        syslog.syslog(syslog.LOG_ERR,
-                              "w[%s] failed to load callback for job %s (%s)" %
-                              (self.id, self.job_id, str(ex)))
-                        c_b = None
-
-                self.core.connect(n_c, n_n, c_b)
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR,
                           "w[%s] failed to process graph for job %s (%s)" %

@@ -119,6 +119,9 @@ class session (pgraph.graph):
         self.crash_threshold     = 3
         self.restart_sleep_time  = 300
 
+        self.pre_send            = None
+        self.post_send           = None
+
         # State reason holds information about why the job is in a given
         # state. For example, a job can be in a paused state because the
         # user requested the pause, or, because of an error, e.g.: no
@@ -180,6 +183,22 @@ class session (pgraph.graph):
         self.last_recv  = None
 
         self.add_node(self.root)
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def set_pre_send(self, func):
+        if not func: return None
+        self.pre_send = func
+
+    # -----------------------------------------------------------------------------------
+    #
+    # -----------------------------------------------------------------------------------
+
+    def set_post_send(self, func):
+        if not func: return None
+        self.post_send = func
 
     # -----------------------------------------------------------------------------------
     #
@@ -535,7 +554,7 @@ class session (pgraph.graph):
                         # and let it do the deed.
 
                         try:
-                            self.pre_send(self.transport_media.media_socket())
+                            if self.pre_send: self.pre_send(self.transport_media.media_socket())
                         except Exception, ex:
                             if self.config['general']['debug'] > 0:
                                 syslog.syslog(syslog.LOG_ERR, self.session_id + ": pre_send() failed (%s)" % str(ex))
@@ -580,7 +599,7 @@ class session (pgraph.graph):
                         break
 
                     try:
-                        self.post_send(self.transport_media.media_socket())
+                        if self.post_send: self.post_send(self.transport_media.media_socket())
                     except Exception, ex:
                         if self.config['general']['debug'] > 0:
                             syslog.syslog(syslog.LOG_ERR, self.session_id + 
@@ -751,52 +770,6 @@ class session (pgraph.graph):
 
     def terminate (self):
         self.stop_flag = True
-
-    # -----------------------------------------------------------------------------------
-    #
-    # -----------------------------------------------------------------------------------
-
-    def post_send (self, sock):
-        '''
-        Overload or replace this routine to specify actions to run after to each fuzz 
-        request. The order of events is as follows:
-
-            pre_send() - req - callback ... req - callback - post_send()
-
-        When fuzzing RPC for example, register this method to tear down the RPC request.
-
-        @see: pre_send()
-
-        @type  sock: Socket
-        @param sock: Connected socket to target
-        '''
-
-        # default to doing nothing.
-
-        pass
-
-    # -----------------------------------------------------------------------------------
-    #
-    # -----------------------------------------------------------------------------------
-
-    def pre_send (self, sock):
-        '''
-        Overload or replace this routine to specify actions to run prior to each fuzz 
-        request. The order of events is as follows:
-
-            pre_send() - req - callback ... req - callback - post_send()
-
-        When fuzzing RPC for example, register this method to establish the RPC bind.
-
-        @see: pre_send()
-
-        @type  sock: Socket
-        @param sock: Connected socket to target
-        '''
-
-        # default to doing nothing.
-
-        pass
 
     # -----------------------------------------------------------------------------------
     #

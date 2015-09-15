@@ -6,6 +6,12 @@
 import syslog
 from sulley import *
 
+def file_presend(sock):
+    syslog.syslog(syslog.LOG_INFO, "PRE_SEND EXECUTED")
+
+def file_postsend(sock):
+    syslog.syslog(syslog.LOG_INFO, "POST_SEND EXECUTED")
+
 def file_callback(session, node, edge, sock):
     syslog.syslog(syslog.LOG_INFO, "CALLBACK EXECUTED")
 
