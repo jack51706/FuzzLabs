@@ -3,13 +3,14 @@
 # This file is part of the FuzzLabs Fuzzing Framework
 # =============================================================================
 
+import syslog
 from sulley import *
 
-s_initialize("TEST_1")
+def file_callback(session, node, edge, sock):
+    syslog.syslog(syslog.LOG_INFO, "CALLBACK EXECUTED")
+
+s_initialize("TEST")
 s_binary("0x00")
-s_byte(0x00, full_range=True)
-s_initialize("TEST_2")
-s_binary("0x01")
 s_byte(0x00, full_range=True)
 
 

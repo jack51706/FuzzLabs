@@ -263,7 +263,9 @@ class jobworker():
 
         r_folder = self.root + "/requests"
         if r_folder not in sys.path: sys.path.insert(0, r_folder)
-        __import__(self.job_data['request']['request_file'])
+        descriptor = __import__(self.job_data['request']['request_file'])
+        global descriptor
+
 
     # -------------------------------------------------------------------------
     # 
@@ -324,10 +326,8 @@ class jobworker():
             self.core = sessions.session(self.config, 
                                  self.root,
                                  self.job_path,
-                                 self.job_id, 
-                                 self.job_data["session"], 
-                                 self.job_data["target"]["transport"], 
-                                 self.job_data["target"]["conditions"])
+                                 self.job_id,
+                                 self.job_data)
             self.core.add_target(
                 sessions.target(self.job_data["target"]["endpoint"]))
 
@@ -346,11 +346,22 @@ class jobworker():
 
         try:
             for path in self.job_data["request"]["graph"]:
-                if path.get('next') == None:
-                    self.core.connect(s_get(path["current"]))
-                else:
-                    self.core.connect(s_get(path["current"]),
-                                      s_get(path["next"]))
+                n_c = path.get('current')
+                if n_c != None: n_c = s_get(n_c)
+                n_n = path.get('next')
+                if n_n != None: n_n = s_get(n_n)
+                c_b = path.get('callback')
+
+                if c_b:
+                    try:
+                        c_b = getattr(descriptor, c_b)
+                    except Exception, ex:
+                        syslog.syslog(syslog.LOG_ERR,
+                              "w[%s] failed to load callback for job %s (%s)" %
+                              (self.id, self.job_id, str(ex)))
+                        c_b = None
+
+                self.core.connect(n_c, n_n, c_b)
         except Exception, ex:
             syslog.syslog(syslog.LOG_ERR,
                           "w[%s] failed to process graph for job %s (%s)" %

@@ -84,33 +84,20 @@ class session (pgraph.graph):
     #
     # -----------------------------------------------------------------------------------
 
-    def __init__(self, config, root_dir, job_dir, session_id, settings=None, transport=None, 
-                 conditions=None):
-
+    def __init__(self, config, root_dir, job_dir, session_id, job_data):
         pgraph.graph.__init__(self)
 
         syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_DAEMON)
 
-        self.session_id = session_id
-        self.directory = job_dir
+        self.job_data            = job_data
 
-        if settings == None:
-            syslog.syslog(syslog.LOG_ERR, self.session_id + 
-                              ": no global configuration provided for job")
-            return
-        if settings == None:
-            syslog.syslog(syslog.LOG_ERR, self.session_id + 
-                              ": no settings provided for job")
-            return
-        if transport == None:
-            syslog.syslog(syslog.LOG_ERR, self.session_id + 
-                              ": no transport settings provided for job")
-            return
-        if conditions == None:
-            syslog.syslog(syslog.LOG_ERR, self.session_id + 
-                              ": no target crash detection conditions set")
-            return
+        settings                 = self.job_data["session"]
+        transport                = self.job_data["target"]["transport"]
+        conditions               = self.job_data["target"]["conditions"]
 
+        self.session_id          = session_id
+        self.directory           = job_dir
+        self.job_data            = job_data
         self.root_dir            = root_dir
         self.config              = config
         self.database            = db.DatabaseHandler(self.config, self.root_dir,
@@ -354,6 +341,7 @@ class session (pgraph.graph):
             self.add_node(dst)
 
         # create an edge between the two nodes and add it to the graph.
+
         edge = connection(src.id, dst.id, callback)
         self.add_edge(edge)
 
